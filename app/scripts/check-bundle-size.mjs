@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { basename, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const distDir = new URL("../dist/", import.meta.url);
 const html = readFileSync(new URL("index.html", distDir), "utf8");
@@ -23,7 +24,7 @@ if (!entryMatch) {
   throw new Error("Bundle budget check could not find the production entry script");
 }
 
-const assetsDir = join(distDir.pathname, "assets");
+const assetsDir = join(fileURLToPath(distDir), "assets");
 const assetFiles = readdirSync(assetsDir);
 const initialJavaScript = [
   ...html.matchAll(/(?:src|href)="\/assets\/([^"]+\.js)"/g),
