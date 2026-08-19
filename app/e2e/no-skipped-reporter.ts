@@ -10,7 +10,7 @@ export default class NoSkippedReporter implements Reporter {
     }
   }
 
-  onEnd(result: FullResult): { status?: FullResult["status"] } | undefined {
+  async onEnd(result: FullResult): Promise<{ status?: FullResult["status"] } | undefined> {
     if (process.env.E2E_REQUIRE_FULL_SUITE !== "1" || this.skippedTests.length === 0) {
       return undefined;
     }

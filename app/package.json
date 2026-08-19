@@ -16,7 +16,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "verify:lockfile": "node scripts/check-lockfile-reproducible.mjs",
-    "typecheck": "tsc -p tsconfig.app.json --noEmit --incremental false && tsc -p tsconfig.node.json --noEmit",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit --incremental false && tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.e2e.json --noEmit",
     "preview": "vite preview",
     "desktop": "electron .",
     "desktop:dev": "concurrently -k \"vite\" \"wait-on tcp:127.0.0.1:8080 && electron .\"",

@@ -18,6 +18,7 @@ falsely reported saves across browsers, devices, and failure conditions.
 
 ```bash
 E2E_PORT=8173 npx playwright test e2e/data-integrity.e2e.spec.ts
+E2E_PORT=8173 npx playwright test e2e/round-lifecycle.e2e.spec.ts
 ```
 
 (Any free port works; `E2E_PORT` exists because `localhost:8080` may be used
@@ -30,6 +31,65 @@ account and roster.)
 | 5. Offline recovery (queue → recovery copy → reconnect → no duplication) | Automated — the owner-scoped roster and Todo snapshot remain available after an offline service-worker reload; queued chart payloads are projected over the last roster snapshot and restore their `Offline queued` state before chart/End/Export render; the shared Offline indicator remains reachable at desktop/tablet/compact breakpoints; destructive discard stays disabled until the exact queue is downloaded as PHI-marked recovery JSON; cross-tab changes invalidate confirmation and an atomic signature check preserves any mutation not present in that download; cancel preserves the queue; patient Todos remain in IndexedDB, feed the shared End/Export map, drain on reconnect, and persist exactly once. Known-offline work must issue zero clinical-data writes. Chromium additionally proves zero Supabase requests during the offline reload; WebKit must briefly re-enable document transport but blocks clinical-data writes while the shell loads. | PASS (Chromium + WebKit) |
 | 7. Completion guard | Automated — an offline Todo disables Done and Mark Complete while End review plus the preloaded Print / Export dialog remain usable; transient Todo or patient-roster read outages preserve locally available clinical truth, mark it unverified, show a persistent retry surface, and block completion; a successful forced read clears the guard without refresh | PASS (Chromium + WebKit) |
 | 9. Reload truth | Automated for the two scenarios above (post-reload content match + occurrence count) | PASS (Chromium + WebKit) |
+
+### Newly authored automation — NOT YET EXECUTED (2026-08-19)
+
+The scenarios below were added to close the automation gaps for matrix rows 1,
+2, 4, 6, 8 and 10. **They have not been run yet** (no browser run has been
+performed since they were written), so no row they cover may be recorded as
+PASS until a credentialed Chromium and WebKit run produces evidence. Treat every
+"AUTO (unverified)" cell in the manual matrix below as "code exists, result
+unknown".
+
+Files:
+
+- `e2e/data-integrity.e2e.spec.ts` — three added describes:
+  `Data integrity — interaction isolation`,
+  `Data integrity — cross-device concurrency`,
+  `Data integrity — failure injection`.
+- `e2e/round-lifecycle.e2e.spec.ts` — new spec, describe `Round lifecycle`.
+  It deliberately mutates the shared account's Round continuity and restarts a
+  fresh Round in its teardown, and is named to sort ahead of `round-runner`,
+  whose walk path assumes an active Round at position 1.
+
+| Matrix row | Spec file | Test name |
+| --- | --- | --- |
+| 1 | `e2e/data-integrity.e2e.spec.ts` | `Data integrity — interaction isolation > todo input keeps focus across editor expand/collapse and clinical notes stay unchanged` |
+| 2 | `e2e/data-integrity.e2e.spec.ts` | `Data integrity — interaction isolation > editor toolbar controls open only their own surface and never mutate the note` |
+| 4 | `e2e/data-integrity.e2e.spec.ts` | `Data integrity — cross-device concurrency > phone edit from a stale snapshot becomes an explicit Save conflict, never a silent overwrite` |
+| 6 | `e2e/data-integrity.e2e.spec.ts` | `Data integrity — failure injection > rejected patient write queues durably instead of reporting a false save, then drains on retry` |
+| 6 | `e2e/data-integrity.e2e.spec.ts` | `Data integrity — failure injection > non-retryable rejected write reports Save failed and persists nothing` |
+| 8 | `e2e/data-integrity.e2e.spec.ts` | `Data integrity — failure injection > online pending-change recovery export names the mutation and Keep changes preserves the queue` |
+| 10 | `e2e/round-lifecycle.e2e.spec.ts` | `Round lifecycle > completed Round stays review-only after reload and in a new browser, and Start New Round is explicit` |
+
+Row 4 uses a 390x844 emulated viewport for the "phone" side because the touch
+Round shell is selected by a width media query; it is a form-factor emulation,
+not a physical device, so the **Real phone** column stays manual.
+
+### Deliberately not automated (still manual evidence)
+
+- **Row 6 — expired session.** Revoking or expiring the session mid-run would
+  poison the shared credentialed account for every later spec in the same
+  worker, and Playwright cannot revoke a Supabase session from the browser side
+  without a service-role key. Keep the manual recipe below.
+- **Row 6 — storage unavailable.** Disabling IndexedDB requires a browser
+  profile/policy flag that Playwright cannot express per browser context. Keep
+  the manual recipe below.
+- **Row 6 — rate limit (429) on `parse-handoff`.** Driving a real edge-function
+  rate limit from CI would depend on shared server-side counters and is not
+  deterministic. The 429 status shares the retryable/queueable classification
+  branch that the automated 5xx scenario exercises, and
+  `src/lib/offline/syncEngine.test.ts` covers the retry policy.
+- **Row 10 — stale device completing over a newer active Round.** Automating
+  this needs a second device to hold a stale Round generation while a third
+  party advances the server generation, then reconnect and be refused with the
+  retry/adopt resolution. That orchestration is not reproducible from a single
+  Playwright worker against one shared account; the adopt control
+  (`round-use-remote-generation`) has unit coverage in
+  `src/components/round/__tests__/roundRunnerHarness.test.tsx`. Keep manual
+  evidence for the reconnect half.
+- **Real phone column (all rows).** Emulated viewports do not replace real
+  device evidence.
 
 Unit-level coverage that backs the matrix:
 
@@ -147,18 +207,22 @@ observer, notes.
 
 | # | Scenario | Chromium | WebKit/Safari | Real phone | Expected result |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Todo isolation: expand/collapse every editor; type in Todo input | | | | Todo input keeps focus; clinical notes unchanged |
-| 2 | Toolbar routing: customize toolbar, AI model selector, phrase library, formatting, overflow | | | | Each control performs only its intended action |
+| 1 | Todo isolation: expand/collapse every editor; type in Todo input | AUTO (unverified) | AUTO (unverified) | | Todo input keeps focus; clinical notes unchanged. Automated in `e2e/data-integrity.e2e.spec.ts` → `Data integrity — interaction isolation > todo input keeps focus across editor expand/collapse and clinical notes stay unchanged`: expands and collapses the Focus clinical summary and every system editor, types the Todo draft in chunks asserting `toBeFocused()` and the accumulated value after each, then asserts the summary markup is byte-identical and zero patient `PATCH` requests were issued. The draft is never submitted, so no data is created. **Not yet executed.** |
+| 2 | Toolbar routing: customize toolbar, AI model selector, phrase library, formatting, overflow | AUTO (unverified) | AUTO (unverified) | | Each control performs only its intended action. Automated in `e2e/data-integrity.e2e.spec.ts` → `Data integrity — interaction isolation > editor toolbar controls open only their own surface and never mutate the note`: pins the persisted `Toolbar style for all text boxes` preference, then opens the More overflow, the phrase picker, the AI writing-tools menu and the Clinical AI dialog, switches minimal↔full and asserts only the bar composition changes, clicks Bold/Italic with a collapsed caret, and finally asserts the summary markup is unchanged and zero patient `PATCH` requests were issued. **Not yet executed.** |
 | 3 | Multi-tab concurrency (covered by browser automation) | PASS (auto) | PASS (auto) | | Native stale edit → one revision-guarded patient `PATCH`, one explicit conflict notification, matching `Review conflict` inline state, and no silent overwrite; unit coverage proves queued trailing edits stop at the barrier |
-| 4 | Cross-device concurrency: edit same field on phone and workstation | | | | Same explicit-conflict behavior as scenario 3 |
+| 4 | Cross-device concurrency: edit same field on phone and workstation | AUTO (unverified) | AUTO (unverified) | | Same explicit-conflict behavior as scenario 3. Automated in `e2e/data-integrity.e2e.spec.ts` → `Data integrity — cross-device concurrency > phone edit from a stale snapshot becomes an explicit Save conflict, never a silent overwrite`: a 390x844 emulated context on the touch Round shell loads first, a desktop classic context saves the same clinical summary, and the phone's stale edit must raise `Save conflict`, issue exactly one revision-guarded `PATCH`, and lose to the workstation content after reload. Emulated form factor only — the **Real phone** column stays manual. **Not yet executed.** |
 | 5 | Offline recovery: queue chart edits and patient Todos offline, reload, continue from the cached roster, reconnect, retry | PASS (auto) | PASS (auto; zero writes, Supabase blocked during shell reload) | | Owner-scoped roster remains navigable; post-reload Todo add/complete stays local; known-offline work makes zero Supabase writes; queued work survives reload and persists exactly once; Todo status goes Queued → synced and remains removable; global notices identify only changes showing `Offline queued` or `Queued` as device-resident and require confirming `Queued` clears or `Saved` appears after reconnect |
-| 6 | Failure injection: expired session, rejected write, storage unavailable, rate limit, timeout, 4xx/5xx | | | | Actionable retry/conflict/recovery path; no false "Saved" |
+| 6 | Failure injection: expired session, rejected write, storage unavailable, rate limit, timeout, 4xx/5xx | AUTO (unverified), partial | AUTO (unverified), partial | | Actionable retry/conflict/recovery path; no false "Saved". Rejected writes automated in `e2e/data-integrity.e2e.spec.ts` → `Data integrity — failure injection > rejected patient write queues durably instead of reporting a false save, then drains on retry` (injected 503 on patient `PATCH`: must show `Offline queued`, expose the pending-changes surface, then drain and persist exactly once) and `… > non-retryable rejected write reports Save failed and persists nothing` (injected 400: explicit `Save failed`, nothing persisted after reload). Expired session, storage-unavailable and edge-function rate limit remain manual — see "Deliberately not automated" above. **Not yet executed.** |
 | 7 | Completion guard: Done / End Round with pending, failed, conflicting, or queued changes | PASS (auto) | PASS (auto) | | Done and Mark Complete block; End review and Print / Export remain usable; reconnect replay unlocks completion without refresh |
-| 8 | Recovery export: download failed/pending changes, inspect content and identifiers, cancel discard, and perform authorized manual recovery if needed | | | | Discard is unavailable before download; JSON retains mutation/patient identifiers and local content; cancel leaves the queue intact |
+| 8 | Recovery export: download failed/pending changes, inspect content and identifiers, cancel discard, and perform authorized manual recovery if needed | AUTO (unverified) | AUTO (unverified) | | Discard is unavailable before download; JSON retains mutation/patient identifiers and local content; cancel leaves the queue intact. The offline flavour is already exercised inside scenario 5's automated test. The online flavour (a change left pending by a rejected write while the browser still reports online) is automated in `e2e/data-integrity.e2e.spec.ts` → `Data integrity — failure injection > online pending-change recovery export names the mutation and Keep changes preserves the queue`. Authorized manual re-import stays manual by design — the JSON is never auto-imported. **New test not yet executed.** |
 | 9 | Reload truth: compare rendered content vs database rows after refresh on every tab/device | | | | Rendered content matches DB exactly |
-| 10 | Terminal Round lifecycle: complete, reload locally/new browser, then reconnect a stale device | | | | Completed Round opens review-only Home; Start New Round is explicit; stale completion cannot overwrite the newer active Round; competing generation has retry/adopt resolution |
+| 10 | Terminal Round lifecycle: complete, reload locally/new browser, then reconnect a stale device | AUTO (unverified), partial | AUTO (unverified), partial | | Completed Round opens review-only Home; Start New Round is explicit; stale completion cannot overwrite the newer active Round; competing generation has retry/adopt resolution. Complete → local reload → new browser profile automated in `e2e/round-lifecycle.e2e.spec.ts` → `Round lifecycle > completed Round stays review-only after reload and in a new browser, and Start New Round is explicit` (also asserts terminal state is immutable: no second `Mark Round complete`, no `End Round` on Home). The stale-device reconnect / competing-generation half stays manual — see "Deliberately not automated" above. **Not yet executed.** |
 
 ### Scenario 6 notes (failure injection recipes)
+
+Rejected-write injection (backend 5xx and non-retryable 4xx) is now automated —
+see the automated-coverage table above. The recipes below remain the manual
+procedure for the conditions automation cannot reproduce.
 
 - **Expired session:** sign in, then revoke the session from another device
   (or wait for token expiry with auto-refresh disabled); the next write must
@@ -166,7 +230,9 @@ observer, notes.
 - **Rate limit:** trigger the `parse-handoff` edge function repeatedly;
   expect HTTP 429 handling with a user-visible retry message.
 - **Backend 5xx:** block/rewrite `*.supabase.co/rest/v1/*` to return 500 via
-  DevTools request interception; writes must queue or fail loudly.
+  DevTools request interception; writes must queue or fail loudly. (Automated,
+  unverified: the Playwright scenario fulfils patient `PATCH` with 503 and with
+  400 and asserts the queue-or-fail-loudly split.)
 - **Storage unavailable:** run in a profile with IndexedDB disabled; the app
   must fall back to the in-memory queue and still report honestly.
 
@@ -191,7 +257,10 @@ observer, notes.
   indicator is visible across dashboard breakpoints, export precedes discard,
   and automatic re-import is never implied.
 - Automated Playwright coverage exists for stable Chromium scenarios plus a
-  production-bundle WebKit auth/login/dashboard smoke. The browser suite also
+  production-bundle WebKit auth/login/dashboard smoke. Matrix rows 1, 2, 4, 6,
+  8 and 10 gained Playwright automation on 2026-08-19 that has not been executed
+  yet; none of those rows may be signed off until a credentialed run produces
+  evidence. The browser suite also
   covers keyboard skip/focus restoration, roving tabs, live ARIA panel
   relationships, 320px/390px overflow, 44px primary Round targets, 200% text,
   reduced motion, and dark-theme activation. Manual evidence covers screen
