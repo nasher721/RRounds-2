@@ -145,6 +145,15 @@
     "concurrently": "^9.1.0",
     "wait-on": "^8.0.1"
   },
+  "overrides": {
+    "expo-random": "11.0.0",
+    "@unimodules/core": "7.2.0",
+    "@unimodules/react-native-adapter": "6.5.0",
+    "react-native-securerandom": "0.1.1",
+    "react-native": "0.87.0",
+    "@babel/core": "7.29.7",
+    "base64-js": "1.5.1"
+  },
   "build": {
     "appId": "com.rollingrounds.app",
     "productName": "Rolling Rounds",
