@@ -155,3 +155,14 @@ receipt verification, and production alert rules remain deployment gates.
 | **Error boundaries** | `AIErrorBoundary`, `LazyPanelErrorBoundary`, `ErrorBoundary`, section boundaries, and global fallback record `render_error` with boundary metadata. |
 
 **Triage workflow:** reproduce → Settings → **Copy diagnostics** (or console `await __RR_OBSERVABILITY__.exportReport()`) → search codebase using `message` / `stackPreview` / `fingerprint`. Set `VITE_TELEMETRY_INGEST_URL` to the deployed Supabase telemetry function so structured logger batches reach the approved central store.
+
+---
+
+## Alert rules (added 2026-08-19)
+
+Concrete, executable alert rules for the queued/failed/conflicting-write and
+queue-age signals now live in **`docs/operations/alert-rules.md`**, closing the
+authoring half of the "production alert rules remain deployment gates" item
+above. They are **proposed and uncalibrated** — deploy report-only for one
+clinical week and obtain owner sign-off on thresholds before paging anyone.
+The on-call rota is still unnamed, which remains a blocking Phase 7 gate.

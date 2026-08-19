@@ -4,6 +4,27 @@ Handoff plan for continuing this project to production. Read this first, then th
 docs it references. **The release is currently on HOLD** — clinical production use
 is not yet approved.
 
+> ### ⚠️ Staleness notice (added 2026-08-19)
+>
+> Parts of this plan are **out of date**. It was written against
+> `docs/release/2026-08-11-release-hold-phase0.md`, which had not been updated
+> since 2026-08-11, and so inherited a stale picture.
+>
+> **Read `docs/release/2026-08-11-release-hold-phase0.md` § "Update 2026-08-19"
+> first.** Known-stale items in this document:
+>
+> - **§3.1 (secrets).** `docs/release/2026-08-12-signoff-packet.md` (updated
+>   2026-08-13) states these secrets are already present. That was *not*
+>   independently verified — check repo secrets directly rather than trusting
+>   either document.
+> - **§3.2 (lockfile).** Understated. `npm ci` did not merely churn, it **failed
+>   outright**; root-caused and contained on 2026-08-19. See the update section.
+> - **§7 Phase 4.** "`MobilePatientDetail` missing-hook-dep" and "44 Fast Refresh
+>   warnings" are resolved — lint reports **0 errors, 0 warnings**.
+> - **§7 Phase 6.** Per-chunk budgets already exist (14 of them) and all pass;
+>   initial JS is **618,671 / 750,000 bytes**.
+> - **§9 actions 4, 6, 7.** Already complete; no work required.
+
 ---
 
 ## 1. What this is
@@ -41,7 +62,17 @@ From `docs/release/2026-08-11-release-hold-phase0.md` ("Known gap" + "Remaining"
 - [ ] Post-deploy authenticated smoke test, record frontend + DB + edge versions.
 - [ ] Rollback drill (rollback = revert frontend; DB migration is additive-only).
 
-### 3.2 ⚠️ Lockfile reproducibility (P0 — verify before any CI push)
+### 3.2 ✅ Lockfile reproducibility (P0 — RESOLVED 2026-08-19)
+
+> **Resolved.** `npm ci` was failing outright (not merely churning) under the
+> pinned toolchain, root-caused to the `fhirclient` → `isomorphic-webcrypto`
+> floating-`*` optional dependency chain pulling the Expo SDK 57 tree. Contained
+> via a 7-entry `overrides` block; lock went 1457 → 1083 entries and `npm ci` is
+> now reproducible (verified 3× stable lock hash, 2× byte-identical installs).
+> A durable fix still needs an owner decision — see the release-hold update.
+> The original text is kept below for context.
+
+#### Original text
 
 `package-lock.json` was regenerated locally under **Node 24 / npm 11** to add the
 Electron dependencies. CI pins **Node 22 / npm 10.9.8** (`.nvmrc`, `engines`,
