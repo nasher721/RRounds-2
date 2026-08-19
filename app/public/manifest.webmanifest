@@ -1,0 +1,30 @@
+{
+  "name": "Rolling Rounds",
+  "short_name": "Rounds",
+  "description": "Offline-aware ICU rounding workspace",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7f3",
+  "theme_color": "#00c56a",
+  "lang": "en",
+  "dir": "ltr",
+  "orientation": "any",
+  "categories": ["medical", "productivity"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

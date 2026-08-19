@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sign in — Rolling Rounds</title>
+<link rel="icon" type="image/png" href="assets/icons/favicon-64.png" />
+<link rel="stylesheet" href="assets/app.css" />
+<style>
+  .auth { min-height: 100dvh; background: #f7f9fb; color: hsl(100 11% 5%); }
+  .auth .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .auth-top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; color: hsl(100 11% 5%); text-decoration: none; }
+  .brand img { width: 28px; height: 28px; border-radius: 7px; }
+  .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; padding: 64px 0 96px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid hsl(90 14% 89%); background: #fff; border-radius: 999px; font-size: 13px; font-weight: 600; color: hsl(102 5% 40%); }
+  .eyebrow svg { color: hsl(var(--accent-foreground)); }
+  .auth-copy h1 { font-size: clamp(30px, 3.4vw, 42px); font-weight: 650; letter-spacing: -0.03em; line-height: 1.1; margin-top: 24px; }
+  .auth-copy p { margin-top: 18px; font-size: 16px; line-height: 1.6; color: hsl(102 5% 42%); max-width: 42ch; }
+  .auth-points { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; }
+  .auth-point { padding: 16px; border-radius: 12px; border: 1px solid hsl(90 14% 89%); background: #fff; }
+  .auth-point b { font-size: 14px; font-weight: 600; }
+
+  .card { max-width: 440px; margin: 0 auto; width: 100%; overflow: hidden; border-radius: 20px; border: 1px solid hsl(90 14% 89%); background: #fff; box-shadow: 0 24px 60px -20px rgba(15,23,42,0.16); }
+  .card .stripe { height: 4px; background: linear-gradient(90deg, hsl(var(--primary) / 0.5), hsl(var(--primary)), hsl(var(--primary) / 0.5)); }
+  .card-inner { padding: 28px 32px 32px; }
+  .card h2 { font-size: 24px; font-weight: 650; letter-spacing: -0.02em; }
+  .card .sub { margin: 8px 0 0; font-size: 14px; color: hsl(102 5% 45%); line-height: 1.55; }
+  .form { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+  .input-wrap { position: relative; }
+  .input-wrap svg.lead { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: hsl(102 5% 50%); pointer-events: none; }
+  .input-wrap .input { padding-left: 42px; }
+  .input-wrap .toggle { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 9px; border: none; background: transparent; color: hsl(102 5% 50%); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .input-wrap .toggle:hover { color: hsl(100 11% 5%); }
+  .field-error { font-size: 12px; color: hsl(var(--destructive)); margin-top: 4px; }
+  .input.has-error { border-color: hsl(var(--destructive)); }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+  .divider .line { height: 1px; flex: 1; background: hsl(90 14% 89%); }
+  .divider span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: hsl(102 5% 45%); }
+  .note { margin-top: 20px; text-align: center; font-size: 12px; color: hsl(102 5% 45%); }
+  .error-banner { display: none; margin-top: 14px; padding: 10px 14px; border-radius: 10px; background: hsl(var(--destructive) / 0.1); color: hsl(var(--destructive)); font-size: 13px; }
+
+  @media (max-width: 900px) {
+    .auth-grid { grid-template-columns: 1fr; padding: 32px 0 64px; }
+    .auth-copy { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="auth">
+  <div class="wrap">
+    <div class="auth-top">
+      <a class="btn btn-ghost btn-sm" href="landing.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>Back</a>
+      <a class="brand" href="landing.html"><img src="assets/icons/icon-192.png" alt="" />Rolling Rounds</a>
+    </div>
+
+    <div class="auth-grid">
+      <section class="auth-copy">
+        <span class="eyebrow"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>Protected clinical workspace</span>
+        <h1>Sign in, then get straight to the patient list.</h1>
+        <p>Rolling Rounds keeps authentication quiet and the workspace practical: notes, tasks, handoffs, and exports stay close.</p>
+        <div class="auth-points">
+          <div class="auth-point"><b>Team sync</b></div>
+          <div class="auth-point"><b>Field history</b></div>
+          <div class="auth-point"><b>Print export</b></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="stripe"></div>
+        <div class="card-inner">
+          <h2>Welcome back</h2>
+          <p class="sub">Use your provisioned email and password to open the workspace.</p>
+
+          <div class="error-banner" id="error-banner" role="alert"></div>
+
+          <form class="form" id="login-form" novalidate>
+            <div class="field">
+              <label for="email">Email</label>
+              <div class="input-wrap">
+                <svg class="lead" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                <input class="input" id="email" type="email" placeholder="doctor@hospital.org" autocomplete="email" />
+              </div>
+              <span class="field-error" id="email-error"></span>
+            </div>
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="input-wrap">
+                <svg class="lead" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <input class="input" id="password" type="password" placeholder="Password" autocomplete="current-password" />
+                <button type="button" class="toggle" id="toggle-pw" aria-label="Show password" aria-pressed="false">
+                  <svg id="eye-on" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg id="eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c6.5 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3.5 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                </button>
+              </div>
+              <span class="field-error" id="password-error"></span>
+            </div>
+
+            <button class="btn btn-primary w-full" id="submit" type="submit" style="min-height:48px;">Sign in</button>
+          </form>
+
+          <div class="divider"><span class="line"></span><span>or</span><span class="line"></span></div>
+
+          <button class="btn btn-outline w-full" id="oauth-google" type="button" style="min-height:48px;">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continue with Google
+          </button>
+
+          <p class="note">Access is restricted to accounts provisioned by your administrator.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+  var form = document.getElementById('login-form');
+  var email = document.getElementById('email');
+  var password = document.getElementById('password');
+  var submit = document.getElementById('submit');
+  var errorBanner = document.getElementById('error-banner');
+  var emailError = document.getElementById('email-error');
+  var passwordError = document.getElementById('password-error');
+
+  function setError(el, msg) {
+    if (msg) { el.textContent = msg; el.previousElementSibling.querySelector('input').classList.add('has-error'); }
+    else { el.textContent = ''; el.previousElementSibling.querySelector('input').classList.remove('has-error'); }
+  }
+
+  email.addEventListener('input', function () { if (emailError.textContent) setError(emailError, ''); });
+  password.addEventListener('input', function () { if (passwordError.textContent) setError(passwordError, ''); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var em = email.value.trim();
+    var pw = password.value;
+    var ok = true;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setError(emailError, 'Enter a valid email address.'); ok = false; } else setError(emailError, '');
+    if (pw.length < 8) { setError(passwordError, 'Password must be at least 8 characters.'); ok = false; } else setError(passwordError, '');
+    errorBanner.style.display = 'none';
+    if (!ok) return;
+
+    submit.disabled = true;
+    submit.innerHTML = 'Signing in…';
+    setTimeout(function () {
+      window.location.href = 'workspace.html';
+    }, 900);
+  });
+
+  document.getElementById('toggle-pw').addEventListener('click', function () {
+    var show = password.type === 'password';
+    password.type = show ? 'text' : 'password';
+    document.getElementById('eye-on').style.display = show ? 'none' : '';
+    document.getElementById('eye-off').style.display = show ? '' : 'none';
+    this.setAttribute('aria-pressed', String(show));
+  });
+
+  document.getElementById('oauth-google').addEventListener('click', function () {
+    this.innerHTML = 'Redirecting…';
+    this.disabled = true;
+    setTimeout(function () { window.location.href = 'workspace.html'; }, 700);
+  });
+</script>
+</body>
+</html>

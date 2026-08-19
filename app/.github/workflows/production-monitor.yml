@@ -1,0 +1,139 @@
+name: Production monitor
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-monitor
+  cancel-in-progress: false
+
+jobs:
+  save-canary:
+    name: Health and reversible save canary
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: e2e-shared-account
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Require production monitor configuration
+        env:
+          PRODUCTION_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          HEALTHCHECK_TOKEN: ${{ secrets.HEALTHCHECK_TOKEN }}
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          PRODUCTION_SENTRY_DSN: ${{ vars.PRODUCTION_SENTRY_DSN }}
+          PRODUCTION_TELEMETRY_INGEST_URL: ${{ vars.PRODUCTION_TELEMETRY_INGEST_URL }}
+        run: |
+          set -euo pipefail
+          for name in PRODUCTION_APP_URL PROJECT_ID ANON_KEY HEALTHCHECK_TOKEN E2E_TEST_EMAIL E2E_TEST_PASSWORD; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::$name is required for the production monitor"
+              exit 1
+            fi
+          done
+          case "$PRODUCTION_APP_URL" in
+            https://*) ;;
+            *) echo "::error::PRODUCTION_APP_URL must use HTTPS"; exit 1 ;;
+          esac
+          if [ -z "${PRODUCTION_SENTRY_DSN:-}" ] && [ -z "${PRODUCTION_TELEMETRY_INGEST_URL:-}" ]; then
+            echo "::error::A central production observability sink is required"
+            exit 1
+          fi
+      - name: Probe Edge and database health
+        env:
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          HEALTHCHECK_TOKEN: ${{ secrets.HEALTHCHECK_TOKEN }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            "https://${PROJECT_ID}.supabase.co/functions/v1/healthcheck" \
+            -H "Authorization: Bearer $ANON_KEY" \
+            -H "apikey: $ANON_KEY" \
+            -H "x-healthcheck-token: $HEALTHCHECK_TOKEN" \
+            -o "$RUNNER_TEMP/healthcheck.json"
+          jq -e '.status == "healthy" and .components.database == "connected"' \
+            "$RUNNER_TEMP/healthcheck.json" >/dev/null
+      - name: Probe configured first-party telemetry ingest
+        if: vars.PRODUCTION_TELEMETRY_INGEST_URL != ''
+        env:
+          ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          TELEMETRY_INGEST_URL: ${{ vars.PRODUCTION_TELEMETRY_INGEST_URL }}
+        run: |
+          set -euo pipefail
+          payload="$RUNNER_TEMP/telemetry-probe.json"
+          response="$RUNNER_TEMP/telemetry-probe-response.json"
+          jq --null-input \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+            --arg session "monitor_${GITHUB_RUN_ID}" \
+            '[{
+              app: "round-robin-notes",
+              context: {},
+              env: "production",
+              level: "info",
+              message: "monitor.ingest_probe",
+              sessionId: $session,
+              timestamp: $timestamp
+            }]' >"$payload"
+          curl --fail --silent --show-error \
+            --request POST "$TELEMETRY_INGEST_URL" \
+            --header "Authorization: Bearer $ANON_KEY" \
+            --header "apikey: $ANON_KEY" \
+            --header "Content-Type: application/json" \
+            --data @"$payload" \
+            --output "$response"
+          jq -e '.accepted == 1' "$response" >/dev/null
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run reversible production save canary
+        env:
+          E2E_REQUIRE_SYNTHETIC: "1"
+          E2E_BASE_URL: ${{ vars.PRODUCTION_APP_URL }}
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+        run: npm run test:e2e:synthetic
+      - name: Open or update production monitor incident
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          title="Production monitor failure"
+          issue=$(gh issue list --state open --search "$title in:title" --json number,title \
+            --jq '.[] | select(.title == "Production monitor failure") | .number' | head -n 1)
+          if [ -z "$issue" ]; then
+            gh issue create --title "$title" \
+              --body "The hourly production health/save canary failed. Review the workflow run: $RUN_URL"
+          else
+            gh issue comment "$issue" \
+              --body "The production monitor failed again. Review the workflow run: $RUN_URL"
+          fi
+      - name: Close recovered production monitor incident
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          issue=$(gh issue list --state open --search "Production monitor failure in:title" \
+            --json number,title \
+            --jq '.[] | select(.title == "Production monitor failure") | .number' | head -n 1)
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body "Production monitoring recovered: $RUN_URL"
+            gh issue close "$issue" --reason completed
+          fi

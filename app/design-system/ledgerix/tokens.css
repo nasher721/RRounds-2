@@ -1,0 +1,670 @@
+/* =========================================================================
+   LEDGERIX DESIGN SYSTEM — TOKENS
+   -------------------------------------------------------------------------
+   The single source of truth. Every component style resolves to a variable
+   declared here, so retheming the whole system is a matter of editing this
+   file and nothing else.
+
+   Design DNA
+   ----------
+   Typeface : Urbanist — a geometric sans chosen for clarity + approachability,
+              holding legibility from 11px captions to 56px display figures.
+   Colour   : one vibrant green carrying action / growth / reliability, set
+              against neutral black, white and grey. The neutrals carry a
+              faint green cast so the greys and the accent read as one family.
+   Posture  : generous radii, hairline borders, near-flat elevation. Depth
+              comes from surface *lightness* steps, not from drop shadows.
+
+   Structure
+   ---------
+   1. Primitives  — raw scales. Never referenced by components directly.
+   2. Semantics   — role tokens (surface, text, border …). Components use
+                    ONLY these, which is what makes light/dark a single swap.
+   3. Typography, space, radius, shadow, motion, layout, charts.
+
+   Theming contract
+   ----------------
+   The full light palette is declared on bare `:root`. Dark is redefined in
+   two guarded blocks so both the OS setting and an explicit `data-theme`
+   toggle win in the right direction:
+       @media (prefers-color-scheme: dark) :root:not([data-theme="light"])
+       :root[data-theme="dark"]
+   A `.dark` class selector is included alongside so the system drops into
+   Tailwind's `darkMode: "class"` and shadcn projects unchanged.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   FONT
+   Urbanist ships on Google Fonts. Load it once in your document head:
+
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+   …or via CSS, which is what this file does. Remove the @import if you use
+   the <link> form — the link tag is faster because it avoids a request
+   waterfall behind your stylesheet.
+   ------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* =========================================================================
+   1. PRIMITIVES
+   Raw scales. Stable across themes — light and dark both draw from these.
+   ========================================================================= */
+
+:root {
+  /* --- Brand green -------------------------------------------------------
+     Anchored at 500 (#00C56A): saturated enough to read as "vibrant", deep
+     enough to carry white text at 600+ and to sit on white without glare.  */
+  --lx-green-50: #e8fbf0;
+  --lx-green-100: #c6f5dc;
+  --lx-green-200: #92ecbe;
+  --lx-green-300: #52de9a;
+  --lx-green-400: #17cd78;
+  --lx-green-500: #00c56a;
+  --lx-green-600: #00a257;
+  --lx-green-700: #007f44;
+  --lx-green-800: #0a5c34;
+  --lx-green-900: #0b3d25;
+  --lx-green-950: #07261a;
+
+  /* --- Signal lime -------------------------------------------------------
+     The hyper-saturated highlight. Deliberately scarce: the single emphasised
+     chart series, a "live" dot, one hero CTA per screen. Always takes INK
+     text (near-black), never white — see --lx-on-signal.                    */
+  --lx-lime-300: #dcfb7f;
+  --lx-lime-400: #cef95a;
+  --lx-lime-500: #c8f94e;
+  --lx-lime-600: #b0e02f;
+  --lx-lime-700: #8bb520;
+  --lx-lime-800: #6f9212; /* light-mode chart mark — lime is unreadable on white */
+
+  /* --- Neutrals ----------------------------------------------------------
+     Not pure grey. A trace of green (hue ~110) keeps the chrome in the same
+     family as the accent — the difference between a system and a swatch.    */
+  --lx-neutral-0: #ffffff;
+  --lx-neutral-25: #fafbf9;
+  --lx-neutral-50: #f5f7f3;
+  --lx-neutral-100: #eef1ea;
+  --lx-neutral-200: #e2e6de;
+  --lx-neutral-300: #cdd3c8;
+  --lx-neutral-400: #a8b0a3;
+  --lx-neutral-500: #8a9186;
+  --lx-neutral-600: #6b7268;
+  --lx-neutral-700: #4d5449;
+  --lx-neutral-800: #333a30;
+  --lx-neutral-850: #242821;
+  --lx-neutral-900: #1a1d18;
+  --lx-neutral-925: #121412;
+  --lx-neutral-950: #0d0f0c;
+  --lx-neutral-975: #0a0b0a;
+
+  /* --- Supporting hues ---------------------------------------------------
+     Used for semantics and for the categorical chart ramp. Muted on purpose:
+     the green must stay the loudest thing on screen.                        */
+  --lx-amber-100: #fef3c7;
+  --lx-amber-400: #fbbf3c;
+  --lx-amber-500: #f5a524;
+  --lx-amber-600: #d38508;
+  --lx-amber-650: #b06e00; /* light-mode chart mark */
+  --lx-amber-700: #9a6100; /* text step — 500/600 are fills, too light for text */
+
+  --lx-red-100: #fee4e2;
+  --lx-red-400: #f2585e;
+  --lx-red-500: #e5484d;
+  --lx-red-600: #c8323b;
+  --lx-red-700: #b4242d; /* text step */
+
+  --lx-blue-100: #dbeafe;
+  --lx-blue-400: #7aa5f5;
+  --lx-blue-500: #5b8def;
+  --lx-blue-600: #3a6fd8;
+  --lx-blue-700: #2f5fc0; /* text step */
+
+  --lx-violet-400: #a78bfa;
+  --lx-violet-500: #8b74f0;
+
+  --lx-teal-400: #45c4c0;
+  --lx-teal-500: #2aa9a5;
+  --lx-teal-600: #1f8b88;
+}
+
+/* =========================================================================
+   2. SEMANTIC ROLES — LIGHT (the default)
+   Components reference these and nothing above.
+   ========================================================================= */
+
+:root {
+  color-scheme: light;
+
+  /* --- Surfaces ----------------------------------------------------------
+     canvas  : the page itself, a shade off-white so white cards lift.
+     surface : default card / panel.
+     raised  : a card sitting ON a card (nested tiles, popovers, menus).
+     sunken  : wells — table headers, inputs, empty states, code.
+     overlay : modal scrim.                                                  */
+  --lx-canvas: var(--lx-neutral-50);
+  --lx-surface: var(--lx-neutral-0);
+  --lx-surface-raised: var(--lx-neutral-0);
+  --lx-surface-sunken: var(--lx-neutral-100);
+  --lx-surface-hover: var(--lx-neutral-100);
+  --lx-surface-active: var(--lx-neutral-200);
+  --lx-surface-inverse: var(--lx-neutral-950);
+  --lx-overlay: rgb(13 15 12 / 0.45);
+
+  /* --- Text --------------------------------------------------------------
+     Four steps, and four is the budget. More than four and hierarchy stops
+     being legible as hierarchy.                                             */
+  --lx-text: var(--lx-neutral-950);
+  --lx-text-secondary: var(--lx-neutral-700);
+  --lx-text-muted: var(--lx-neutral-600);
+  /* Disabled text is intentionally below 4.5:1 — WCAG 1.4.3 exempts inactive
+     controls, and a disabled field that reads as active is worse. */
+  --lx-text-disabled: var(--lx-neutral-400);
+  --lx-text-inverse: var(--lx-neutral-25);
+  --lx-text-brand: var(--lx-green-700);
+  --lx-text-link: var(--lx-green-700);
+
+  /* --- Borders -----------------------------------------------------------
+     Hairlines do the structural work that shadows do in other systems.      */
+  --lx-border: var(--lx-neutral-200);
+  --lx-border-subtle: var(--lx-neutral-100);
+  --lx-border-strong: var(--lx-neutral-300);
+  /* Inputs are interactive boundaries, so they need 3:1 against the surface —
+     unlike card hairlines, where the surface/canvas step carries the shape. */
+  --lx-border-control: var(--lx-neutral-500);
+  --lx-border-brand: var(--lx-green-500);
+  /* green-500 is only 2.28:1 on white; the focus ring must clear 3:1. */
+  --lx-border-focus: var(--lx-green-600);
+
+  /* --- Brand / interactive ----------------------------------------------- */
+  --lx-brand: var(--lx-green-500);
+  --lx-brand-hover: var(--lx-green-600);
+  --lx-brand-active: var(--lx-green-700);
+  --lx-brand-subtle: var(--lx-green-50);
+  --lx-brand-subtle-hover: var(--lx-green-100);
+  --lx-brand-muted: var(--lx-green-100);
+  /* Ink, not white. White on green-500 is 2.28:1; ink is 8.43:1 — and dark
+     text on a vibrant green is the look this system is after anyway. */
+  --lx-on-brand: var(--lx-neutral-950);
+
+  --lx-signal: var(--lx-lime-500);
+  --lx-signal-hover: var(--lx-lime-600);
+  --lx-on-signal: var(--lx-neutral-950);
+
+  /* --- Semantic states ---------------------------------------------------
+     `-fg` is the text/icon colour, `-bg` the tinted container behind it.    */
+  --lx-success: var(--lx-green-500);
+  --lx-success-fg: var(--lx-green-700);
+  --lx-success-bg: var(--lx-green-50);
+
+  --lx-warning: var(--lx-amber-500);
+  --lx-warning-fg: var(--lx-amber-700);
+  --lx-warning-bg: var(--lx-amber-100);
+
+  --lx-danger: var(--lx-red-500);
+  --lx-danger-fg: var(--lx-red-700);
+  --lx-danger-bg: var(--lx-red-100);
+
+  --lx-info: var(--lx-blue-500);
+  --lx-info-fg: var(--lx-blue-700);
+  --lx-info-bg: var(--lx-blue-100);
+
+  --lx-neutral-fg: var(--lx-neutral-600);
+  --lx-neutral-bg: var(--lx-neutral-100);
+
+  /* --- Financial direction -----------------------------------------------
+     Money moves up or down; that reading is not the same as success/error
+     and deserves its own tokens so a fall can be styled neutrally in
+     markets where red/green carries the opposite meaning.                   */
+  --lx-positive: var(--lx-green-700);
+  --lx-positive-bg: var(--lx-green-50);
+  --lx-negative: var(--lx-red-700);
+  --lx-negative-bg: var(--lx-red-100);
+
+  /* --- Elevation ---------------------------------------------------------
+     Light mode gets real (but very soft) shadows. See the dark block for how
+     these invert into near-nothing.                                         */
+  --lx-shadow-xs: 0 1px 2px 0 rgb(13 15 12 / 0.04);
+  --lx-shadow-sm: 0 1px 3px 0 rgb(13 15 12 / 0.06), 0 1px 2px -1px rgb(13 15 12 / 0.04);
+  --lx-shadow-md: 0 4px 12px -2px rgb(13 15 12 / 0.07), 0 2px 4px -2px rgb(13 15 12 / 0.04);
+  --lx-shadow-lg: 0 12px 28px -6px rgb(13 15 12 / 0.10), 0 4px 8px -4px rgb(13 15 12 / 0.05);
+  --lx-shadow-xl: 0 24px 56px -12px rgb(13 15 12 / 0.14);
+  --lx-shadow-focus: 0 0 0 3px rgb(0 197 106 / 0.22);
+  --lx-shadow-brand: 0 6px 20px -6px rgb(0 197 106 / 0.42);
+
+  /* Chart plumbing that differs per theme. */
+  --lx-chart-grid: var(--lx-neutral-200);
+  --lx-chart-axis: var(--lx-neutral-400);
+  --lx-chart-neutral: var(--lx-neutral-500);
+  --lx-chart-tooltip-bg: var(--lx-neutral-950);
+  --lx-chart-tooltip-fg: var(--lx-neutral-25);
+
+  /* Skeleton shimmer base. */
+  --lx-skeleton: var(--lx-neutral-100);
+  --lx-skeleton-shine: var(--lx-neutral-200);
+}
+
+/* =========================================================================
+   2b. SEMANTIC ROLES — DARK
+   Only role tokens are redefined; primitives are untouched.
+
+   Dark is where this system earns its keep. Two rules:
+     · Depth is a lightness ladder (975 canvas → 925 surface → 900 raised).
+       Shadows on near-black are invisible, so they're reduced to almost
+       nothing and borders take over.
+     · The brand steps DOWN in weight, not up: on a dark ground the 400/500
+       greens already glow, so `--lx-brand-hover` gets lighter rather than
+       darker, keeping hover feeling like "more energy" in both themes.
+   ========================================================================= */
+
+:root[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  --lx-canvas: var(--lx-neutral-975);
+  --lx-surface: var(--lx-neutral-925);
+  --lx-surface-raised: var(--lx-neutral-900);
+  --lx-surface-sunken: var(--lx-neutral-950);
+  --lx-surface-hover: var(--lx-neutral-850);
+  --lx-surface-active: var(--lx-neutral-800);
+  --lx-surface-inverse: var(--lx-neutral-50);
+  --lx-overlay: rgb(5 6 5 / 0.68);
+
+  --lx-text: var(--lx-neutral-25);
+  --lx-text-secondary: var(--lx-neutral-400);
+  --lx-text-muted: var(--lx-neutral-500);
+  --lx-text-disabled: var(--lx-neutral-700);
+  --lx-text-inverse: var(--lx-neutral-950);
+  --lx-text-brand: var(--lx-green-400);
+  --lx-text-link: var(--lx-green-400);
+
+  --lx-border: var(--lx-neutral-850);
+  --lx-border-subtle: var(--lx-neutral-900);
+  --lx-border-strong: var(--lx-neutral-800);
+  --lx-border-control: var(--lx-neutral-600);
+  --lx-border-brand: var(--lx-green-500);
+  --lx-border-focus: var(--lx-green-400);
+
+  --lx-brand: var(--lx-green-500);
+  --lx-brand-hover: var(--lx-green-400);
+  --lx-brand-active: var(--lx-green-300);
+  --lx-brand-subtle: rgb(0 197 106 / 0.14);
+  --lx-brand-subtle-hover: rgb(0 197 106 / 0.22);
+  --lx-brand-muted: rgb(0 197 106 / 0.28);
+  --lx-on-brand: var(--lx-neutral-975);
+
+  --lx-signal: var(--lx-lime-500);
+  --lx-signal-hover: var(--lx-lime-400);
+  --lx-on-signal: var(--lx-neutral-975);
+
+  --lx-success: var(--lx-green-400);
+  --lx-success-fg: var(--lx-green-300);
+  --lx-success-bg: rgb(0 197 106 / 0.16);
+
+  --lx-warning: var(--lx-amber-400);
+  --lx-warning-fg: var(--lx-amber-400);
+  --lx-warning-bg: rgb(245 165 36 / 0.16);
+
+  --lx-danger: var(--lx-red-400);
+  --lx-danger-fg: var(--lx-red-400);
+  --lx-danger-bg: rgb(229 72 77 / 0.18);
+
+  --lx-info: var(--lx-blue-400);
+  --lx-info-fg: var(--lx-blue-400);
+  --lx-info-bg: rgb(91 141 239 / 0.18);
+
+  --lx-neutral-fg: var(--lx-neutral-400);
+  --lx-neutral-bg: rgb(255 255 255 / 0.07);
+
+  --lx-positive: var(--lx-green-400);
+  --lx-positive-bg: rgb(0 197 106 / 0.16);
+  --lx-negative: var(--lx-red-400);
+  --lx-negative-bg: rgb(229 72 77 / 0.18);
+
+  --lx-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+  --lx-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.40);
+  --lx-shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.48);
+  --lx-shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.55);
+  --lx-shadow-xl: 0 24px 56px -12px rgb(0 0 0 / 0.65);
+  --lx-shadow-focus: 0 0 0 3px rgb(0 197 106 / 0.34);
+  --lx-shadow-brand: 0 6px 24px -6px rgb(0 197 106 / 0.34);
+
+  --lx-chart-grid: var(--lx-neutral-850);
+  --lx-chart-axis: var(--lx-neutral-600);
+  --lx-chart-neutral: var(--lx-neutral-600);
+  --lx-chart-tooltip-bg: var(--lx-neutral-800);
+  --lx-chart-tooltip-fg: var(--lx-neutral-25);
+
+  --lx-skeleton: var(--lx-neutral-900);
+  --lx-skeleton-shine: var(--lx-neutral-850);
+}
+
+/* System preference, unless the user explicitly asked for light. Duplicated
+   rather than shared because CSS has no way to alias a selector list. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) {
+    color-scheme: dark;
+
+    --lx-canvas: var(--lx-neutral-975);
+    --lx-surface: var(--lx-neutral-925);
+    --lx-surface-raised: var(--lx-neutral-900);
+    --lx-surface-sunken: var(--lx-neutral-950);
+    --lx-surface-hover: var(--lx-neutral-850);
+    --lx-surface-active: var(--lx-neutral-800);
+    --lx-surface-inverse: var(--lx-neutral-50);
+    --lx-overlay: rgb(5 6 5 / 0.68);
+
+    --lx-text: var(--lx-neutral-25);
+    --lx-text-secondary: var(--lx-neutral-400);
+    --lx-text-muted: var(--lx-neutral-500);
+    --lx-text-disabled: var(--lx-neutral-700);
+    --lx-text-inverse: var(--lx-neutral-950);
+    --lx-text-brand: var(--lx-green-400);
+    --lx-text-link: var(--lx-green-400);
+
+    --lx-border: var(--lx-neutral-850);
+    --lx-border-subtle: var(--lx-neutral-900);
+    --lx-border-strong: var(--lx-neutral-800);
+    --lx-border-control: var(--lx-neutral-600);
+    --lx-border-brand: var(--lx-green-500);
+    --lx-border-focus: var(--lx-green-400);
+
+    --lx-brand: var(--lx-green-500);
+    --lx-brand-hover: var(--lx-green-400);
+    --lx-brand-active: var(--lx-green-300);
+    --lx-brand-subtle: rgb(0 197 106 / 0.14);
+    --lx-brand-subtle-hover: rgb(0 197 106 / 0.22);
+    --lx-brand-muted: rgb(0 197 106 / 0.28);
+    --lx-on-brand: var(--lx-neutral-975);
+
+    --lx-signal: var(--lx-lime-500);
+    --lx-signal-hover: var(--lx-lime-400);
+    --lx-on-signal: var(--lx-neutral-975);
+
+    --lx-success: var(--lx-green-400);
+    --lx-success-fg: var(--lx-green-300);
+    --lx-success-bg: rgb(0 197 106 / 0.16);
+
+    --lx-warning: var(--lx-amber-400);
+    --lx-warning-fg: var(--lx-amber-400);
+    --lx-warning-bg: rgb(245 165 36 / 0.16);
+
+    --lx-danger: var(--lx-red-400);
+    --lx-danger-fg: var(--lx-red-400);
+    --lx-danger-bg: rgb(229 72 77 / 0.18);
+
+    --lx-info: var(--lx-blue-400);
+    --lx-info-fg: var(--lx-blue-400);
+    --lx-info-bg: rgb(91 141 239 / 0.18);
+
+    --lx-neutral-fg: var(--lx-neutral-400);
+    --lx-neutral-bg: rgb(255 255 255 / 0.07);
+
+    --lx-positive: var(--lx-green-400);
+    --lx-positive-bg: rgb(0 197 106 / 0.16);
+    --lx-negative: var(--lx-red-400);
+    --lx-negative-bg: rgb(229 72 77 / 0.18);
+
+    --lx-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+    --lx-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.40);
+    --lx-shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.48);
+    --lx-shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.55);
+    --lx-shadow-xl: 0 24px 56px -12px rgb(0 0 0 / 0.65);
+    --lx-shadow-focus: 0 0 0 3px rgb(0 197 106 / 0.34);
+    --lx-shadow-brand: 0 6px 24px -6px rgb(0 197 106 / 0.34);
+
+    --lx-chart-grid: var(--lx-neutral-850);
+    --lx-chart-axis: var(--lx-neutral-600);
+    --lx-chart-neutral: var(--lx-neutral-600);
+    --lx-chart-tooltip-bg: var(--lx-neutral-800);
+    --lx-chart-tooltip-fg: var(--lx-neutral-25);
+
+    --lx-skeleton: var(--lx-neutral-900);
+    --lx-skeleton-shine: var(--lx-neutral-850);
+  }
+}
+
+/* =========================================================================
+   3. TYPOGRAPHY
+   Urbanist is geometric, so it needs negative tracking as size grows or the
+   counters open up and headlines look loose. The `tight` tracking values
+   below are tuned for Urbanist specifically — they are too aggressive for a
+   humanist face like Inter.
+   ========================================================================= */
+
+:root {
+  --lx-font-sans: "Urbanist", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --lx-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  /* Figures in tables and KPI tiles must not jitter as they tick. */
+  --lx-font-numeric: var(--lx-font-sans);
+
+  --lx-weight-light: 300;
+  --lx-weight-regular: 400;
+  --lx-weight-medium: 500;
+  --lx-weight-semibold: 600;
+  --lx-weight-bold: 700;
+  --lx-weight-extrabold: 800;
+
+  /* Size ramp — a 1.2-ish minor third, flattened in the body range where
+     14 and 16 both need to exist for dense data UI. */
+  --lx-text-2xs: 0.6875rem; /* 11px — overline, table micro-labels        */
+  --lx-text-xs: 0.75rem;    /* 12px — captions, chart ticks, meta         */
+  --lx-text-sm: 0.8125rem;  /* 13px — dense table cells, secondary body   */
+  --lx-text-base: 0.875rem; /* 14px — DEFAULT body for app UI             */
+  --lx-text-md: 1rem;       /* 16px — comfortable body, marketing         */
+  --lx-text-lg: 1.125rem;   /* 18px — card titles                         */
+  --lx-text-xl: 1.25rem;    /* 20px — section headings                    */
+  --lx-text-2xl: 1.5rem;    /* 24px — page headings                       */
+  --lx-text-3xl: 1.875rem;  /* 30px — small display                       */
+  --lx-text-4xl: 2.25rem;   /* 36px — KPI figures                         */
+  --lx-text-5xl: 2.75rem;   /* 44px — display                             */
+  --lx-text-6xl: 3.5rem;    /* 56px — hero display                        */
+
+  --lx-leading-none: 1;
+  --lx-leading-tight: 1.15;
+  --lx-leading-snug: 1.3;
+  --lx-leading-normal: 1.5;
+  --lx-leading-relaxed: 1.65;
+
+  --lx-tracking-tighter: -0.03em; /* 44px+ display        */
+  --lx-tracking-tight: -0.02em;   /* 24–36px headings/KPI */
+  --lx-tracking-snug: -0.01em;    /* 18–20px titles       */
+  --lx-tracking-normal: 0em;      /* body                 */
+  --lx-tracking-wide: 0.02em;     /* small caps-ish       */
+  --lx-tracking-wider: 0.08em;    /* overline / eyebrow   */
+}
+
+/* =========================================================================
+   4. SPACE — 4px base grid.
+   Card padding is 20 (--lx-space-5); grid gutter is 20–24. Sticking to those
+   two is most of what makes screens feel like one product.
+   ========================================================================= */
+
+:root {
+  --lx-space-0: 0;
+  --lx-space-px: 1px;
+  --lx-space-0-5: 0.125rem; /*  2 */
+  --lx-space-1: 0.25rem;    /*  4 */
+  --lx-space-1-5: 0.375rem; /*  6 */
+  --lx-space-2: 0.5rem;     /*  8 */
+  --lx-space-2-5: 0.625rem; /* 10 */
+  --lx-space-3: 0.75rem;    /* 12 */
+  --lx-space-4: 1rem;       /* 16 */
+  --lx-space-5: 1.25rem;    /* 20 — canonical card padding */
+  --lx-space-6: 1.5rem;     /* 24 — canonical gutter       */
+  --lx-space-8: 2rem;       /* 32 */
+  --lx-space-10: 2.5rem;    /* 40 */
+  --lx-space-12: 3rem;      /* 48 */
+  --lx-space-16: 4rem;      /* 64 */
+  --lx-space-20: 5rem;      /* 80 */
+  --lx-space-24: 6rem;      /* 96 */
+}
+
+/* =========================================================================
+   5. RADIUS
+   Generous, and consistent by role rather than by size: everything that is a
+   "container" is 20, everything that is a "control" is 12, everything that
+   is a "chip" is a pill. Mixing radii within a role is the fastest way to
+   lose the look.
+   ========================================================================= */
+
+:root {
+  --lx-radius-none: 0;
+  --lx-radius-xs: 4px;
+  --lx-radius-sm: 8px;
+  --lx-radius-md: 12px;  /* controls: buttons, inputs, selects   */
+  --lx-radius-lg: 16px;  /* inner tiles, menus, tooltips         */
+  --lx-radius-xl: 20px;  /* CARDS — the signature radius         */
+  --lx-radius-2xl: 24px; /* large panels, modals                 */
+  --lx-radius-3xl: 32px; /* hero / marketing surfaces            */
+  --lx-radius-full: 9999px;
+}
+
+/* =========================================================================
+   6. MOTION
+   One easing curve for nearly everything. `--lx-ease` is a decelerating
+   curve that reads as "settling into place" rather than "sliding".
+   ========================================================================= */
+
+:root {
+  --lx-duration-instant: 80ms;
+  --lx-duration-fast: 140ms;
+  --lx-duration-base: 200ms;
+  --lx-duration-slow: 320ms;
+  --lx-duration-slower: 480ms;
+
+  --lx-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --lx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --lx-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --lx-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --lx-transition: color var(--lx-duration-fast) var(--lx-ease),
+    background-color var(--lx-duration-fast) var(--lx-ease),
+    border-color var(--lx-duration-fast) var(--lx-ease),
+    box-shadow var(--lx-duration-fast) var(--lx-ease),
+    transform var(--lx-duration-fast) var(--lx-ease),
+    opacity var(--lx-duration-fast) var(--lx-ease);
+}
+
+/* =========================================================================
+   7. LAYOUT
+   The app shell. Sidebar 264 / 76 collapsed, topbar 68 — these three numbers
+   are what makes two different apps read as the same product.
+   ========================================================================= */
+
+:root {
+  --lx-sidebar-width: 264px;
+  --lx-sidebar-width-collapsed: 76px;
+  --lx-topbar-height: 68px;
+  --lx-content-max: 1440px;
+  --lx-page-gutter: var(--lx-space-6);
+  --lx-grid-gap: var(--lx-space-5);
+
+  --lx-z-base: 0;
+  --lx-z-sticky: 100;
+  --lx-z-drawer: 200;
+  --lx-z-overlay: 300;
+  --lx-z-modal: 400;
+  --lx-z-popover: 500;
+  --lx-z-toast: 600;
+  --lx-z-tooltip: 700;
+}
+
+/* =========================================================================
+   8. CHARTS
+   A categorical ramp ordered by emphasis, not by hue family. Series 1 is the
+   brand green because in a finance dashboard the first series is almost
+   always "the number the page is about".
+
+   House pattern — "one bright, rest quiet": when a chart compares one
+   highlighted period/category against a set (this month vs. the other
+   eleven), fill the highlighted mark with --lx-chart-1 or --lx-signal and
+   every other mark with --lx-chart-neutral. That single move is the most
+   recognisable thing in the whole system.
+   ========================================================================= */
+
+:root {
+  /* Marks are graphical objects, so each step clears 3:1 against a white
+     card. That is why several sit a step deeper than the equivalent UI
+     colour: green-500 is only 2.28:1 on white, and lime is 1.23:1. */
+  --lx-chart-1: var(--lx-green-600); /* primary metric              */
+  --lx-chart-2: var(--lx-blue-500);  /* comparison / prior period   */
+  --lx-chart-3: var(--lx-violet-500);
+  --lx-chart-4: var(--lx-amber-650);
+  --lx-chart-5: var(--lx-teal-600);
+  --lx-chart-6: var(--lx-red-500);
+  --lx-chart-7: var(--lx-lime-800); /* the emphasised one          */
+  --lx-chart-8: var(--lx-neutral-500);
+
+  /* Area/gradient fills — the green wash under a line chart. */
+  --lx-chart-fill-strong: rgb(0 197 106 / 0.28);
+  --lx-chart-fill-soft: rgb(0 197 106 / 0.06);
+}
+
+:root[data-theme="dark"],
+.dark {
+  --lx-chart-1: var(--lx-green-400);
+  --lx-chart-2: var(--lx-blue-400);
+  --lx-chart-3: var(--lx-violet-400);
+  --lx-chart-4: var(--lx-amber-400);
+  --lx-chart-5: var(--lx-teal-400);
+  --lx-chart-6: var(--lx-red-400);
+  --lx-chart-7: var(--lx-lime-500);
+  --lx-chart-8: var(--lx-neutral-500);
+  --lx-chart-fill-strong: rgb(23 205 120 / 0.34);
+  --lx-chart-fill-soft: rgb(23 205 120 / 0.02);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) {
+    --lx-chart-1: var(--lx-green-400);
+    --lx-chart-2: var(--lx-blue-400);
+    --lx-chart-3: var(--lx-violet-400);
+    --lx-chart-4: var(--lx-amber-400);
+    --lx-chart-5: var(--lx-teal-400);
+    --lx-chart-6: var(--lx-red-400);
+    --lx-chart-7: var(--lx-lime-500);
+    --lx-chart-8: var(--lx-neutral-500);
+    --lx-chart-fill-strong: rgb(23 205 120 / 0.34);
+    --lx-chart-fill-soft: rgb(23 205 120 / 0.02);
+  }
+}
+
+/* =========================================================================
+   9. BASE
+   Opt-in: import `tokens.css` alone for variables only, or keep this block
+   for the document-level defaults the system assumes.
+   ========================================================================= */
+
+.lx-root,
+body.lx-root {
+  background-color: var(--lx-canvas);
+  color: var(--lx-text);
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-regular);
+  line-height: var(--lx-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Urbanist's default figures are proportional; finance UI needs lining
+     tabular figures so columns of numbers align and KPIs don't reflow. */
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Honour the OS reduced-motion setting system-wide. Components below use
+   --lx-transition, so neutralising it here disables them all at once. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lx-duration-instant: 1ms;
+    --lx-duration-fast: 1ms;
+    --lx-duration-base: 1ms;
+    --lx-duration-slow: 1ms;
+    --lx-duration-slower: 1ms;
+    --lx-transition: none;
+  }
+}

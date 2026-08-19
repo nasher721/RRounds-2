@@ -1,0 +1,1281 @@
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind directives are required */
+@tailwind base;
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind directives are required */
+@tailwind components;
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind directives are required */
+@tailwind utilities;
+
+/* =========================================================================
+   URBANIST — self-hosted variable font
+   -------------------------------------------------------------------------
+   Served from /public/fonts, never a third-party font host. The production
+   CSP is `font-src 'self' data:`, and widening it for a typeface is the wrong
+   trade in a PHI-bearing app; deployWorkflowSafety.test.ts enforces this.
+   Self-hosting also keeps the font available offline, which the service
+   worker precache relies on.
+
+   One variable file per subset covers weights 400–800, so there is no
+   per-weight request fan-out. `font-display: swap` keeps first paint text
+   visible; the fallback stack below is metric-similar enough that the swap
+   does not reflow layout badly.
+   ========================================================================= */
+
+@font-face {
+  font-family: "Urbanist";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/urbanist-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Urbanist";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/urbanist-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@layer base {
+  :root {
+    /* Ledgerix palette. Neutrals carry a faint green cast (hue ~90-100) so the
+       chrome and the brand accent read as one family rather than a green
+       swatch dropped onto grey. */
+    --background: 90 20% 96%;
+    --foreground: 100 11% 5%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 100 11% 5%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 100 11% 5%;
+
+    /* Brand green — interactive chrome only (buttons, active nav, links).
+       --primary-foreground is INK, not white: white on this green measures
+       2.28:1, ink measures 8.43:1. Revisit only if the green gets darker. */
+    --primary: 152 100% 39%;
+    --primary-foreground: 100 11% 5%;
+
+    --secondary: 86 20% 93%;
+    --secondary-foreground: 100 11% 5%;
+
+    --muted: 86 20% 93%;
+    --muted-foreground: 102 5% 43%;
+
+    --accent: 145 70% 95%;
+    --accent-foreground: 152 100% 25%;
+
+    /* Deepened from the raw Ledgerix red-500 (59% L): white on that measures
+       3.92:1. 52% clears AA while staying the same hue. */
+    --destructive: 358 75% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Clinical status green is deliberately TEAL, not the brand green. In this
+       app green already means "normal / stable / in range"; if success shared
+       the brand hue, a status chip and a call-to-action would look identical.
+       Hue 178 keeps the "good" reading while staying clearly not-a-button. */
+    --success: 178 64% 30%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 37 91% 55%;
+    --warning-foreground: 38 100% 15%;
+
+    --border: 90 14% 89%;
+    /* Inputs are interactive boundaries and need 3:1 against the surface,
+       unlike decorative card hairlines. */
+    --input: 98 5% 50%;
+    --ring: 152 100% 32%;
+
+    /* Ledgerix assigns radius by role, not by size: controls 12px, inner tiles
+       16px, cards 20px. --radius is the control step; Tailwind derives
+       md/sm/xl/2xl from it, so rounded-xl lands at ~18px for cards. Kept a
+       step tighter than Ledgerix's 20px because this is a dense clinical
+       roster, not a four-tile finance dashboard. */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+
+    /* Shadows: card and modal for consistent elevation */
+    --shadow-card: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --shadow-modal: 0 18px 50px -24px rgba(15, 23, 42, 0.35), 0 8px 20px -18px rgba(15, 23, 42, 0.2);
+    --shadow-elevated: 0 8px 28px -20px rgba(15, 23, 42, 0.32);
+    --shadow-floating: 0 20px 48px -26px rgba(15, 23, 42, 0.42);
+
+    /* Surface elevation: 4 levels for depth hierarchy (base→card→panel→overlay) */
+    --surface-0: 0 0% 100%;
+    --surface-1: 90 20% 98%;
+    --surface-2: 90 20% 96%;
+    --surface-3: 86 20% 93%;
+    --surface-4: 90 14% 89%;
+
+    /* Functional surfaces: keep legacy utility names, remove decorative mesh by default */
+    --gradient-header-mesh: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--card)) 100%);
+    --gradient-empty-state: linear-gradient(180deg, hsl(var(--muted) / 0.7) 0%, hsl(var(--background)) 100%);
+    --gradient-card-depth: linear-gradient(180deg, hsl(var(--card)) 0%, hsl(var(--card)) 100%);
+
+    /* Spacing scale (4px base): use for padding/gap consistency */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+
+    --font-heading: "Urbanist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-sans: "Urbanist", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    /* Typography scale (align with fluid where used) */
+    --text-fluid-xs: 0.8125rem;
+    --text-fluid-sm: 0.875rem;
+    --text-fluid-base: 1rem;
+    --text-fluid-lg: 1.125rem;
+    --text-fluid-xl: 1.25rem;
+    --text-fluid-2xl: 1.5rem;
+    --text-fluid-3xl: 2rem;
+
+    --space-fluid-xs: var(--space-2);
+    --space-fluid-sm: var(--space-3);
+    --space-fluid-md: var(--space-4);
+    --space-fluid-lg: var(--space-6);
+    --space-fluid-xl: var(--space-8);
+  }
+
+  .dark {
+    /* Dark builds depth from a surface lightness ladder rather than shadow —
+       canvas 4% -> card 7% -> raised 10% — because drop shadows on near-black
+       are invisible and only muddy the panel. */
+    --background: 120 5% 4%;
+    --foreground: 90 20% 98%;
+
+    --card: 120 5% 7%;
+    --card-foreground: 90 20% 98%;
+
+    --popover: 96 9% 10%;
+    --popover-foreground: 90 20% 98%;
+
+    --primary: 152 100% 39%;
+    --primary-foreground: 120 5% 4%;
+
+    --secondary: 94 10% 14%;
+    --secondary-foreground: 90 20% 98%;
+
+    --muted: 94 10% 14%;
+    --muted-foreground: 98 5% 55%;
+
+    --accent: 151 80% 16%;
+    --accent-foreground: 152 80% 45%;
+
+    --destructive: 358 86% 65%;
+    --destructive-foreground: 120 5% 4%;
+
+    /* Clinical teal, lightened for the dark ground. */
+    --success: 178 52% 52%;
+    --success-foreground: 120 5% 4%;
+
+    --warning: 41 96% 61%;
+    --warning-foreground: 120 5% 4%;
+
+    --border: 94 10% 14%;
+    --input: 102 5% 43%;
+    --ring: 152 80% 45%;
+
+    --surface-0: 120 5% 4%;
+    --surface-1: 120 5% 7%;
+    --surface-2: 96 9% 10%;
+    --surface-3: 94 10% 14%;
+    --surface-4: 102 9% 21%;
+
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
+    --shadow-modal: 0 18px 50px -24px rgba(0, 0, 0, 0.6), 0 8px 20px -18px rgba(0, 0, 0, 0.4);
+    --shadow-elevated: 0 8px 28px -20px rgba(0, 0, 0, 0.55);
+    --shadow-floating: 0 20px 48px -26px rgba(0, 0, 0, 0.65);
+  }
+
+  /* High contrast: stronger text, borders, and focus (WCAG-friendly) — stacks with .light / .dark on html */
+  .light.high-contrast {
+    --foreground: 100 11% 3%;
+    --muted-foreground: 98 7% 26%;
+    --border: 98 5% 45%;
+    --input: 98 7% 31%;
+    --ring: 152 100% 25%;
+    --card-foreground: 100 11% 3%;
+  }
+
+  .dark.high-contrast {
+    --foreground: 0 0% 100%;
+    --muted-foreground: 93 11% 81%;
+    --border: 97 8% 66%;
+    --input: 97 8% 66%;
+    --ring: 151 68% 60%;
+    --card-foreground: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+
+  /* Refined clinical focus states (static — no transition, per focus-first motion policy) */
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--primary) / 0.6);
+  }
+
+  .high-contrast :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--ring));
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Simplified Utility Classes */
+@layer utilities {
+  .hover-lift {
+    transition: all 300ms ease-out;
+  }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .card-hover {
+    transition: all 300ms ease-out;
+  }
+  .card-hover:hover {
+    border-color: hsl(var(--border) / 0.6);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  
+  /* Fallbacks for removed complex classes to prevent breaking the UI */
+  .morrow-blur {
+    background-color: hsl(var(--background) / 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .glass-panel {
+    background-color: hsl(var(--card) / 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border));
+  }
+  .text-gradient {
+    color: hsl(var(--foreground));
+  }
+  .text-gradient-primary {
+    color: hsl(var(--primary));
+  }
+  .shimmer {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    background-color: hsl(var(--muted));
+  }
+  .noise-overlay {
+    /* Removed for performance & clarity */
+  }
+  
+  /* Atmospheric depth utilities */
+  .gradient-mesh-subtle {
+    background-image: var(--gradient-header-mesh);
+    background-size: 200% 200%;
+    background-position: center;
+  }
+  .gradient-mesh-empty {
+    background-image: var(--gradient-empty-state);
+    background-size: 150% 150%;
+    background-position: center;
+  }
+  .glass-morphic {
+    background: hsl(var(--card) / 0.85);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+  .depth-shadow-hover {
+    transition: box-shadow 0.25s ease-out, transform 0.25s ease-out;
+  }
+  .depth-shadow-hover:hover {
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-1px);
+  }
+  .card-depth-gradient {
+    background-image: var(--gradient-card-depth);
+  }
+  
+  /* Standard utilities */
+  .section-divider {
+    border-top: 1px solid hsl(var(--border));
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+  .badge-clinical {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    border: 1px solid hsl(var(--border));
+  }
+  
+  /* Safe areas */
+  .safe-area-top { padding-top: env(safe-area-inset-top); }
+  .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-area-left { padding-left: env(safe-area-inset-left); }
+  .safe-area-right { padding-right: env(safe-area-inset-right); }
+}
+
+[data-browser-print-root] {
+  display: none;
+}
+
+/*
+ * Rounds print format
+ *
+ * Reproduces the clinician's rounds document house style. Every tunable value
+ * arrives as a CSS custom property set inline on `[data-rounds-document]`, so
+ * the same stylesheet serves the on-screen preview, the hidden export sandbox
+ * and the browser print clone without re-injecting styles per render.
+ */
+[data-rounds-document] {
+  --rounds-body-pt: 9pt;
+  --rounds-title-pt: 10pt;
+  --rounds-system-pt: 9pt;
+  --rounds-header-pt: 14pt;
+  --rounds-summary-pt: 9pt;
+  --rounds-line-height: 1.25;
+  --rounds-indent: 8pt;
+  --rounds-section-gap: 6pt;
+  --rounds-page-width: 215.9mm;
+  --rounds-page-height: 279.4mm;
+  --rounds-page-margin: 12.7mm;
+  --rounds-column-count: 1;
+  --rounds-column-gap: 6mm;
+  --rounds-column-rule: none;
+  --rounds-header-bg: #2e3a4e;
+  --rounds-header-text: #ffffff;
+  --rounds-header-accent: #ffd966;
+  --rounds-summary-text: #d9e2f0;
+  --rounds-body-text: #1f2d3d;
+  --rounds-title-text: #1f2d3d;
+  --rounds-dispo-bg: #ebf3fb;
+  --rounds-dispo-text: #1f2d3d;
+
+  color: var(--rounds-body-text);
+  font-size: var(--rounds-body-pt);
+  line-height: var(--rounds-line-height);
+  background: #ffffff;
+}
+
+.rounds-page {
+  width: var(--rounds-page-width);
+  padding: var(--rounds-page-margin);
+  background: #ffffff;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+/* Preview only: show the full sheet so page breaks are obvious on screen. */
+[data-rounds-preview="true"] .rounds-page {
+  min-height: var(--rounds-page-height);
+  margin-bottom: 8mm;
+  box-shadow: 0 8px 24px -12px rgb(15 23 42 / 0.35);
+  border: 1px solid rgb(148 163 184 / 0.35);
+}
+
+.rounds-flow {
+  column-count: var(--rounds-column-count);
+  column-gap: var(--rounds-column-gap);
+  column-rule: var(--rounds-column-rule);
+  /*
+   * Continuous flow balances across the columns; a multicol box with automatic
+   * height would otherwise put every section in column 1 and leave column 2
+   * blank, because `auto` fill has no height to fill against.
+   */
+  column-fill: balance;
+}
+
+/*
+ * Sequential fill runs column 1 to the bottom of the sheet before column 2
+ * starts, like the paper document. That needs a real height, so the flow is
+ * floored at the page's content box. Content taller than one page grows the box
+ * and fragments onto the next printed page rather than clipping.
+ */
+.rounds-flow--sequential {
+  column-fill: auto;
+  min-height: calc(var(--rounds-page-height) - (var(--rounds-page-margin) * 2));
+}
+
+.rounds-patient {
+  break-inside: auto;
+}
+
+.rounds-patient--separated {
+  border-top: 1pt solid #cbd5e1;
+  padding-top: var(--rounds-section-gap);
+  margin-top: var(--rounds-section-gap);
+}
+
+.rounds-patient--spaced {
+  margin-top: calc(var(--rounds-section-gap) * 2.5);
+}
+
+.rounds-banner {
+  background: var(--rounds-header-bg);
+  color: var(--rounds-header-text);
+  padding: 4pt 6pt;
+  break-inside: avoid;
+  break-after: avoid;
+}
+
+.rounds-banner--plain {
+  background: transparent;
+  color: var(--rounds-body-text);
+  border-bottom: 1.5pt solid var(--rounds-body-text);
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.rounds-banner__title {
+  font-size: var(--rounds-header-pt);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.rounds-banner__bed {
+  color: var(--rounds-header-text);
+  margin-right: 0.5em;
+}
+
+.rounds-banner--plain .rounds-banner__bed {
+  color: inherit;
+}
+
+.rounds-banner__name {
+  color: var(--rounds-header-accent);
+}
+
+.rounds-banner--plain .rounds-banner__name {
+  color: inherit;
+}
+
+.rounds-banner__meta,
+.rounds-banner__summary,
+.rounds-banner__allergies {
+  font-size: var(--rounds-summary-pt);
+  color: var(--rounds-summary-text);
+  line-height: var(--rounds-line-height);
+  margin-top: 1.5pt;
+}
+
+.rounds-banner--plain .rounds-banner__meta,
+.rounds-banner--plain .rounds-banner__summary,
+.rounds-banner--plain .rounds-banner__allergies {
+  color: var(--rounds-body-text);
+}
+
+.rounds-banner__summary {
+  font-style: italic;
+}
+
+.rounds-banner__allergies {
+  font-weight: 700;
+}
+
+.rounds-section {
+  margin-top: var(--rounds-section-gap);
+}
+
+.rounds-section--together {
+  break-inside: avoid;
+}
+
+.rounds-section__header {
+  font-size: var(--rounds-system-pt);
+  font-weight: 700;
+  line-height: 1.2;
+  break-after: avoid;
+}
+
+.rounds-section__header--bar {
+  background: var(--rounds-section-color);
+  color: var(--rounds-section-on-color);
+  padding: 1.5pt 5pt;
+}
+
+.rounds-section__header--underline {
+  color: var(--rounds-section-color);
+  border-bottom: 1pt solid var(--rounds-section-color);
+  padding-bottom: 1pt;
+}
+
+.rounds-section__header--plain {
+  color: var(--rounds-section-color);
+}
+
+.rounds-section__body {
+  margin-top: 2pt;
+  padding-left: var(--rounds-indent);
+}
+
+.rounds-line {
+  font-size: var(--rounds-body-pt);
+  line-height: var(--rounds-line-height);
+  margin: 0 0 1pt;
+  overflow-wrap: anywhere;
+}
+
+.rounds-line--heading {
+  font-size: var(--rounds-title-pt);
+  font-weight: 700;
+  color: var(--rounds-title-text);
+  margin-top: 2pt;
+  margin-left: calc(var(--rounds-indent) * -1);
+  break-after: avoid;
+}
+
+.rounds-todo {
+  display: flex;
+  gap: 0.4em;
+  align-items: flex-start;
+}
+
+.rounds-todo__box {
+  flex: 0 0 auto;
+  font-family: "DejaVu Sans", "Segoe UI Symbol", sans-serif;
+}
+
+.rounds-notes__line {
+  border-bottom: 0.75pt solid #94a3b8;
+  height: calc(var(--rounds-body-pt) * 1.9);
+}
+
+.rounds-dispo {
+  margin-top: var(--rounds-section-gap);
+  background: var(--rounds-dispo-bg);
+  color: var(--rounds-dispo-text);
+  border: 0.75pt solid #cbd5e1;
+  padding: 3pt 6pt;
+  break-inside: avoid;
+}
+
+.rounds-dispo__label {
+  font-weight: 700;
+  margin-right: 0.4em;
+}
+
+.rounds-doc-header {
+  border-bottom: 1pt solid #cbd5e1;
+  padding-bottom: 4pt;
+  margin-bottom: var(--rounds-section-gap);
+  break-inside: avoid;
+}
+
+.rounds-doc-header__title {
+  font-size: calc(var(--rounds-header-pt) * 1.05);
+  font-weight: 700;
+  color: var(--rounds-body-text);
+}
+
+.rounds-doc-header__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  font-size: var(--rounds-summary-pt);
+  color: #475569;
+  margin-top: 2pt;
+}
+
+@media print {
+  [data-rounds-document] {
+    width: 100% !important;
+  }
+
+  .rounds-page {
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    break-after: page;
+  }
+
+  .rounds-page:last-child {
+    break-after: auto;
+  }
+
+  .rounds-page--continuous {
+    break-after: auto;
+  }
+
+  .rounds-banner,
+  .rounds-section__header--bar,
+  .rounds-dispo {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* Print Styles that must remain for clinical functionality */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    background-color: white;
+    color: black;
+  }
+  html.print-export-active body > * {
+    display: none !important;
+  }
+  html.print-export-active body > [data-browser-print-root] {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+  }
+  .no-print,
+  [data-no-print],
+  .print-export-sandbox {
+    display: none !important;
+  }
+  .print-break {
+    page-break-after: always;
+  }
+  .print-avoid-break {
+    page-break-inside: avoid;
+  }
+  thead {
+    display: table-header-group !important;
+  }
+  tfoot {
+    display: table-footer-group !important;
+  }
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  [data-print-document] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  [data-print-document] img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  @page {
+    margin: 0;
+  }
+}
+
+/*
+ * Focus-first motion policy
+ *
+ * Workspace state changes should be immediate rather than animated. Loading
+ * spinners remain animated because they communicate active progress; other
+ * pulses, entrances, transforms, and hover transitions are decorative and can
+ * make a dense clinical workspace harder to scan.
+ *
+ * Scoped at `body` (not `#root`) so portal-mounted content — Radix dialogs,
+ * popovers, selects, listboxes, cmdk menus — is covered as well.
+ */
+body *:not(.animate-spin),
+body *:not(.animate-spin)::before,
+body *:not(.animate-spin)::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+}
+
+/* Reduced motion overrides - disable all atmospheric animations */
+@media (prefers-reduced-motion: reduce) {
+  .gradient-mesh-subtle,
+  .gradient-mesh-empty,
+  .card-depth-gradient {
+    background-image: none;
+  }
+  
+  .glass-morphic {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  
+  .depth-shadow-hover {
+    transition: none;
+  }
+  
+  .depth-shadow-hover:hover {
+    transform: none;
+  }
+  
+  .animate-stagger-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* High Contrast Mode - Automatic detection via prefers-contrast: more */
+@media (prefers-contrast: more) {
+  :root {
+    /* Increase contrast for all semantic colors */
+    --foreground: 0 0% 0%; /* Pure black */
+    --muted-foreground: 0 0% 20%;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
+    --ring: 0 0% 0%;
+    --card-foreground: 0 0% 0%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 0 0% 0%;
+    --accent-foreground: 0 0% 0%;
+    --destructive-foreground: 0 0% 100%;
+    --success-foreground: 0 0% 100%;
+    --warning-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 0%;
+  }
+  
+  .dark {
+    --foreground: 0 0% 100%; /* Pure white */
+    --muted-foreground: 0 0% 90%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary-foreground: 0 0% 100%;
+    --accent-foreground: 0 0% 100%;
+    --destructive-foreground: 0 0% 0%;
+    --success-foreground: 0 0% 0%;
+    --warning-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+  }
+  
+  /* Increase border widths for better visibility */
+  * {
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  /* Stronger focus states */
+  :focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 2px;
+    box-shadow: none !important;
+  }
+  
+  /* Improve link visibility */
+  a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  
+  /* Increase button borders */
+  button, 
+  [role="button"] {
+    border-width: 2px !important;
+  }
+  
+  /* Increase input borders */
+  input, 
+  textarea, 
+  select {
+    border-width: 2px !important;
+  }
+  
+  /* Card improvements */
+  .card {
+    border-width: 2px !important;
+  }
+  
+  /* Disable gradients and reduce transparency for clarity */
+  .gradient-mesh-subtle,
+  .gradient-mesh-empty,
+  .card-depth-gradient {
+    background-image: none !important;
+  }
+  
+  .glass-morphic {
+    background-color: hsl(var(--background)) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-width: 2px !important;
+  }
+  
+  /* Table improvements */
+  th, td {
+    border-width: 2px !important;
+  }
+  
+  /* Badge improvements */
+  .badge-clinical {
+    border-width: 2px !important;
+  }
+}
+
+/* Windows High Contrast Mode - forced-colors support */
+@media (forced-colors: active) {
+  :root {
+    /* Use system colors that work with forced-colors */
+    --foreground: CanvasText;
+    --muted-foreground: CanvasText;
+    --border: CanvasText;
+    --input: CanvasText;
+    --ring: CanvasText;
+    --card-foreground: CanvasText;
+    --primary: CanvasText;
+    --primary-foreground: Canvas;
+    --secondary-foreground: CanvasText;
+    --accent-foreground: CanvasText;
+    --destructive-foreground: Canvas;
+    --success-foreground: Canvas;
+    --warning-foreground: CanvasText;
+    --popover-foreground: CanvasText;
+    --background: Canvas;
+  }
+  
+  /* Reset all backgrounds to canvas */
+  body,
+  .card,
+  .popover,
+  [role="dialog"],
+  .glass-morphic {
+    background-color: Canvas !important;
+  }
+  
+  /* Use system focus */
+  :focus-visible {
+    outline: 2px solid CanvasText !important;
+    outline-offset: 2px !important;
+    box-shadow: none !important;
+  }
+  
+  /* Force borders to be visible */
+  * {
+    border-color: CanvasText !important;
+  }
+  
+  /* Increase border widths */
+  button,
+  [role="button"],
+  input,
+  textarea,
+  select,
+  .card,
+  th,
+  td {
+    border-width: 2px !important;
+  }
+  
+  /* Remove decorative shadows */
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-card,
+  .shadow-modal,
+  .shadow-elevated,
+  .shadow-floating,
+  .depth-shadow-hover,
+  .glass-morphic {
+    box-shadow: none !important;
+  }
+  
+  /* Ensure text is always visible */
+  a, 
+  button, 
+  input, 
+  textarea, 
+  select, 
+  label {
+    color: CanvasText !important;
+  }
+  
+  /* Remove gradients */
+  .gradient-mesh-subtle,
+  .gradient-mesh-empty,
+  .card-depth-gradient,
+  .text-gradient,
+  .text-gradient-primary {
+    background-image: none !important;
+    color: CanvasText !important;
+  }
+  
+  /* System buttons */
+  button, 
+  [role="button"] {
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+  }
+
+  .round-section-tab[aria-selected="true"] {
+    outline: 3px solid Highlight !important;
+    outline-offset: -3px !important;
+    font-weight: 700 !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+  }
+}
+
+/* Loading Spinner */
+.loading svg polyline {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.loading svg polyline#back {
+  stroke: hsl(var(--primary) / 0.2);
+}
+
+.loading svg polyline#front {
+  stroke: hsl(var(--primary));
+  stroke-dasharray: 48, 144;
+  stroke-dashoffset: 192;
+  animation: dash_loading 1.4s linear infinite;
+}
+
+@keyframes dash_loading {
+  72.5% { opacity: 0; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* ============================================================================
+   Rolling Rounds workspace ("rr-ws") — scoped design tokens for the two-pane
+   desktop documentation workspace. Values mirror the approved mockups in
+   design-mockups/patient-documentation-mockups.html (Kimi design tokens).
+   Dark mode derives from the app's existing surface variables so the workspace
+   stays sane under .dark.
+   ============================================================================ */
+.rr-ws {
+  --rr-bg-primary: #ffffff;
+  --rr-bg-secondary: #f5f5f5;
+  --rr-bg-ground: #f9fbfc;
+  --rr-label-1: rgba(0, 0, 0, 0.92);
+  --rr-label-2: rgba(0, 0, 0, 0.72);
+  --rr-label-3: rgba(0, 0, 0, 0.62);
+  --rr-label-4: rgba(0, 0, 0, 0.5);
+  --rr-f1: rgba(0, 0, 0, 0.03);
+  --rr-f2: rgba(0, 0, 0, 0.05);
+  --rr-f3: rgba(0, 0, 0, 0.15);
+  --rr-sep: rgba(0, 0, 0, 0.13);
+  --rr-danger: #ff3849;
+  --rr-green: #16c456;
+  --rr-orange: #ff9500;
+  --rr-blue: #1783ff;
+  --rr-light-red-bg: rgba(255, 77, 77, 0.1);
+  --rr-light-orange-bg: rgba(255, 149, 0, 0.1);
+  --rr-light-green-bg: rgba(22, 196, 86, 0.1);
+  --rr-light-blue-bg: #e8f3ff;
+  --rr-badge-orange-text: #c25e00;
+  --rr-badge-green-text: #0d9440;
+  --rr-shadow-input: 0 5px 16px -4px rgba(0, 0, 0, 0.07);
+  --rr-shadow-small: 0 4px 16.4px rgba(0, 0, 0, 0.1);
+  --rr-r-xxs: 4px;
+  --rr-r-sm: 8px;
+  --rr-r-md: 10px;
+  --rr-r-lg: 12px;
+  --rr-r-xl: 16px;
+}
+
+.dark .rr-ws {
+  --rr-bg-primary: hsl(var(--card));
+  --rr-bg-secondary: hsl(var(--secondary) / 0.55);
+  --rr-bg-ground: hsl(var(--background));
+  --rr-label-1: rgba(255, 255, 255, 0.95);
+  --rr-label-2: rgba(255, 255, 255, 0.78);
+  --rr-label-3: rgba(255, 255, 255, 0.68);
+  --rr-label-4: rgba(255, 255, 255, 0.55);
+  --rr-f1: rgba(255, 255, 255, 0.05);
+  --rr-f2: rgba(255, 255, 255, 0.09);
+  --rr-f3: rgba(255, 255, 255, 0.28);
+  --rr-sep: rgba(255, 255, 255, 0.16);
+  --rr-light-red-bg: rgba(255, 77, 77, 0.16);
+  --rr-light-orange-bg: rgba(255, 149, 0, 0.16);
+  --rr-light-green-bg: rgba(22, 196, 86, 0.16);
+  --rr-light-blue-bg: rgba(23, 131, 255, 0.18);
+  --rr-badge-orange-text: #ffb340;
+  --rr-badge-green-text: #3ddc74;
+  --rr-shadow-input: 0 5px 16px -4px rgba(0, 0, 0, 0.4);
+  --rr-shadow-small: 0 4px 16.4px rgba(0, 0, 0, 0.5);
+}
+
+/* Buttons (40px default / 44px primary; radius 10/12) */
+.rr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 40px;
+  height: 40px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--rr-r-md);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  color: var(--rr-label-1);
+}
+.rr-btn:disabled { opacity: 0.5; cursor: default; }
+.rr-btn-primary { background: var(--rr-label-1); color: var(--rr-bg-primary); }
+.rr-btn-secondary { background: var(--rr-f1); color: var(--rr-label-1); }
+.rr-btn-secondary:hover:not(:disabled) { background: var(--rr-f2); }
+.rr-btn-outline { background: transparent; border: 0.5px solid var(--rr-sep); color: var(--rr-label-1); }
+.rr-btn-outline:hover:not(:disabled) { background: var(--rr-f1); }
+.rr-btn-44 { min-height: 44px; height: 44px; border-radius: var(--rr-r-lg); font-size: 16px; line-height: 24px; padding: 10px 14px; gap: 6px; }
+
+.rr-icon-btn {
+  min-width: 40px;
+  min-height: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rr-r-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rr-label-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.rr-icon-btn:hover { background: var(--rr-f1); }
+.rr-icon-btn:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.rr-icon-btn:disabled { opacity: 0.5; cursor: default; }
+
+@media (pointer: fine) and (min-width: 1024px) {
+  .rr-btn {
+    min-height: 32px;
+    height: 32px;
+    padding: 6px 10px;
+  }
+  .rr-icon-btn {
+    min-width: 28px;
+    min-height: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Badges — semantic colors on 10% light backgrounds; neutral facts stay gray */
+.rr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  padding: 1px 6px;
+  border-radius: var(--rr-r-xxs);
+  white-space: nowrap;
+}
+.rr-badge-orange { background: var(--rr-light-orange-bg); color: var(--rr-badge-orange-text); }
+.rr-badge-red { background: var(--rr-light-red-bg); color: var(--rr-danger); }
+.rr-badge-neutral { background: var(--rr-f2); color: var(--rr-label-2); }
+.rr-badge-green { background: var(--rr-light-green-bg); color: var(--rr-badge-green-text); }
+.rr-badge-blue { background: var(--rr-light-blue-bg); color: var(--rr-blue); }
+
+/* Status dots & roster progress segments */
+.rr-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.rr-st-ready { background: var(--rr-green); }
+.rr-st-prog { background: var(--rr-orange); }
+.rr-st-todo { background: var(--rr-f3); }
+.rr-seg { width: 20px; height: 3px; border-radius: 2px; }
+
+/* Roster rail items */
+.rr-roster-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: var(--rr-r-md);
+  padding: 10px 10px 10px 12px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--rr-label-1);
+}
+.rr-roster-item:hover { background: var(--rr-f1); }
+/*
+ * Selected = "this is the chart open in the workspace". A neutral gray fill is
+ * too easy to lose in a dense roster, so the open row carries the accent tint
+ * plus a leading accent bar. forced-colors falls back to the system Highlight.
+ */
+.rr-roster-item.rr-sel,
+.rr-roster-item.rr-sel:hover { background: var(--rr-light-blue-bg); }
+.rr-roster-item.rr-sel::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--rr-blue);
+}
+@media (forced-colors: active) {
+  .rr-roster-item.rr-sel,
+  .rr-roster-item.rr-sel:hover { background: Highlight !important; color: HighlightText !important; }
+  .rr-roster-item.rr-sel::before { background: HighlightText !important; }
+}
+.rr-bed-chip {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--rr-label-2);
+  background: var(--rr-f2);
+  border-radius: var(--rr-r-xxs);
+  padding: 0 6px;
+  white-space: nowrap;
+}
+.rr-sel .rr-bed-chip { color: var(--rr-label-1); }
+
+/* Section tabs (derived component: fills.f2 active fill, radius 8) */
+.rr-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: var(--rr-r-sm);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--rr-label-2);
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.rr-tab:hover { background: var(--rr-f1); }
+.rr-tab:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.rr-tab.rr-active { background: var(--rr-f2); color: var(--rr-label-1); font-weight: 500; }
+
+@media (pointer: fine) and (min-width: 1024px) {
+  .rr-tab {
+    min-height: 32px;
+    height: 32px;
+    padding: 6px 10px;
+  }
+}
+
+/* Editor surface (white card, 0.5px separator edge, radius 12, input shadow) */
+.rr-editor {
+  background: var(--rr-bg-primary);
+  border: 0.5px solid var(--rr-sep);
+  border-radius: var(--rr-r-lg);
+  box-shadow: var(--rr-shadow-input);
+}
+
+/* Sign-off readiness footer bar */
+.rr-signoff {
+  background: var(--rr-bg-primary);
+  border-top: 0.5px solid var(--rr-sep);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  /* Leave room for the floating AI FAB on tablet/desktop */
+  padding-right: max(16px, calc(5.5rem + env(safe-area-inset-right, 0px)));
+}
+@media (max-width: 1023px) {
+  .rr-signoff {
+    flex-wrap: wrap;
+    gap: 10px;
+    /* Extra bottom clearance so the FAB does not cover Handoff / Sign off */
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    padding-right: max(16px, calc(5.5rem + env(safe-area-inset-right, 0px)));
+  }
+}
+.rr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  height: 32px;
+  padding: 4px 10px;
+  border-radius: var(--rr-r-sm);
+  background: var(--rr-f1);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--rr-label-2);
+  white-space: nowrap;
+}
+.rr-chip .rr-dot { width: 6px; height: 6px; }

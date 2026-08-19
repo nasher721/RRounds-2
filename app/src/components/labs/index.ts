@@ -1,0 +1,1 @@
+export { LabFishbone } from './LabFishbone';

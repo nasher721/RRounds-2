@@ -1,0 +1,64 @@
+# Must match GitHub Actions secret SUPABASE_PROJECT_ID and `supabase link --project-ref`.
+# Must match the project ref in VITE_SUPABASE_URL (https://<ref>.supabase.co).
+project_id = "zsavxqvnseqxusfwdovu"
+
+[auth]
+enable_signup = false
+enable_anonymous_sign_ins = false
+
+[auth.email]
+enable_signup = false
+
+[auth.sessions]
+inactivity_timeout = "30m"
+
+# Gateway-level JWT verification is disabled because the project now issues ES256
+# (asymmetric ECDSA) tokens, but the Supabase edge-function gateway verifies with
+# the legacy HS256/JWT_SECRET and rejects valid ES256 tokens with "Invalid JWT".
+#
+# Authentication is still enforced: every function calls authenticateRequest()
+# from _shared/auth.ts, which uses supabaseClient.auth.getUser(token) — a
+# server-side round-trip to Supabase Auth that correctly validates ES256 tokens
+# regardless of algorithm. Healthcheck also accepts a dedicated monitor secret
+# so external uptime probes do not need a clinical user session. Telemetry is a
+# deliberately public, rate-limited, fixed-vocabulary ingest because landing
+# events occur before authentication; it has no browser-readable data path.
+
+[functions.healthcheck]
+verify_jwt = false
+
+[functions.telemetry]
+verify_jwt = false
+
+[functions.ai-clinical-assistant]
+verify_jwt = false
+
+[functions.check-drug-interactions]
+verify_jwt = false
+
+[functions.format-medications]
+verify_jwt = false
+
+[functions.generate-daily-summary]
+verify_jwt = false
+
+[functions.generate-interval-events]
+verify_jwt = false
+
+[functions.generate-patient-course]
+verify_jwt = false
+
+[functions.generate-todos]
+verify_jwt = false
+
+[functions.parse-handoff]
+verify_jwt = false
+
+[functions.parse-single-patient]
+verify_jwt = false
+
+[functions.transcribe-audio]
+verify_jwt = false
+
+[functions.transform-text]
+verify_jwt = false

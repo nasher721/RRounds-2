@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rolling Rounds — Prototype overview</title>
+<link rel="icon" type="image/png" href="assets/icons/favicon-64.png" />
+<link rel="stylesheet" href="assets/app.css" />
+<style>
+  .ov { min-height: 100dvh; background: hsl(var(--background)); color: hsl(var(--foreground)); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 48px 24px 72px; }
+  .ov-head { display: flex; align-items: center; gap: 14px; }
+  .ov-head img { width: 44px; height: 44px; border-radius: 11px; }
+  .ov-head h1 { font-size: 24px; font-weight: 650; letter-spacing: -0.02em; }
+  .ov-head p { font-size: 14px; color: hsl(var(--muted-foreground)); margin-top: 2px; }
+  .ov-tagline { margin: 20px 0 36px; font-size: 16px; line-height: 1.6; color: hsl(var(--muted-foreground)); max-width: 64ch; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .screen { display: block; text-decoration: none; color: inherit; border: 1px solid hsl(var(--border)); border-radius: 18px; overflow: hidden; background: hsl(var(--card)); transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
+  .screen:hover { border-color: hsl(var(--ring)); box-shadow: var(--shadow-floating); transform: translateY(-2px); }
+  .screen .thumb { height: 180px; display: flex; align-items: center; justify-content: center; background: hsl(var(--muted)); position: relative; }
+  .screen .thumb .pill { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: hsl(var(--muted-foreground)); background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 999px; padding: 6px 14px; }
+  .screen .body { padding: 18px 20px 20px; }
+  .screen h2 { font-size: 17px; font-weight: 650; }
+  .screen p { font-size: 13px; color: hsl(var(--muted-foreground)); line-height: 1.55; margin-top: 6px; }
+  .screen .go { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: hsl(var(--accent-foreground)); margin-top: 12px; }
+  .thumb-1 { background: linear-gradient(135deg, hsl(var(--primary) / 0.5), hsl(var(--primary))); }
+  .thumb-2 { background: linear-gradient(135deg, hsl(178 64% 30% / 0.55), hsl(178 64% 30%)); }
+  .thumb-3 { background: linear-gradient(135deg, hsl(152 100% 25% / 0.6), hsl(152 100% 25%)); }
+  .thumb .mini { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18px; }
+  .thumb .mini i { display: block; width: 200px; height: 96px; border-radius: 12px; background: rgba(255,255,255,0.9); box-shadow: 0 12px 30px -12px rgba(0,0,0,0.35); }
+  .thumb .mini i.rail-mock { display: flex; }
+  .thumb .mini i.rail-mock::before { content: ''; width: 64px; height: 100%; background: rgba(0,0,0,0.05); border-radius: 12px 0 0 12px; }
+  .thumb .mini i.rail-mock::after { content: ''; flex: 1; margin: 12px; background: rgba(0,0,0,0.03); border-radius: 8px; }
+  .thumb .mini i.form-mock { width: 220px; height: 88px; display: flex; flex-direction: column; gap: 8px; padding: 14px; }
+  .thumb .mini i.form-mock::before { content: ''; height: 10px; width: 40%; background: rgba(0,0,0,0.12); border-radius: 4px; }
+  .thumb .mini i.form-mock::after { content: ''; flex: 1; background: rgba(0,0,0,0.05); border-radius: 6px; }
+  .thumb .mini i.brand-mock { display: flex; align-items: center; justify-content: center; }
+  .thumb .mini i.brand-mock::before { content: ''; width: 28px; height: 28px; border-radius: 8px; background: hsl(152 100% 30%); margin-right: 10px; }
+  .thumb .mini i.brand-mock::after { content: ''; width: 90px; height: 10px; background: rgba(0,0,0,0.15); border-radius: 4px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="ov">
+  <div class="wrap">
+    <div class="ov-head">
+      <img src="assets/icons/icon-192.png" alt="" />
+      <div>
+        <h1>Rolling Rounds</h1>
+        <p>Clinical rounding workspace — prototype overview</p>
+      </div>
+    </div>
+    <p class="ov-tagline">
+      A full prototype of the Rolling Rounds clinical documentation workspace, rebuilt as a responsive web app
+      that runs on desktop and mobile. Start on the landing page, sign in, and open the live workspace.
+    </p>
+
+    <div class="grid">
+      <a class="screen" href="landing.html">
+        <div class="thumb thumb-3"><span class="pill">Landing</span><div class="mini"><i class="brand-mock"></i></div></div>
+        <div class="body"><h2>Marketing site</h2><p>Public landing page with hero, feature grid, workflow, and security sections.</p><span class="go">Open landing page →</span></div>
+      </a>
+      <a class="screen" href="login.html">
+        <div class="thumb thumb-2"><span class="pill">Auth</span><div class="mini"><i class="form-mock"></i></div></div>
+        <div class="body"><h2>Sign in</h2><p>Provisioned email/password sign-in with inline validation and Google SSO.</p><span class="go">Open sign in →</span></div>
+      </a>
+      <a class="screen" href="workspace.html">
+        <div class="thumb thumb-1"><span class="pill">Workspace</span><div class="mini"><i class="rail-mock"></i></div></div>
+        <div class="body"><h2>Rounding workspace</h2><p>The live two-pane app: roster rail, 10-system chart, meds, tasks, sign-off, AI, quick reference, and clinical tools.</p><span class="go">Open workspace →</span></div>
+      </a>
+      <div class="screen">
+        <div class="thumb" style="background:hsl(var(--secondary));"><span class="pill">Desktop + mobile</span><div class="mini"><i style="width:120px;height:70px;background:hsl(var(--card));border:1px solid hsl(var(--border));"></i></div></div>
+        <div class="body"><h2>Responsive by design</h2><p>Every screen adapts. Resize the workspace below 900px to see the mobile roster drawer and bottom navigation.</p><span class="go" style="color:hsl(var(--muted-foreground));">Resize to preview</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

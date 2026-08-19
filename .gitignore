@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Dependencies & build output (app/.gitignore is more specific)
+node_modules/
+dist/
+
+# Environment
+.env
+
+# Open Design runtime preview metadata (regenerated on render)
+*.artifact.json
+
+# Open Design runtime state & skill scaffolding (not project source)
+.file-versions/
+.od-skills/
+
+# Export bundles (generated)
+*.zip

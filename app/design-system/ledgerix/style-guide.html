@@ -1,0 +1,3385 @@
+<title>Ledgerix Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap">
+
+<style>
+/* ===== ledgerix/tokens.css — verbatim from the shipped package ===== */
+/* =========================================================================
+   LEDGERIX DESIGN SYSTEM — TOKENS
+   -------------------------------------------------------------------------
+   The single source of truth. Every component style resolves to a variable
+   declared here, so retheming the whole system is a matter of editing this
+   file and nothing else.
+
+   Design DNA
+   ----------
+   Typeface : Urbanist — a geometric sans chosen for clarity + approachability,
+              holding legibility from 11px captions to 56px display figures.
+   Colour   : one vibrant green carrying action / growth / reliability, set
+              against neutral black, white and grey. The neutrals carry a
+              faint green cast so the greys and the accent read as one family.
+   Posture  : generous radii, hairline borders, near-flat elevation. Depth
+              comes from surface *lightness* steps, not from drop shadows.
+
+   Structure
+   ---------
+   1. Primitives  — raw scales. Never referenced by components directly.
+   2. Semantics   — role tokens (surface, text, border …). Components use
+                    ONLY these, which is what makes light/dark a single swap.
+   3. Typography, space, radius, shadow, motion, layout, charts.
+
+   Theming contract
+   ----------------
+   The full light palette is declared on bare `:root`. Dark is redefined in
+   two guarded blocks so both the OS setting and an explicit `data-theme`
+   toggle win in the right direction:
+       @media (prefers-color-scheme: dark) :root:not([data-theme="light"])
+       :root[data-theme="dark"]
+   A `.dark` class selector is included alongside so the system drops into
+   Tailwind's `darkMode: "class"` and shadcn projects unchanged.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   FONT
+   Urbanist ships on Google Fonts. Load it once in your document head:
+
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+   …or via CSS, which is what this file does. Remove the @import if you use
+   the <link> form — the link tag is faster because it avoids a request
+   waterfall behind your stylesheet.
+   ------------------------------------------------------------------------- */
+/* Urbanist is loaded via <link> in the document head. */
+
+/* =========================================================================
+   1. PRIMITIVES
+   Raw scales. Stable across themes — light and dark both draw from these.
+   ========================================================================= */
+
+:root {
+  /* --- Brand green -------------------------------------------------------
+     Anchored at 500 (#00C56A): saturated enough to read as "vibrant", deep
+     enough to carry white text at 600+ and to sit on white without glare.  */
+  --lx-green-50: #e8fbf0;
+  --lx-green-100: #c6f5dc;
+  --lx-green-200: #92ecbe;
+  --lx-green-300: #52de9a;
+  --lx-green-400: #17cd78;
+  --lx-green-500: #00c56a;
+  --lx-green-600: #00a257;
+  --lx-green-700: #007f44;
+  --lx-green-800: #0a5c34;
+  --lx-green-900: #0b3d25;
+  --lx-green-950: #07261a;
+
+  /* --- Signal lime -------------------------------------------------------
+     The hyper-saturated highlight. Deliberately scarce: the single emphasised
+     chart series, a "live" dot, one hero CTA per screen. Always takes INK
+     text (near-black), never white — see --lx-on-signal.                    */
+  --lx-lime-300: #dcfb7f;
+  --lx-lime-400: #cef95a;
+  --lx-lime-500: #c8f94e;
+  --lx-lime-600: #b0e02f;
+  --lx-lime-700: #8bb520;
+  --lx-lime-800: #6f9212; /* light-mode chart mark — lime is unreadable on white */
+
+  /* --- Neutrals ----------------------------------------------------------
+     Not pure grey. A trace of green (hue ~110) keeps the chrome in the same
+     family as the accent — the difference between a system and a swatch.    */
+  --lx-neutral-0: #ffffff;
+  --lx-neutral-25: #fafbf9;
+  --lx-neutral-50: #f5f7f3;
+  --lx-neutral-100: #eef1ea;
+  --lx-neutral-200: #e2e6de;
+  --lx-neutral-300: #cdd3c8;
+  --lx-neutral-400: #a8b0a3;
+  --lx-neutral-500: #8a9186;
+  --lx-neutral-600: #6b7268;
+  --lx-neutral-700: #4d5449;
+  --lx-neutral-800: #333a30;
+  --lx-neutral-850: #242821;
+  --lx-neutral-900: #1a1d18;
+  --lx-neutral-925: #121412;
+  --lx-neutral-950: #0d0f0c;
+  --lx-neutral-975: #0a0b0a;
+
+  /* --- Supporting hues ---------------------------------------------------
+     Used for semantics and for the categorical chart ramp. Muted on purpose:
+     the green must stay the loudest thing on screen.                        */
+  --lx-amber-100: #fef3c7;
+  --lx-amber-400: #fbbf3c;
+  --lx-amber-500: #f5a524;
+  --lx-amber-600: #d38508;
+  --lx-amber-650: #b06e00; /* light-mode chart mark */
+  --lx-amber-700: #9a6100; /* text step — 500/600 are fills, too light for text */
+
+  --lx-red-100: #fee4e2;
+  --lx-red-400: #f2585e;
+  --lx-red-500: #e5484d;
+  --lx-red-600: #c8323b;
+  --lx-red-700: #b4242d; /* text step */
+
+  --lx-blue-100: #dbeafe;
+  --lx-blue-400: #7aa5f5;
+  --lx-blue-500: #5b8def;
+  --lx-blue-600: #3a6fd8;
+  --lx-blue-700: #2f5fc0; /* text step */
+
+  --lx-violet-400: #a78bfa;
+  --lx-violet-500: #8b74f0;
+
+  --lx-teal-400: #45c4c0;
+  --lx-teal-500: #2aa9a5;
+  --lx-teal-600: #1f8b88;
+}
+
+/* =========================================================================
+   2. SEMANTIC ROLES — LIGHT (the default)
+   Components reference these and nothing above.
+   ========================================================================= */
+
+:root {
+  color-scheme: light;
+
+  /* --- Surfaces ----------------------------------------------------------
+     canvas  : the page itself, a shade off-white so white cards lift.
+     surface : default card / panel.
+     raised  : a card sitting ON a card (nested tiles, popovers, menus).
+     sunken  : wells — table headers, inputs, empty states, code.
+     overlay : modal scrim.                                                  */
+  --lx-canvas: var(--lx-neutral-50);
+  --lx-surface: var(--lx-neutral-0);
+  --lx-surface-raised: var(--lx-neutral-0);
+  --lx-surface-sunken: var(--lx-neutral-100);
+  --lx-surface-hover: var(--lx-neutral-100);
+  --lx-surface-active: var(--lx-neutral-200);
+  --lx-surface-inverse: var(--lx-neutral-950);
+  --lx-overlay: rgb(13 15 12 / 0.45);
+
+  /* --- Text --------------------------------------------------------------
+     Four steps, and four is the budget. More than four and hierarchy stops
+     being legible as hierarchy.                                             */
+  --lx-text: var(--lx-neutral-950);
+  --lx-text-secondary: var(--lx-neutral-700);
+  --lx-text-muted: var(--lx-neutral-600);
+  /* Disabled text is intentionally below 4.5:1 — WCAG 1.4.3 exempts inactive
+     controls, and a disabled field that reads as active is worse. */
+  --lx-text-disabled: var(--lx-neutral-400);
+  --lx-text-inverse: var(--lx-neutral-25);
+  --lx-text-brand: var(--lx-green-700);
+  --lx-text-link: var(--lx-green-700);
+
+  /* --- Borders -----------------------------------------------------------
+     Hairlines do the structural work that shadows do in other systems.      */
+  --lx-border: var(--lx-neutral-200);
+  --lx-border-subtle: var(--lx-neutral-100);
+  --lx-border-strong: var(--lx-neutral-300);
+  /* Inputs are interactive boundaries, so they need 3:1 against the surface —
+     unlike card hairlines, where the surface/canvas step carries the shape. */
+  --lx-border-control: var(--lx-neutral-500);
+  --lx-border-brand: var(--lx-green-500);
+  /* green-500 is only 2.28:1 on white; the focus ring must clear 3:1. */
+  --lx-border-focus: var(--lx-green-600);
+
+  /* --- Brand / interactive ----------------------------------------------- */
+  --lx-brand: var(--lx-green-500);
+  --lx-brand-hover: var(--lx-green-600);
+  --lx-brand-active: var(--lx-green-700);
+  --lx-brand-subtle: var(--lx-green-50);
+  --lx-brand-subtle-hover: var(--lx-green-100);
+  --lx-brand-muted: var(--lx-green-100);
+  /* Ink, not white. White on green-500 is 2.28:1; ink is 8.43:1 — and dark
+     text on a vibrant green is the look this system is after anyway. */
+  --lx-on-brand: var(--lx-neutral-950);
+
+  --lx-signal: var(--lx-lime-500);
+  --lx-signal-hover: var(--lx-lime-600);
+  --lx-on-signal: var(--lx-neutral-950);
+
+  /* --- Semantic states ---------------------------------------------------
+     `-fg` is the text/icon colour, `-bg` the tinted container behind it.    */
+  --lx-success: var(--lx-green-500);
+  --lx-success-fg: var(--lx-green-700);
+  --lx-success-bg: var(--lx-green-50);
+
+  --lx-warning: var(--lx-amber-500);
+  --lx-warning-fg: var(--lx-amber-700);
+  --lx-warning-bg: var(--lx-amber-100);
+
+  --lx-danger: var(--lx-red-500);
+  --lx-danger-fg: var(--lx-red-700);
+  --lx-danger-bg: var(--lx-red-100);
+
+  --lx-info: var(--lx-blue-500);
+  --lx-info-fg: var(--lx-blue-700);
+  --lx-info-bg: var(--lx-blue-100);
+
+  --lx-neutral-fg: var(--lx-neutral-600);
+  --lx-neutral-bg: var(--lx-neutral-100);
+
+  /* --- Financial direction -----------------------------------------------
+     Money moves up or down; that reading is not the same as success/error
+     and deserves its own tokens so a fall can be styled neutrally in
+     markets where red/green carries the opposite meaning.                   */
+  --lx-positive: var(--lx-green-700);
+  --lx-positive-bg: var(--lx-green-50);
+  --lx-negative: var(--lx-red-700);
+  --lx-negative-bg: var(--lx-red-100);
+
+  /* --- Elevation ---------------------------------------------------------
+     Light mode gets real (but very soft) shadows. See the dark block for how
+     these invert into near-nothing.                                         */
+  --lx-shadow-xs: 0 1px 2px 0 rgb(13 15 12 / 0.04);
+  --lx-shadow-sm: 0 1px 3px 0 rgb(13 15 12 / 0.06), 0 1px 2px -1px rgb(13 15 12 / 0.04);
+  --lx-shadow-md: 0 4px 12px -2px rgb(13 15 12 / 0.07), 0 2px 4px -2px rgb(13 15 12 / 0.04);
+  --lx-shadow-lg: 0 12px 28px -6px rgb(13 15 12 / 0.10), 0 4px 8px -4px rgb(13 15 12 / 0.05);
+  --lx-shadow-xl: 0 24px 56px -12px rgb(13 15 12 / 0.14);
+  --lx-shadow-focus: 0 0 0 3px rgb(0 197 106 / 0.22);
+  --lx-shadow-brand: 0 6px 20px -6px rgb(0 197 106 / 0.42);
+
+  /* Chart plumbing that differs per theme. */
+  --lx-chart-grid: var(--lx-neutral-200);
+  --lx-chart-axis: var(--lx-neutral-400);
+  --lx-chart-neutral: var(--lx-neutral-500);
+  --lx-chart-tooltip-bg: var(--lx-neutral-950);
+  --lx-chart-tooltip-fg: var(--lx-neutral-25);
+
+  /* Skeleton shimmer base. */
+  --lx-skeleton: var(--lx-neutral-100);
+  --lx-skeleton-shine: var(--lx-neutral-200);
+}
+
+/* =========================================================================
+   2b. SEMANTIC ROLES — DARK
+   Only role tokens are redefined; primitives are untouched.
+
+   Dark is where this system earns its keep. Two rules:
+     · Depth is a lightness ladder (975 canvas → 925 surface → 900 raised).
+       Shadows on near-black are invisible, so they're reduced to almost
+       nothing and borders take over.
+     · The brand steps DOWN in weight, not up: on a dark ground the 400/500
+       greens already glow, so `--lx-brand-hover` gets lighter rather than
+       darker, keeping hover feeling like "more energy" in both themes.
+   ========================================================================= */
+
+:root[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  --lx-canvas: var(--lx-neutral-975);
+  --lx-surface: var(--lx-neutral-925);
+  --lx-surface-raised: var(--lx-neutral-900);
+  --lx-surface-sunken: var(--lx-neutral-950);
+  --lx-surface-hover: var(--lx-neutral-850);
+  --lx-surface-active: var(--lx-neutral-800);
+  --lx-surface-inverse: var(--lx-neutral-50);
+  --lx-overlay: rgb(5 6 5 / 0.68);
+
+  --lx-text: var(--lx-neutral-25);
+  --lx-text-secondary: var(--lx-neutral-400);
+  --lx-text-muted: var(--lx-neutral-500);
+  --lx-text-disabled: var(--lx-neutral-700);
+  --lx-text-inverse: var(--lx-neutral-950);
+  --lx-text-brand: var(--lx-green-400);
+  --lx-text-link: var(--lx-green-400);
+
+  --lx-border: var(--lx-neutral-850);
+  --lx-border-subtle: var(--lx-neutral-900);
+  --lx-border-strong: var(--lx-neutral-800);
+  --lx-border-control: var(--lx-neutral-600);
+  --lx-border-brand: var(--lx-green-500);
+  --lx-border-focus: var(--lx-green-400);
+
+  --lx-brand: var(--lx-green-500);
+  --lx-brand-hover: var(--lx-green-400);
+  --lx-brand-active: var(--lx-green-300);
+  --lx-brand-subtle: rgb(0 197 106 / 0.14);
+  --lx-brand-subtle-hover: rgb(0 197 106 / 0.22);
+  --lx-brand-muted: rgb(0 197 106 / 0.28);
+  --lx-on-brand: var(--lx-neutral-975);
+
+  --lx-signal: var(--lx-lime-500);
+  --lx-signal-hover: var(--lx-lime-400);
+  --lx-on-signal: var(--lx-neutral-975);
+
+  --lx-success: var(--lx-green-400);
+  --lx-success-fg: var(--lx-green-300);
+  --lx-success-bg: rgb(0 197 106 / 0.16);
+
+  --lx-warning: var(--lx-amber-400);
+  --lx-warning-fg: var(--lx-amber-400);
+  --lx-warning-bg: rgb(245 165 36 / 0.16);
+
+  --lx-danger: var(--lx-red-400);
+  --lx-danger-fg: var(--lx-red-400);
+  --lx-danger-bg: rgb(229 72 77 / 0.18);
+
+  --lx-info: var(--lx-blue-400);
+  --lx-info-fg: var(--lx-blue-400);
+  --lx-info-bg: rgb(91 141 239 / 0.18);
+
+  --lx-neutral-fg: var(--lx-neutral-400);
+  --lx-neutral-bg: rgb(255 255 255 / 0.07);
+
+  --lx-positive: var(--lx-green-400);
+  --lx-positive-bg: rgb(0 197 106 / 0.16);
+  --lx-negative: var(--lx-red-400);
+  --lx-negative-bg: rgb(229 72 77 / 0.18);
+
+  --lx-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+  --lx-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.40);
+  --lx-shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.48);
+  --lx-shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.55);
+  --lx-shadow-xl: 0 24px 56px -12px rgb(0 0 0 / 0.65);
+  --lx-shadow-focus: 0 0 0 3px rgb(0 197 106 / 0.34);
+  --lx-shadow-brand: 0 6px 24px -6px rgb(0 197 106 / 0.34);
+
+  --lx-chart-grid: var(--lx-neutral-850);
+  --lx-chart-axis: var(--lx-neutral-600);
+  --lx-chart-neutral: var(--lx-neutral-600);
+  --lx-chart-tooltip-bg: var(--lx-neutral-800);
+  --lx-chart-tooltip-fg: var(--lx-neutral-25);
+
+  --lx-skeleton: var(--lx-neutral-900);
+  --lx-skeleton-shine: var(--lx-neutral-850);
+}
+
+/* System preference, unless the user explicitly asked for light. Duplicated
+   rather than shared because CSS has no way to alias a selector list. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) {
+    color-scheme: dark;
+
+    --lx-canvas: var(--lx-neutral-975);
+    --lx-surface: var(--lx-neutral-925);
+    --lx-surface-raised: var(--lx-neutral-900);
+    --lx-surface-sunken: var(--lx-neutral-950);
+    --lx-surface-hover: var(--lx-neutral-850);
+    --lx-surface-active: var(--lx-neutral-800);
+    --lx-surface-inverse: var(--lx-neutral-50);
+    --lx-overlay: rgb(5 6 5 / 0.68);
+
+    --lx-text: var(--lx-neutral-25);
+    --lx-text-secondary: var(--lx-neutral-400);
+    --lx-text-muted: var(--lx-neutral-500);
+    --lx-text-disabled: var(--lx-neutral-700);
+    --lx-text-inverse: var(--lx-neutral-950);
+    --lx-text-brand: var(--lx-green-400);
+    --lx-text-link: var(--lx-green-400);
+
+    --lx-border: var(--lx-neutral-850);
+    --lx-border-subtle: var(--lx-neutral-900);
+    --lx-border-strong: var(--lx-neutral-800);
+    --lx-border-control: var(--lx-neutral-600);
+    --lx-border-brand: var(--lx-green-500);
+    --lx-border-focus: var(--lx-green-400);
+
+    --lx-brand: var(--lx-green-500);
+    --lx-brand-hover: var(--lx-green-400);
+    --lx-brand-active: var(--lx-green-300);
+    --lx-brand-subtle: rgb(0 197 106 / 0.14);
+    --lx-brand-subtle-hover: rgb(0 197 106 / 0.22);
+    --lx-brand-muted: rgb(0 197 106 / 0.28);
+    --lx-on-brand: var(--lx-neutral-975);
+
+    --lx-signal: var(--lx-lime-500);
+    --lx-signal-hover: var(--lx-lime-400);
+    --lx-on-signal: var(--lx-neutral-975);
+
+    --lx-success: var(--lx-green-400);
+    --lx-success-fg: var(--lx-green-300);
+    --lx-success-bg: rgb(0 197 106 / 0.16);
+
+    --lx-warning: var(--lx-amber-400);
+    --lx-warning-fg: var(--lx-amber-400);
+    --lx-warning-bg: rgb(245 165 36 / 0.16);
+
+    --lx-danger: var(--lx-red-400);
+    --lx-danger-fg: var(--lx-red-400);
+    --lx-danger-bg: rgb(229 72 77 / 0.18);
+
+    --lx-info: var(--lx-blue-400);
+    --lx-info-fg: var(--lx-blue-400);
+    --lx-info-bg: rgb(91 141 239 / 0.18);
+
+    --lx-neutral-fg: var(--lx-neutral-400);
+    --lx-neutral-bg: rgb(255 255 255 / 0.07);
+
+    --lx-positive: var(--lx-green-400);
+    --lx-positive-bg: rgb(0 197 106 / 0.16);
+    --lx-negative: var(--lx-red-400);
+    --lx-negative-bg: rgb(229 72 77 / 0.18);
+
+    --lx-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.30);
+    --lx-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.40);
+    --lx-shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.48);
+    --lx-shadow-lg: 0 12px 28px -6px rgb(0 0 0 / 0.55);
+    --lx-shadow-xl: 0 24px 56px -12px rgb(0 0 0 / 0.65);
+    --lx-shadow-focus: 0 0 0 3px rgb(0 197 106 / 0.34);
+    --lx-shadow-brand: 0 6px 24px -6px rgb(0 197 106 / 0.34);
+
+    --lx-chart-grid: var(--lx-neutral-850);
+    --lx-chart-axis: var(--lx-neutral-600);
+    --lx-chart-neutral: var(--lx-neutral-600);
+    --lx-chart-tooltip-bg: var(--lx-neutral-800);
+    --lx-chart-tooltip-fg: var(--lx-neutral-25);
+
+    --lx-skeleton: var(--lx-neutral-900);
+    --lx-skeleton-shine: var(--lx-neutral-850);
+  }
+}
+
+/* =========================================================================
+   3. TYPOGRAPHY
+   Urbanist is geometric, so it needs negative tracking as size grows or the
+   counters open up and headlines look loose. The `tight` tracking values
+   below are tuned for Urbanist specifically — they are too aggressive for a
+   humanist face like Inter.
+   ========================================================================= */
+
+:root {
+  --lx-font-sans: "Urbanist", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --lx-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  /* Figures in tables and KPI tiles must not jitter as they tick. */
+  --lx-font-numeric: var(--lx-font-sans);
+
+  --lx-weight-light: 300;
+  --lx-weight-regular: 400;
+  --lx-weight-medium: 500;
+  --lx-weight-semibold: 600;
+  --lx-weight-bold: 700;
+  --lx-weight-extrabold: 800;
+
+  /* Size ramp — a 1.2-ish minor third, flattened in the body range where
+     14 and 16 both need to exist for dense data UI. */
+  --lx-text-2xs: 0.6875rem; /* 11px — overline, table micro-labels        */
+  --lx-text-xs: 0.75rem;    /* 12px — captions, chart ticks, meta         */
+  --lx-text-sm: 0.8125rem;  /* 13px — dense table cells, secondary body   */
+  --lx-text-base: 0.875rem; /* 14px — DEFAULT body for app UI             */
+  --lx-text-md: 1rem;       /* 16px — comfortable body, marketing         */
+  --lx-text-lg: 1.125rem;   /* 18px — card titles                         */
+  --lx-text-xl: 1.25rem;    /* 20px — section headings                    */
+  --lx-text-2xl: 1.5rem;    /* 24px — page headings                       */
+  --lx-text-3xl: 1.875rem;  /* 30px — small display                       */
+  --lx-text-4xl: 2.25rem;   /* 36px — KPI figures                         */
+  --lx-text-5xl: 2.75rem;   /* 44px — display                             */
+  --lx-text-6xl: 3.5rem;    /* 56px — hero display                        */
+
+  --lx-leading-none: 1;
+  --lx-leading-tight: 1.15;
+  --lx-leading-snug: 1.3;
+  --lx-leading-normal: 1.5;
+  --lx-leading-relaxed: 1.65;
+
+  --lx-tracking-tighter: -0.03em; /* 44px+ display        */
+  --lx-tracking-tight: -0.02em;   /* 24–36px headings/KPI */
+  --lx-tracking-snug: -0.01em;    /* 18–20px titles       */
+  --lx-tracking-normal: 0em;      /* body                 */
+  --lx-tracking-wide: 0.02em;     /* small caps-ish       */
+  --lx-tracking-wider: 0.08em;    /* overline / eyebrow   */
+}
+
+/* =========================================================================
+   4. SPACE — 4px base grid.
+   Card padding is 20 (--lx-space-5); grid gutter is 20–24. Sticking to those
+   two is most of what makes screens feel like one product.
+   ========================================================================= */
+
+:root {
+  --lx-space-0: 0;
+  --lx-space-px: 1px;
+  --lx-space-0-5: 0.125rem; /*  2 */
+  --lx-space-1: 0.25rem;    /*  4 */
+  --lx-space-1-5: 0.375rem; /*  6 */
+  --lx-space-2: 0.5rem;     /*  8 */
+  --lx-space-2-5: 0.625rem; /* 10 */
+  --lx-space-3: 0.75rem;    /* 12 */
+  --lx-space-4: 1rem;       /* 16 */
+  --lx-space-5: 1.25rem;    /* 20 — canonical card padding */
+  --lx-space-6: 1.5rem;     /* 24 — canonical gutter       */
+  --lx-space-8: 2rem;       /* 32 */
+  --lx-space-10: 2.5rem;    /* 40 */
+  --lx-space-12: 3rem;      /* 48 */
+  --lx-space-16: 4rem;      /* 64 */
+  --lx-space-20: 5rem;      /* 80 */
+  --lx-space-24: 6rem;      /* 96 */
+}
+
+/* =========================================================================
+   5. RADIUS
+   Generous, and consistent by role rather than by size: everything that is a
+   "container" is 20, everything that is a "control" is 12, everything that
+   is a "chip" is a pill. Mixing radii within a role is the fastest way to
+   lose the look.
+   ========================================================================= */
+
+:root {
+  --lx-radius-none: 0;
+  --lx-radius-xs: 4px;
+  --lx-radius-sm: 8px;
+  --lx-radius-md: 12px;  /* controls: buttons, inputs, selects   */
+  --lx-radius-lg: 16px;  /* inner tiles, menus, tooltips         */
+  --lx-radius-xl: 20px;  /* CARDS — the signature radius         */
+  --lx-radius-2xl: 24px; /* large panels, modals                 */
+  --lx-radius-3xl: 32px; /* hero / marketing surfaces            */
+  --lx-radius-full: 9999px;
+}
+
+/* =========================================================================
+   6. MOTION
+   One easing curve for nearly everything. `--lx-ease` is a decelerating
+   curve that reads as "settling into place" rather than "sliding".
+   ========================================================================= */
+
+:root {
+  --lx-duration-instant: 80ms;
+  --lx-duration-fast: 140ms;
+  --lx-duration-base: 200ms;
+  --lx-duration-slow: 320ms;
+  --lx-duration-slower: 480ms;
+
+  --lx-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --lx-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --lx-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --lx-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --lx-transition: color var(--lx-duration-fast) var(--lx-ease),
+    background-color var(--lx-duration-fast) var(--lx-ease),
+    border-color var(--lx-duration-fast) var(--lx-ease),
+    box-shadow var(--lx-duration-fast) var(--lx-ease),
+    transform var(--lx-duration-fast) var(--lx-ease),
+    opacity var(--lx-duration-fast) var(--lx-ease);
+}
+
+/* =========================================================================
+   7. LAYOUT
+   The app shell. Sidebar 264 / 76 collapsed, topbar 68 — these three numbers
+   are what makes two different apps read as the same product.
+   ========================================================================= */
+
+:root {
+  --lx-sidebar-width: 264px;
+  --lx-sidebar-width-collapsed: 76px;
+  --lx-topbar-height: 68px;
+  --lx-content-max: 1440px;
+  --lx-page-gutter: var(--lx-space-6);
+  --lx-grid-gap: var(--lx-space-5);
+
+  --lx-z-base: 0;
+  --lx-z-sticky: 100;
+  --lx-z-drawer: 200;
+  --lx-z-overlay: 300;
+  --lx-z-modal: 400;
+  --lx-z-popover: 500;
+  --lx-z-toast: 600;
+  --lx-z-tooltip: 700;
+}
+
+/* =========================================================================
+   8. CHARTS
+   A categorical ramp ordered by emphasis, not by hue family. Series 1 is the
+   brand green because in a finance dashboard the first series is almost
+   always "the number the page is about".
+
+   House pattern — "one bright, rest quiet": when a chart compares one
+   highlighted period/category against a set (this month vs. the other
+   eleven), fill the highlighted mark with --lx-chart-1 or --lx-signal and
+   every other mark with --lx-chart-neutral. That single move is the most
+   recognisable thing in the whole system.
+   ========================================================================= */
+
+:root {
+  /* Marks are graphical objects, so each step clears 3:1 against a white
+     card. That is why several sit a step deeper than the equivalent UI
+     colour: green-500 is only 2.28:1 on white, and lime is 1.23:1. */
+  --lx-chart-1: var(--lx-green-600); /* primary metric              */
+  --lx-chart-2: var(--lx-blue-500);  /* comparison / prior period   */
+  --lx-chart-3: var(--lx-violet-500);
+  --lx-chart-4: var(--lx-amber-650);
+  --lx-chart-5: var(--lx-teal-600);
+  --lx-chart-6: var(--lx-red-500);
+  --lx-chart-7: var(--lx-lime-800); /* the emphasised one          */
+  --lx-chart-8: var(--lx-neutral-500);
+
+  /* Area/gradient fills — the green wash under a line chart. */
+  --lx-chart-fill-strong: rgb(0 197 106 / 0.28);
+  --lx-chart-fill-soft: rgb(0 197 106 / 0.06);
+}
+
+:root[data-theme="dark"],
+.dark {
+  --lx-chart-1: var(--lx-green-400);
+  --lx-chart-2: var(--lx-blue-400);
+  --lx-chart-3: var(--lx-violet-400);
+  --lx-chart-4: var(--lx-amber-400);
+  --lx-chart-5: var(--lx-teal-400);
+  --lx-chart-6: var(--lx-red-400);
+  --lx-chart-7: var(--lx-lime-500);
+  --lx-chart-8: var(--lx-neutral-500);
+  --lx-chart-fill-strong: rgb(23 205 120 / 0.34);
+  --lx-chart-fill-soft: rgb(23 205 120 / 0.02);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) {
+    --lx-chart-1: var(--lx-green-400);
+    --lx-chart-2: var(--lx-blue-400);
+    --lx-chart-3: var(--lx-violet-400);
+    --lx-chart-4: var(--lx-amber-400);
+    --lx-chart-5: var(--lx-teal-400);
+    --lx-chart-6: var(--lx-red-400);
+    --lx-chart-7: var(--lx-lime-500);
+    --lx-chart-8: var(--lx-neutral-500);
+    --lx-chart-fill-strong: rgb(23 205 120 / 0.34);
+    --lx-chart-fill-soft: rgb(23 205 120 / 0.02);
+  }
+}
+
+/* =========================================================================
+   9. BASE
+   Opt-in: import `tokens.css` alone for variables only, or keep this block
+   for the document-level defaults the system assumes.
+   ========================================================================= */
+
+.lx-root,
+body.lx-root {
+  background-color: var(--lx-canvas);
+  color: var(--lx-text);
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-regular);
+  line-height: var(--lx-leading-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Urbanist's default figures are proportional; finance UI needs lining
+     tabular figures so columns of numbers align and KPIs don't reflow. */
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Honour the OS reduced-motion setting system-wide. Components below use
+   --lx-transition, so neutralising it here disables them all at once. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lx-duration-instant: 1ms;
+    --lx-duration-fast: 1ms;
+    --lx-duration-base: 1ms;
+    --lx-duration-slow: 1ms;
+    --lx-duration-slower: 1ms;
+    --lx-transition: none;
+  }
+}
+
+
+/* ===== ledgerix/components.css — verbatim from the shipped package ===== */
+/* =========================================================================
+   LEDGERIX DESIGN SYSTEM — COMPONENTS
+   -------------------------------------------------------------------------
+   Framework-free component classes. Every declaration resolves to a token
+   from tokens.css — there are no literal colours, sizes or durations below.
+
+   Import order matters:
+       @import "./tokens.css";
+       @import "./components.css";
+
+   Naming: .lx-<block>, .lx-<block>__<element>, .lx-<block>--<modifier>.
+   ========================================================================= */
+
+/* =========================================================================
+   RESET-ISH
+   Scoped to the system so it can coexist with an existing app's styles.
+   ========================================================================= */
+
+.lx-root *,
+.lx-root *::before,
+.lx-root *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================================
+   TYPOGRAPHY UTILITIES
+   Semantic roles, not sizes: use .lx-metric for a KPI figure rather than
+   remembering that KPI figures happen to be 36px.
+   ========================================================================= */
+
+.lx-display {
+  font-size: var(--lx-text-6xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-none);
+  letter-spacing: var(--lx-tracking-tighter);
+}
+
+.lx-display-sm {
+  font-size: var(--lx-text-5xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-tight);
+  letter-spacing: var(--lx-tracking-tighter);
+}
+
+.lx-h1 {
+  font-size: var(--lx-text-3xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-tight);
+  letter-spacing: var(--lx-tracking-tight);
+}
+
+.lx-h2 {
+  font-size: var(--lx-text-2xl);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-tight);
+}
+
+.lx-h3 {
+  font-size: var(--lx-text-xl);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-snug);
+}
+
+.lx-title {
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-snug);
+}
+
+.lx-body {
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-regular);
+  line-height: var(--lx-leading-normal);
+}
+
+.lx-body-strong {
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-normal);
+}
+
+.lx-caption {
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+  line-height: var(--lx-leading-snug);
+  color: var(--lx-text-secondary);
+}
+
+/* The eyebrow above a KPI figure or a section. Wide tracking is load-bearing
+   here — without it, 11px uppercase turns into a smudge. */
+.lx-overline {
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+}
+
+/* The big money number. Tabular figures stop it reflowing as values tick. */
+.lx-metric {
+  font-family: var(--lx-font-numeric);
+  font-size: var(--lx-text-4xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-none);
+  letter-spacing: var(--lx-tracking-tight);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--lx-text);
+}
+
+.lx-metric--sm {
+  font-size: var(--lx-text-2xl);
+}
+
+.lx-metric--lg {
+  font-size: var(--lx-text-5xl);
+}
+
+.lx-text-secondary { color: var(--lx-text-secondary); }
+.lx-text-muted { color: var(--lx-text-muted); }
+.lx-text-brand { color: var(--lx-text-brand); }
+.lx-text-positive { color: var(--lx-positive); }
+.lx-text-negative { color: var(--lx-negative); }
+.lx-numeric { font-variant-numeric: tabular-nums lining-nums; }
+
+/* =========================================================================
+   FOCUS
+   One ring, everywhere, and only for keyboard users.
+   ========================================================================= */
+
+.lx-root :focus-visible {
+  outline: 2px solid var(--lx-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--lx-radius-xs);
+}
+
+/* =========================================================================
+   SURFACE / CARD
+   The workhorse. 20px radius + hairline border + near-flat shadow.
+   ========================================================================= */
+
+.lx-card {
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border);
+  border-radius: var(--lx-radius-xl);
+  box-shadow: var(--lx-shadow-xs);
+  transition: var(--lx-transition);
+}
+
+.lx-card--interactive {
+  cursor: pointer;
+}
+
+.lx-card--interactive:hover {
+  border-color: var(--lx-border-strong);
+  box-shadow: var(--lx-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Full-bleed emphasis card: the one dark panel on a light dashboard (or the
+   one green panel). Used for the primary balance / hero KPI. */
+.lx-card--inverse {
+  background-color: var(--lx-surface-inverse);
+  border-color: transparent;
+  color: var(--lx-text-inverse);
+}
+
+.lx-card--inverse .lx-metric,
+.lx-card--inverse .lx-card__title {
+  color: var(--lx-text-inverse);
+}
+
+.lx-card--inverse .lx-overline,
+.lx-card--inverse .lx-caption {
+  color: color-mix(in srgb, var(--lx-text-inverse) 62%, transparent);
+}
+
+.lx-card--brand {
+  background-color: var(--lx-brand);
+  border-color: transparent;
+  color: var(--lx-on-brand);
+}
+
+.lx-card--flat {
+  box-shadow: none;
+}
+
+.lx-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--lx-space-4);
+  padding: var(--lx-space-5) var(--lx-space-5) 0;
+}
+
+.lx-card__title {
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-snug);
+  line-height: var(--lx-leading-snug);
+  color: var(--lx-text);
+  margin: 0;
+}
+
+.lx-card__subtitle {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+  margin: var(--lx-space-1) 0 0;
+}
+
+.lx-card__body {
+  padding: var(--lx-space-5);
+}
+
+.lx-card__footer {
+  padding: var(--lx-space-4) var(--lx-space-5);
+  border-top: 1px solid var(--lx-border-subtle);
+}
+
+/* Header + body both padded would double-pad; collapse the gap. */
+.lx-card__header + .lx-card__body {
+  padding-top: var(--lx-space-4);
+}
+
+/* =========================================================================
+   STAT CARD  (KPI tile)
+   The single most repeated object in the product. Structure is fixed:
+     overline label → metric figure → delta chip + comparison caption.
+   ========================================================================= */
+
+.lx-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-3);
+  padding: var(--lx-space-5);
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border);
+  border-radius: var(--lx-radius-xl);
+  box-shadow: var(--lx-shadow-xs);
+  transition: var(--lx-transition);
+  overflow: hidden;
+}
+
+.lx-stat:hover {
+  border-color: var(--lx-border-strong);
+  box-shadow: var(--lx-shadow-sm);
+}
+
+.lx-stat__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lx-space-3);
+}
+
+.lx-stat__label {
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+}
+
+/* The tinted square that holds the tile's icon. */
+.lx-stat__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: var(--lx-radius-md);
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+}
+
+.lx-stat__icon--neutral {
+  background-color: var(--lx-surface-sunken);
+  color: var(--lx-text-secondary);
+}
+
+.lx-stat__value {
+  font-size: var(--lx-text-4xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-none);
+  letter-spacing: var(--lx-tracking-tight);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--lx-text);
+}
+
+.lx-stat__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2);
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+}
+
+/* Inline sparkline slot — sits flush to the tile's bottom edge. */
+.lx-stat__spark {
+  margin: var(--lx-space-1) calc(var(--lx-space-5) * -1) calc(var(--lx-space-5) * -1);
+  height: 56px;
+}
+
+/* =========================================================================
+   DELTA CHIP
+   The ▲ +12.4% pill. Direction tokens, not success/error tokens.
+   ========================================================================= */
+
+.lx-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-1);
+  padding: var(--lx-space-0-5) var(--lx-space-2);
+  border-radius: var(--lx-radius-full);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-semibold);
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: var(--lx-leading-snug);
+  white-space: nowrap;
+}
+
+.lx-delta--up {
+  color: var(--lx-positive);
+  background-color: var(--lx-positive-bg);
+}
+
+.lx-delta--down {
+  color: var(--lx-negative);
+  background-color: var(--lx-negative-bg);
+}
+
+.lx-delta--flat {
+  color: var(--lx-neutral-fg);
+  background-color: var(--lx-neutral-bg);
+}
+
+/* =========================================================================
+   BUTTONS
+   Sizes: sm 32 / md 40 / lg 48. Radius 12 (--lx-radius-md) across the board;
+   .lx-btn--pill for the marketing/hero variant.
+   ========================================================================= */
+
+.lx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lx-space-2);
+  height: 40px;
+  padding: 0 var(--lx-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--lx-radius-md);
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-semibold);
+  line-height: 1;
+  letter-spacing: var(--lx-tracking-normal);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  transition: var(--lx-transition);
+}
+
+.lx-btn:disabled,
+.lx-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.lx-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Primary — solid green. One per view; two primaries means neither is. */
+.lx-btn--primary {
+  background-color: var(--lx-brand);
+  color: var(--lx-on-brand);
+  box-shadow: var(--lx-shadow-brand);
+}
+
+.lx-btn--primary:hover:not(:disabled) {
+  background-color: var(--lx-brand-hover);
+}
+
+.lx-btn--primary:active:not(:disabled) {
+  background-color: var(--lx-brand-active);
+}
+
+/* Signal — the lime hero CTA. Ink text, never white. */
+.lx-btn--signal {
+  background-color: var(--lx-signal);
+  color: var(--lx-on-signal);
+}
+
+.lx-btn--signal:hover:not(:disabled) {
+  background-color: var(--lx-signal-hover);
+}
+
+/* Secondary — bordered, the default for most actions. */
+.lx-btn--secondary {
+  background-color: var(--lx-surface);
+  border-color: var(--lx-border);
+  color: var(--lx-text);
+}
+
+.lx-btn--secondary:hover:not(:disabled) {
+  background-color: var(--lx-surface-hover);
+  border-color: var(--lx-border-strong);
+}
+
+/* Ghost — toolbars, table row actions, icon buttons. */
+.lx-btn--ghost {
+  background-color: transparent;
+  color: var(--lx-text-secondary);
+}
+
+.lx-btn--ghost:hover:not(:disabled) {
+  background-color: var(--lx-surface-hover);
+  color: var(--lx-text);
+}
+
+.lx-btn--subtle {
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+}
+
+.lx-btn--subtle:hover:not(:disabled) {
+  background-color: var(--lx-brand-subtle-hover);
+}
+
+.lx-btn--inverse {
+  background-color: var(--lx-surface-inverse);
+  color: var(--lx-text-inverse);
+}
+
+.lx-btn--danger {
+  background-color: var(--lx-danger);
+  color: #fff;
+}
+
+.lx-btn--danger:hover:not(:disabled) {
+  filter: brightness(0.94);
+}
+
+.lx-btn--sm {
+  height: 32px;
+  padding: 0 var(--lx-space-3);
+  font-size: var(--lx-text-sm);
+  border-radius: var(--lx-radius-sm);
+}
+
+.lx-btn--lg {
+  height: 48px;
+  padding: 0 var(--lx-space-6);
+  font-size: var(--lx-text-md);
+  border-radius: var(--lx-radius-lg);
+}
+
+.lx-btn--pill {
+  border-radius: var(--lx-radius-full);
+}
+
+.lx-btn--icon {
+  width: 40px;
+  padding: 0;
+  flex: none;
+}
+
+.lx-btn--icon.lx-btn--sm { width: 32px; }
+.lx-btn--icon.lx-btn--lg { width: 48px; }
+
+.lx-btn--block {
+  width: 100%;
+}
+
+/* =========================================================================
+   BADGE / TAG
+   Status pills. Same shape as .lx-delta but semantic rather than directional.
+   ========================================================================= */
+
+.lx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-1-5);
+  padding: var(--lx-space-1) var(--lx-space-2-5);
+  border-radius: var(--lx-radius-full);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  white-space: nowrap;
+  background-color: var(--lx-neutral-bg);
+  color: var(--lx-neutral-fg);
+}
+
+.lx-badge--brand { background-color: var(--lx-brand-subtle); color: var(--lx-text-brand); }
+.lx-badge--success { background-color: var(--lx-success-bg); color: var(--lx-success-fg); }
+.lx-badge--warning { background-color: var(--lx-warning-bg); color: var(--lx-warning-fg); }
+.lx-badge--danger { background-color: var(--lx-danger-bg); color: var(--lx-danger-fg); }
+.lx-badge--info { background-color: var(--lx-info-bg); color: var(--lx-info-fg); }
+.lx-badge--signal { background-color: var(--lx-signal); color: var(--lx-on-signal); }
+
+.lx-badge--outline {
+  background-color: transparent;
+  border: 1px solid var(--lx-border);
+  color: var(--lx-text-secondary);
+}
+
+/* The leading status dot. Colour is inherited from the badge modifier. */
+.lx-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--lx-radius-full);
+  background-color: currentColor;
+  flex: none;
+}
+
+/* =========================================================================
+   FORM CONTROLS
+   ========================================================================= */
+
+.lx-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-1-5);
+}
+
+.lx-label {
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text-secondary);
+}
+
+.lx-input,
+.lx-select,
+.lx-textarea {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--lx-space-3);
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border-control);
+  border-radius: var(--lx-radius-md);
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-base);
+  color: var(--lx-text);
+  transition: var(--lx-transition);
+}
+
+.lx-textarea {
+  height: auto;
+  min-height: 96px;
+  padding: var(--lx-space-2-5) var(--lx-space-3);
+  line-height: var(--lx-leading-normal);
+  resize: vertical;
+}
+
+.lx-input::placeholder,
+.lx-textarea::placeholder {
+  color: var(--lx-text-disabled);
+}
+
+.lx-input:hover,
+.lx-select:hover,
+.lx-textarea:hover {
+  border-color: var(--lx-border-strong);
+}
+
+.lx-input:focus,
+.lx-select:focus,
+.lx-textarea:focus {
+  outline: none;
+  border-color: var(--lx-border-focus);
+  box-shadow: var(--lx-shadow-focus);
+}
+
+.lx-input:disabled,
+.lx-select:disabled,
+.lx-textarea:disabled {
+  background-color: var(--lx-surface-sunken);
+  color: var(--lx-text-disabled);
+  cursor: not-allowed;
+}
+
+.lx-input--invalid,
+.lx-input[aria-invalid="true"] {
+  border-color: var(--lx-danger);
+}
+
+.lx-input--invalid:focus,
+.lx-input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px var(--lx-danger-bg);
+}
+
+.lx-hint {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+}
+
+.lx-error {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-danger-fg);
+}
+
+/* Search input with a leading icon. */
+.lx-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lx-search__icon {
+  position: absolute;
+  left: var(--lx-space-3);
+  display: inline-flex;
+  color: var(--lx-text-muted);
+  pointer-events: none;
+}
+
+.lx-search .lx-input {
+  padding-left: var(--lx-space-10);
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-surface-sunken);
+  border-color: transparent;
+}
+
+.lx-search .lx-input:focus {
+  background-color: var(--lx-surface);
+  border-color: var(--lx-border-focus);
+}
+
+/* --- Switch ------------------------------------------------------------- */
+
+.lx-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-surface-active);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--lx-transition);
+}
+
+.lx-switch::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-neutral-0);
+  box-shadow: var(--lx-shadow-sm);
+  transition: transform var(--lx-duration-base) var(--lx-ease);
+}
+
+.lx-switch[aria-checked="true"],
+.lx-switch[data-state="checked"] {
+  background-color: var(--lx-brand);
+}
+
+.lx-switch[aria-checked="true"]::after,
+.lx-switch[data-state="checked"]::after {
+  transform: translateX(20px);
+}
+
+/* --- Segmented control -------------------------------------------------- */
+
+.lx-segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-0-5);
+  padding: var(--lx-space-1);
+  background-color: var(--lx-surface-sunken);
+  border-radius: var(--lx-radius-md);
+}
+
+.lx-segmented__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 var(--lx-space-3);
+  border: none;
+  border-radius: var(--lx-radius-sm);
+  background-color: transparent;
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text-muted);
+  cursor: pointer;
+  transition: var(--lx-transition);
+}
+
+.lx-segmented__item:hover {
+  color: var(--lx-text);
+}
+
+.lx-segmented__item[aria-selected="true"],
+.lx-segmented__item[data-state="active"] {
+  background-color: var(--lx-surface);
+  color: var(--lx-text);
+  box-shadow: var(--lx-shadow-xs);
+}
+
+/* =========================================================================
+   AVATAR
+   ========================================================================= */
+
+.lx-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-bold);
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.lx-avatar--sm { width: 28px; height: 28px; font-size: var(--lx-text-2xs); }
+.lx-avatar--lg { width: 56px; height: 56px; font-size: var(--lx-text-lg); }
+
+.lx-avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.lx-avatar-group > .lx-avatar + .lx-avatar {
+  margin-left: -10px;
+}
+
+.lx-avatar-group > .lx-avatar {
+  border: 2px solid var(--lx-surface);
+}
+
+/* =========================================================================
+   TABLE
+   Borderless rows, sunken header, right-aligned numerics. No vertical rules:
+   whitespace separates columns.
+   ========================================================================= */
+
+.lx-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.lx-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--lx-text-base);
+}
+
+.lx-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--lx-space-3) var(--lx-space-4);
+  background-color: var(--lx-surface-sunken);
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lx-table thead th:first-child { border-top-left-radius: var(--lx-radius-md); border-bottom-left-radius: var(--lx-radius-md); }
+.lx-table thead th:last-child { border-top-right-radius: var(--lx-radius-md); border-bottom-right-radius: var(--lx-radius-md); }
+
+.lx-table tbody td {
+  padding: var(--lx-space-4);
+  border-bottom: 1px solid var(--lx-border-subtle);
+  color: var(--lx-text);
+  vertical-align: middle;
+}
+
+.lx-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.lx-table tbody tr {
+  transition: background-color var(--lx-duration-fast) var(--lx-ease);
+}
+
+.lx-table tbody tr:hover td {
+  background-color: var(--lx-surface-hover);
+}
+
+/* Money and counts go right, always, with tabular figures. */
+.lx-table .lx-num,
+.lx-table th.lx-num,
+.lx-table td.lx-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: var(--lx-weight-semibold);
+}
+
+.lx-table__primary {
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text);
+}
+
+.lx-table__secondary {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+}
+
+/* =========================================================================
+   APP SHELL — sidebar, topbar, page
+   ========================================================================= */
+
+.lx-shell {
+  display: grid;
+  grid-template-columns: var(--lx-sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--lx-canvas);
+}
+
+.lx-shell--collapsed {
+  grid-template-columns: var(--lx-sidebar-width-collapsed) minmax(0, 1fr);
+}
+
+@media (max-width: 1023px) {
+  .lx-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.lx-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-6);
+  padding: var(--lx-space-5) var(--lx-space-4);
+  background-color: var(--lx-surface);
+  border-right: 1px solid var(--lx-border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+@media (max-width: 1023px) {
+  .lx-sidebar { display: none; }
+}
+
+.lx-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2-5);
+  padding: var(--lx-space-1) var(--lx-space-2);
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-extrabold);
+  letter-spacing: var(--lx-tracking-tight);
+  color: var(--lx-text);
+}
+
+.lx-sidebar__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: var(--lx-radius-sm);
+  background-color: var(--lx-brand);
+  color: var(--lx-on-brand);
+}
+
+.lx-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-0-5);
+}
+
+.lx-nav__section {
+  padding: var(--lx-space-3) var(--lx-space-2) var(--lx-space-1);
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+}
+
+/* The nav pill. Active state is a tinted fill, not a left border — the fill
+   is what reads at a glance in a 264px rail. */
+.lx-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-3);
+  height: 42px;
+  padding: 0 var(--lx-space-3);
+  border-radius: var(--lx-radius-md);
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-medium);
+  color: var(--lx-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--lx-transition);
+}
+
+.lx-nav__item:hover {
+  background-color: var(--lx-surface-hover);
+  color: var(--lx-text);
+}
+
+.lx-nav__item[aria-current="page"],
+.lx-nav__item--active {
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+  font-weight: var(--lx-weight-semibold);
+}
+
+.lx-nav__icon {
+  display: inline-flex;
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.lx-nav__badge {
+  margin-left: auto;
+}
+
+.lx-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lx-space-4);
+  height: var(--lx-topbar-height);
+  padding: 0 var(--lx-page-gutter);
+  background-color: color-mix(in srgb, var(--lx-canvas) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--lx-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--lx-z-sticky);
+}
+
+.lx-topbar__title {
+  font-size: var(--lx-text-xl);
+  font-weight: var(--lx-weight-bold);
+  letter-spacing: var(--lx-tracking-tight);
+  color: var(--lx-text);
+}
+
+.lx-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2);
+}
+
+.lx-page {
+  padding: var(--lx-space-6) var(--lx-page-gutter) var(--lx-space-12);
+  max-width: var(--lx-content-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lx-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--lx-space-4);
+  margin-bottom: var(--lx-space-6);
+}
+
+/* --- Dashboard grid ------------------------------------------------------
+   12 columns at desktop, collapsing to 1 on mobile. Span helpers below cover
+   the layouts this system actually uses; anything else is a one-off. */
+
+.lx-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--lx-grid-gap);
+}
+
+.lx-col-3 { grid-column: span 3; }
+.lx-col-4 { grid-column: span 4; }
+.lx-col-5 { grid-column: span 5; }
+.lx-col-6 { grid-column: span 6; }
+.lx-col-7 { grid-column: span 7; }
+.lx-col-8 { grid-column: span 8; }
+.lx-col-9 { grid-column: span 9; }
+.lx-col-12 { grid-column: span 12; }
+
+@media (max-width: 1279px) {
+  .lx-col-3 { grid-column: span 6; }
+  .lx-col-4 { grid-column: span 6; }
+  .lx-col-5 { grid-column: span 12; }
+  .lx-col-7 { grid-column: span 12; }
+  .lx-col-8 { grid-column: span 12; }
+  .lx-col-9 { grid-column: span 12; }
+}
+
+@media (max-width: 767px) {
+  .lx-col-3,
+  .lx-col-4,
+  .lx-col-6 { grid-column: span 12; }
+}
+
+/* =========================================================================
+   CHART CHROME
+   The frame around a chart: title row, legend, and the axis/grid styling
+   applied to SVG produced by Recharts / D3 / Chart.js.
+   ========================================================================= */
+
+.lx-chart {
+  width: 100%;
+}
+
+.lx-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-4);
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-secondary);
+}
+
+.lx-chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-2);
+}
+
+.lx-chart__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+/* Recharts hooks — these keep charts on-system without prop-drilling colours
+   into every <XAxis>. */
+.lx-chart .recharts-cartesian-grid line {
+  stroke: var(--lx-chart-grid);
+}
+
+.lx-chart .recharts-cartesian-axis-line,
+.lx-chart .recharts-cartesian-axis-tick-line {
+  stroke: transparent;
+}
+
+.lx-chart .recharts-cartesian-axis-tick-value {
+  fill: var(--lx-text-muted);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+}
+
+.lx-chart__tooltip {
+  padding: var(--lx-space-2-5) var(--lx-space-3);
+  background-color: var(--lx-chart-tooltip-bg);
+  color: var(--lx-chart-tooltip-fg);
+  border-radius: var(--lx-radius-md);
+  box-shadow: var(--lx-shadow-lg);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.lx-chart__tooltip-label {
+  color: color-mix(in srgb, var(--lx-chart-tooltip-fg) 65%, transparent);
+  margin-bottom: var(--lx-space-1);
+}
+
+/* =========================================================================
+   PROGRESS / METER
+   ========================================================================= */
+
+.lx-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-surface-sunken);
+  overflow: hidden;
+}
+
+.lx-progress__bar {
+  height: 100%;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-brand);
+  transition: width var(--lx-duration-slow) var(--lx-ease);
+}
+
+.lx-progress__bar--signal { background-color: var(--lx-signal); }
+.lx-progress__bar--warning { background-color: var(--lx-warning); }
+.lx-progress__bar--danger { background-color: var(--lx-danger); }
+
+/* Stacked budget/allocation bar. */
+.lx-meter {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  gap: 2px;
+  border-radius: var(--lx-radius-full);
+  overflow: hidden;
+}
+
+.lx-meter__seg {
+  height: 100%;
+}
+
+/* =========================================================================
+   AI INSIGHT CARD
+   The product's signature element: a generated observation, visually distinct
+   from user-entered data so a reader always knows which is which.
+   ========================================================================= */
+
+.lx-insight {
+  position: relative;
+  display: flex;
+  gap: var(--lx-space-3);
+  padding: var(--lx-space-4) var(--lx-space-5);
+  border-radius: var(--lx-radius-lg);
+  background-color: var(--lx-brand-subtle);
+  border: 1px solid var(--lx-brand-muted);
+  color: var(--lx-text);
+}
+
+.lx-insight__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: var(--lx-radius-sm);
+  background-color: var(--lx-brand);
+  color: var(--lx-on-brand);
+}
+
+.lx-insight__title {
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-bold);
+  color: var(--lx-text-brand);
+  margin: 0 0 var(--lx-space-1);
+}
+
+.lx-insight__body {
+  font-size: var(--lx-text-sm);
+  line-height: var(--lx-leading-normal);
+  color: var(--lx-text-secondary);
+  margin: 0;
+}
+
+/* =========================================================================
+   MISC
+   ========================================================================= */
+
+.lx-divider {
+  height: 1px;
+  border: none;
+  background-color: var(--lx-border);
+  margin: var(--lx-space-4) 0;
+}
+
+.lx-tooltip {
+  padding: var(--lx-space-2) var(--lx-space-2-5);
+  background-color: var(--lx-surface-inverse);
+  color: var(--lx-text-inverse);
+  border-radius: var(--lx-radius-sm);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+  box-shadow: var(--lx-shadow-lg);
+}
+
+.lx-skeleton {
+  border-radius: var(--lx-radius-sm);
+  background: linear-gradient(
+      90deg,
+      var(--lx-skeleton) 0%,
+      var(--lx-skeleton-shine) 50%,
+      var(--lx-skeleton) 100%
+    )
+    0 0 / 200% 100%;
+  animation: lx-shimmer 1.4s var(--lx-ease-in-out) infinite;
+}
+
+@keyframes lx-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-skeleton { animation: none; }
+}
+
+.lx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lx-space-2);
+  padding: var(--lx-space-12) var(--lx-space-6);
+  text-align: center;
+  color: var(--lx-text-muted);
+}
+
+/* A hairline scrollbar that matches the chrome. */
+.lx-root ::-webkit-scrollbar { width: 10px; height: 10px; }
+.lx-root ::-webkit-scrollbar-track { background: transparent; }
+.lx-root ::-webkit-scrollbar-thumb {
+  background-color: var(--lx-border-strong);
+  border-radius: var(--lx-radius-full);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.lx-root ::-webkit-scrollbar-thumb:hover { background-color: var(--lx-text-muted); }
+
+
+/* ===== style-guide page chrome ===== */
+/* =========================================================================
+   STYLE-GUIDE PAGE CHROME
+   Everything below is page furniture for this document only. It resolves to
+   the same Ledgerix tokens as the system it documents — no literal colours.
+   ========================================================================= */
+
+body {
+  margin: 0;
+  background-color: var(--lx-canvas);
+  color: var(--lx-text);
+  font-family: var(--lx-font-sans);
+}
+
+.guide-topbar {
+  padding: 0 var(--lx-space-6);
+  z-index: var(--lx-z-sticky);
+}
+
+.guide-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-16);
+  padding-top: var(--lx-space-12);
+  padding-bottom: var(--lx-space-20);
+  max-width: 1180px;
+}
+
+/* --- intro ------------------------------------------------------------- */
+
+.guide-intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-4);
+  max-width: 44rem;
+}
+
+.guide-hero {
+  margin: 0;
+  font-size: clamp(2.25rem, 6vw, 3.5rem);
+  font-weight: var(--lx-weight-extrabold);
+  line-height: 1.03;
+  letter-spacing: var(--lx-tracking-tighter);
+  text-wrap: balance;
+}
+
+.guide-hero-accent { color: var(--lx-text-brand); }
+
+.guide-lede {
+  margin: 0;
+  font-size: var(--lx-text-md);
+  line-height: var(--lx-leading-relaxed);
+  color: var(--lx-text-secondary);
+  max-width: 62ch;
+}
+
+.guide-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-2);
+  margin-top: var(--lx-space-2);
+}
+
+/* --- sections ---------------------------------------------------------- */
+
+.guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-5);
+}
+
+.guide-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-2);
+  padding-bottom: var(--lx-space-3);
+  border-bottom: 1px solid var(--lx-border);
+}
+
+.guide-section-sub {
+  margin: 0;
+  font-size: var(--lx-text-base);
+  color: var(--lx-text-secondary);
+  max-width: 68ch;
+}
+
+.guide-sub {
+  margin: var(--lx-space-3) 0 0;
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-bold);
+  letter-spacing: var(--lx-tracking-snug);
+}
+
+.guide-sub-note {
+  font-weight: var(--lx-weight-medium);
+  color: var(--lx-text-muted);
+  font-size: var(--lx-text-xs);
+  margin-left: var(--lx-space-2);
+}
+
+/* --- embedded dashboard ------------------------------------------------ */
+
+.guide-demo {
+  border: 1px solid var(--lx-border);
+  border-radius: var(--lx-radius-2xl);
+  background-color: var(--lx-canvas);
+  overflow: hidden;
+  box-shadow: var(--lx-shadow-md);
+}
+
+.guide-demo-shell {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  min-height: 520px;
+}
+
+.guide-demo-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-4);
+  padding: var(--lx-space-4) var(--lx-space-3);
+  background-color: var(--lx-surface);
+  border-right: 1px solid var(--lx-border);
+}
+
+.guide-demo-sidebar .lx-nav__item {
+  height: 36px;
+  font-size: var(--lx-text-sm);
+}
+
+.guide-demo-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.guide-demo-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--lx-space-3);
+  padding: var(--lx-space-4) var(--lx-space-5);
+  border-bottom: 1px solid var(--lx-border);
+  background-color: var(--lx-surface);
+}
+
+.guide-demo-topbar .lx-topbar__title { font-size: var(--lx-text-xl); }
+
+.guide-demo-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-grid-gap);
+  padding: var(--lx-space-5);
+  min-width: 0;
+}
+
+.guide-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--lx-grid-gap);
+}
+
+.guide-kpis .lx-stat__value { font-size: var(--lx-text-3xl); }
+
+.guide-unit {
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text-muted);
+  margin-left: 2px;
+}
+
+.guide-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--lx-grid-gap);
+}
+
+.guide-span-8 { grid-column: span 8; min-width: 0; }
+.guide-span-4 { grid-column: span 4; min-width: 0; }
+
+#areaChart { width: 100%; height: 200px; display: block; }
+#barChart, #emphasisChart { width: 100%; height: auto; display: block; }
+
+.guide-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--lx-space-2);
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-medium);
+  color: var(--lx-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-client {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2-5);
+}
+
+.guide-note {
+  margin: var(--lx-space-3) 0 0;
+  font-size: var(--lx-text-xs);
+  line-height: var(--lx-leading-normal);
+  color: var(--lx-text-muted);
+}
+
+/* --- swatches ---------------------------------------------------------- */
+
+.guide-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--lx-space-3);
+}
+
+.guide-swatch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-1);
+}
+
+.guide-swatch-chip {
+  height: 56px;
+  border-radius: var(--lx-radius-md);
+  border: 1px solid var(--lx-border);
+}
+
+.guide-swatch--key .guide-swatch-chip {
+  box-shadow: 0 0 0 2px var(--lx-canvas), 0 0 0 4px var(--lx-brand);
+}
+
+.guide-swatch-step {
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-bold);
+}
+
+.guide-swatch-hex {
+  font-size: var(--lx-text-2xs);
+  color: var(--lx-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--lx-space-3);
+}
+
+.guide-role {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: var(--lx-space-2-5);
+  padding: var(--lx-space-2-5);
+  border: 1px solid var(--lx-border);
+  border-radius: var(--lx-radius-md);
+  background-color: var(--lx-surface);
+}
+
+.guide-role-chip {
+  grid-row: span 2;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--lx-radius-sm);
+  border: 1px solid var(--lx-border);
+}
+
+.guide-role-name {
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-bold);
+  font-family: var(--lx-font-mono);
+  overflow-wrap: anywhere;
+}
+
+.guide-role-use {
+  font-size: var(--lx-text-2xs);
+  color: var(--lx-text-muted);
+}
+
+/* --- callout ----------------------------------------------------------- */
+
+.guide-callout {
+  border-color: var(--lx-border-strong);
+}
+
+.guide-callout-body {
+  margin: var(--lx-space-2) 0 0;
+  font-size: var(--lx-text-base);
+  line-height: var(--lx-leading-relaxed);
+  color: var(--lx-text-secondary);
+  max-width: 68ch;
+}
+
+.guide-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-2);
+  margin-top: var(--lx-space-4);
+}
+
+.guide-proof-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--lx-space-2) var(--lx-space-3);
+  border-radius: var(--lx-radius-md);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-bold);
+  background-color: var(--lx-brand);
+}
+
+/* Deliberately shown failing — this is the illustration, not an oversight. */
+.guide-proof-bad { color: #fff; }
+.guide-proof-good { color: var(--lx-on-brand); }
+
+/* --- type specimen ----------------------------------------------------- */
+
+.guide-type {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-5);
+}
+
+.guide-type-row {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--lx-space-4);
+}
+
+.guide-type-meta {
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wide);
+  color: var(--lx-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.guide-tabular-demo {
+  display: flex;
+  gap: var(--lx-space-8);
+  margin-top: var(--lx-space-4);
+}
+
+.guide-tabular-demo > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-1);
+}
+
+.guide-prop, .guide-tab {
+  font-size: var(--lx-text-xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: 1.3;
+}
+
+.guide-prop { font-variant-numeric: proportional-nums; }
+.guide-tab { font-variant-numeric: tabular-nums; }
+
+/* --- component grid ---------------------------------------------------- */
+
+.guide-comp-grid,
+.guide-found-grid,
+.guide-use-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--lx-grid-gap);
+  align-items: start;
+}
+
+.guide-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--lx-grid-gap);
+  align-items: start;
+}
+
+.guide-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-4);
+}
+
+.guide-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-2);
+}
+
+.guide-row--between { justify-content: space-between; }
+.guide-mb { margin-bottom: var(--lx-space-2); }
+.guide-mt { margin-top: var(--lx-space-3); }
+
+/* --- ramp / radius / space / elevation --------------------------------- */
+
+.guide-ramp {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: var(--lx-space-3);
+}
+
+.guide-ramp-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-1);
+}
+
+.guide-ramp-chip {
+  height: 40px;
+  border-radius: var(--lx-radius-sm);
+}
+
+.guide-radii {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-4);
+}
+
+.guide-radii > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-1-5);
+  align-items: center;
+}
+
+.guide-radius-box {
+  width: 60px;
+  height: 60px;
+  background-color: var(--lx-surface-sunken);
+  border: 1px solid var(--lx-border-strong);
+}
+
+.guide-radius-key {
+  background-color: var(--lx-brand-subtle);
+  border-color: var(--lx-brand);
+}
+
+.guide-space {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-2);
+}
+
+.guide-space-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: var(--lx-space-3);
+}
+
+.guide-space-bar {
+  height: 12px;
+  border-radius: var(--lx-radius-xs);
+  background-color: var(--lx-brand);
+  display: block;
+}
+
+.guide-space-px {
+  font-size: var(--lx-text-2xs);
+  color: var(--lx-text-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.guide-elev {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-5);
+  padding: var(--lx-space-2) 0;
+}
+
+.guide-elev-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  border-radius: var(--lx-radius-lg);
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border-subtle);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-bold);
+  color: var(--lx-text-muted);
+}
+
+/* --- code -------------------------------------------------------------- */
+
+.guide-code {
+  margin: 0;
+  padding: var(--lx-space-4);
+  background-color: var(--lx-surface-sunken);
+  border-radius: var(--lx-radius-md);
+  overflow-x: auto;
+  font-family: var(--lx-font-mono);
+  font-size: var(--lx-text-xs);
+  line-height: 1.65;
+  color: var(--lx-text-secondary);
+}
+
+.guide-code code { font-family: inherit; }
+
+code {
+  font-family: var(--lx-font-mono);
+  font-size: 0.92em;
+  padding: 1px 5px;
+  border-radius: var(--lx-radius-xs);
+  background-color: var(--lx-surface-sunken);
+  color: var(--lx-text);
+}
+
+.guide-footer {
+  padding-top: var(--lx-space-6);
+  border-top: 1px solid var(--lx-border);
+}
+
+/* --- responsive -------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .guide-demo-shell { grid-template-columns: minmax(0, 1fr); }
+  .guide-demo-sidebar { display: none; }
+  .guide-span-8, .guide-span-4 { grid-column: span 12; }
+}
+
+@media (max-width: 640px) {
+  .guide-page { padding-left: var(--lx-space-4); padding-right: var(--lx-space-4); }
+  .guide-topbar { padding: 0 var(--lx-space-4); }
+  .guide-type-row { grid-template-columns: minmax(0, 1fr); gap: var(--lx-space-1); }
+  .guide-tabular-demo { gap: var(--lx-space-5); }
+}
+
+</style>
+
+<div class="lx-root" id="app">
+
+<!-- ===================== TOPBAR ===================== -->
+<header class="lx-topbar guide-topbar">
+  <div class="lx-sidebar__brand" style="padding:0">
+    <span class="lx-sidebar__mark" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M4 19V9m5 10V5m5 14v-7m5 7V8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+    </span>
+    Ledgerix
+  </div>
+  <div class="lx-topbar__actions">
+    <span class="lx-badge lx-badge--brand"><span class="lx-badge__dot"></span>v1.0</span>
+    <button class="lx-btn lx-btn--secondary lx-btn--sm" id="themeToggle" aria-live="polite">
+      <span id="themeLabel">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main class="lx-page guide-page">
+
+  <!-- ===================== INTRO ===================== -->
+  <section class="guide-intro">
+    <p class="lx-overline">Design system</p>
+    <h1 class="guide-hero">A finance dashboard system<br><span class="guide-hero-accent">you can build apps out of.</span></h1>
+    <p class="guide-lede">
+      Urbanist, one vibrant green against green-cast neutrals, 20px cards, and charts
+      that put a single value forward. Every screen below is rendered by the same
+      <code>tokens.css</code> and <code>components.css</code> that ship in the package —
+      this page is the system running, not a picture of it.
+    </p>
+    <div class="guide-chips">
+      <span class="lx-badge lx-badge--outline">tokens.css</span>
+      <span class="lx-badge lx-badge--outline">components.css</span>
+      <span class="lx-badge lx-badge--outline">tokens.ts</span>
+      <span class="lx-badge lx-badge--outline">tailwind.preset.ts</span>
+      <span class="lx-badge lx-badge--outline">react/</span>
+    </div>
+  </section>
+
+  <!-- ===================== 1. THE DASHBOARD ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">The dashboard</h2>
+      <p class="guide-section-sub">What the system looks like assembled. Sidebar 264, topbar 68, 12-column grid, 20px gutter.</p>
+    </div>
+
+    <div class="guide-demo">
+      <div class="guide-demo-shell">
+        <!-- sidebar -->
+        <aside class="guide-demo-sidebar">
+          <div class="lx-sidebar__brand" style="font-size:1rem;padding-bottom:var(--lx-space-2)">
+            <span class="lx-sidebar__mark" style="width:28px;height:28px" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M4 19V9m5 10V5m5 14v-7m5 7V8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+              </svg>
+            </span>
+            Ledgerix
+          </div>
+          <nav class="lx-nav">
+            <div class="lx-nav__section">Overview</div>
+            <a class="lx-nav__item" aria-current="page" href="#0"><span class="lx-nav__icon" aria-hidden="true">◧</span>Dashboard</a>
+            <a class="lx-nav__item" href="#0"><span class="lx-nav__icon" aria-hidden="true">◈</span>Revenue</a>
+            <a class="lx-nav__item" href="#0"><span class="lx-nav__icon" aria-hidden="true">◇</span>Expenses</a>
+            <div class="lx-nav__section">Ledger</div>
+            <a class="lx-nav__item" href="#0"><span class="lx-nav__icon" aria-hidden="true">▤</span>Invoices<span class="lx-nav__badge lx-badge lx-badge--danger">6</span></a>
+            <a class="lx-nav__item" href="#0"><span class="lx-nav__icon" aria-hidden="true">◎</span>Clients</a>
+            <a class="lx-nav__item" href="#0"><span class="lx-nav__icon" aria-hidden="true">⬡</span>Forecast</a>
+          </nav>
+        </aside>
+
+        <!-- content -->
+        <div class="guide-demo-main">
+          <div class="guide-demo-topbar">
+            <div>
+              <div class="lx-overline">Acme Supply Co.</div>
+              <div class="lx-topbar__title">Dashboard</div>
+            </div>
+            <div class="lx-topbar__actions">
+              <div class="lx-segmented" role="tablist" aria-label="Period">
+                <button class="lx-segmented__item" role="tab" aria-selected="false">30d</button>
+                <button class="lx-segmented__item" role="tab" aria-selected="true">12m</button>
+                <button class="lx-segmented__item" role="tab" aria-selected="false">All</button>
+              </div>
+              <button class="lx-btn lx-btn--primary lx-btn--sm">Export</button>
+            </div>
+          </div>
+
+          <div class="guide-demo-body">
+            <!-- KPI row -->
+            <div class="guide-kpis">
+              <div class="lx-stat">
+                <div class="lx-stat__head">
+                  <span class="lx-stat__label">Net revenue</span>
+                  <span class="lx-stat__icon" aria-hidden="true">$</span>
+                </div>
+                <div class="lx-stat__value">$482.1K</div>
+                <div class="lx-stat__foot">
+                  <span class="lx-delta lx-delta--up"><span aria-hidden="true">▲</span>+12.4%</span>
+                  <span>vs last year</span>
+                </div>
+              </div>
+              <div class="lx-stat">
+                <div class="lx-stat__head">
+                  <span class="lx-stat__label">Gross margin</span>
+                  <span class="lx-stat__icon" aria-hidden="true">%</span>
+                </div>
+                <div class="lx-stat__value">61.8%</div>
+                <div class="lx-stat__foot">
+                  <span class="lx-delta lx-delta--up"><span aria-hidden="true">▲</span>+2.1pt</span>
+                  <span>vs last year</span>
+                </div>
+              </div>
+              <div class="lx-stat">
+                <div class="lx-stat__head">
+                  <span class="lx-stat__label">Operating expenses</span>
+                  <span class="lx-stat__icon lx-stat__icon--neutral" aria-hidden="true">◱</span>
+                </div>
+                <div class="lx-stat__value">$186.4K</div>
+                <div class="lx-stat__foot">
+                  <!-- costs rising is bad: arrow up, colour negative -->
+                  <span class="lx-delta lx-delta--down"><span aria-hidden="true">▲</span>+8.7%</span>
+                  <span>vs last year</span>
+                </div>
+              </div>
+              <div class="lx-stat">
+                <div class="lx-stat__head">
+                  <span class="lx-stat__label">Cash runway</span>
+                  <span class="lx-stat__icon lx-stat__icon--neutral" aria-hidden="true">◷</span>
+                </div>
+                <div class="lx-stat__value">18.2<span class="guide-unit">mo</span></div>
+                <div class="lx-stat__foot">
+                  <span class="lx-delta lx-delta--down"><span aria-hidden="true">▼</span>-1.4%</span>
+                  <span>vs last quarter</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- charts row -->
+            <div class="guide-demo-grid">
+              <div class="lx-card guide-span-8">
+                <div class="lx-card__header">
+                  <div>
+                    <h3 class="lx-card__title">Revenue vs. forecast</h3>
+                    <p class="lx-card__subtitle">Trailing 12 months</p>
+                  </div>
+                  <div class="lx-chart__legend">
+                    <span class="lx-chart__legend-item"><span class="lx-chart__swatch" style="background:var(--lx-chart-1)"></span>Actual</span>
+                    <span class="lx-chart__legend-item"><span class="lx-chart__swatch" style="background:var(--lx-chart-2)"></span>Forecast</span>
+                  </div>
+                </div>
+                <div class="lx-card__body lx-chart">
+                  <svg id="areaChart" viewBox="0 0 720 240" preserveAspectRatio="none" role="img" aria-label="Revenue against forecast over twelve months, rising from 28 thousand to 52 thousand dollars."></svg>
+                  <div class="guide-axis" id="areaAxis"></div>
+                </div>
+              </div>
+
+              <div class="lx-card guide-span-4">
+                <div class="lx-card__header">
+                  <div>
+                    <h3 class="lx-card__title">Revenue by month</h3>
+                    <p class="lx-card__subtitle">August emphasised</p>
+                  </div>
+                </div>
+                <div class="lx-card__body lx-chart">
+                  <svg id="barChart" viewBox="0 0 320 200" role="img" aria-label="Monthly revenue bars with August, the current month, emphasised in green against muted grey."></svg>
+                  <p class="guide-note">“One bright, rest quiet” — the house chart pattern.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- insight -->
+            <div class="lx-insight">
+              <span class="lx-insight__icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.3l-1.8-5.7L4.5 10.8 10.2 9 12 3.5Z" fill="currentColor"/></svg>
+              </span>
+              <div>
+                <p class="lx-insight__title">Margin is outpacing revenue</p>
+                <p class="lx-insight__body">Gross margin rose 2.1 points while revenue grew 12.4%, so the gain is coming from cost of goods, not price. Supplier renegotiation in March accounts for roughly $14K of it.</p>
+              </div>
+            </div>
+
+            <!-- table -->
+            <div class="lx-card">
+              <div class="lx-card__header">
+                <div>
+                  <h3 class="lx-card__title">Outstanding invoices</h3>
+                  <p class="lx-card__subtitle">6 open · $73,410 total</p>
+                </div>
+                <button class="lx-btn lx-btn--ghost lx-btn--sm">View all</button>
+              </div>
+              <div class="lx-card__body" style="padding-top:var(--lx-space-2)">
+                <div class="lx-table-wrap">
+                  <table class="lx-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Client</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Due</th>
+                        <th scope="col" class="lx-num">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <div class="guide-client">
+                            <span class="lx-avatar lx-avatar--sm">NF</span>
+                            <span>
+                              <span class="lx-table__primary">Northfield Labs</span><br>
+                              <span class="lx-table__secondary">INV-2081</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td><span class="lx-badge lx-badge--danger"><span class="lx-badge__dot"></span>Overdue 12d</span></td>
+                        <td class="lx-table__secondary">7 Aug 2026</td>
+                        <td class="lx-num">$24,800.00</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="guide-client">
+                            <span class="lx-avatar lx-avatar--sm">HV</span>
+                            <span>
+                              <span class="lx-table__primary">Harbour Ventures</span><br>
+                              <span class="lx-table__secondary">INV-2084</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td><span class="lx-badge lx-badge--warning"><span class="lx-badge__dot"></span>Due in 3d</span></td>
+                        <td class="lx-table__secondary">22 Aug 2026</td>
+                        <td class="lx-num">$18,250.00</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="guide-client">
+                            <span class="lx-avatar lx-avatar--sm">QP</span>
+                            <span>
+                              <span class="lx-table__primary">Quarry Print Co.</span><br>
+                              <span class="lx-table__secondary">INV-2086</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td><span class="lx-badge lx-badge--success"><span class="lx-badge__dot"></span>Scheduled</span></td>
+                        <td class="lx-table__secondary">30 Aug 2026</td>
+                        <td class="lx-num">$16,900.00</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="guide-client">
+                            <span class="lx-avatar lx-avatar--sm">BD</span>
+                            <span>
+                              <span class="lx-table__primary">Bell &amp; Doyle</span><br>
+                              <span class="lx-table__secondary">INV-2089</span>
+                            </span>
+                          </div>
+                        </td>
+                        <td><span class="lx-badge"><span class="lx-badge__dot"></span>Draft</span></td>
+                        <td class="lx-table__secondary">—</td>
+                        <td class="lx-num">$13,460.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2. COLOR ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">Colour</h2>
+      <p class="guide-section-sub">One green carries action, growth and reliability. The neutrals are hue-shifted toward it so chrome and accent read as one family.</p>
+    </div>
+
+    <h3 class="guide-sub">Brand</h3>
+    <div class="guide-swatches" id="swBrand"></div>
+
+    <h3 class="guide-sub">Signal <span class="guide-sub-note">scarce highlight — always takes ink text</span></h3>
+    <div class="guide-swatches" id="swLime"></div>
+
+    <h3 class="guide-sub">Neutrals <span class="guide-sub-note">green-cast, not pure grey</span></h3>
+    <div class="guide-swatches" id="swNeutral"></div>
+
+    <h3 class="guide-sub">Semantic roles <span class="guide-sub-note">live values — these follow the active theme</span></h3>
+    <div class="guide-roles" id="swRoles"></div>
+
+    <div class="lx-card guide-callout">
+      <div class="lx-card__body">
+        <p class="lx-overline">The measurement that shaped the palette</p>
+        <p class="guide-callout-body">
+          White on <code>#00C56A</code> is <strong>2.28:1</strong> — a fail. Near-black on it is
+          <strong>8.43:1</strong>. So <code>--lx-on-brand</code> is ink in both themes, and the
+          primary button is dark text on vibrant green. The lime already followed that rule;
+          the green now does too.
+        </p>
+        <div class="guide-proof">
+          <span class="guide-proof-chip guide-proof-bad">White on green · 2.28:1</span>
+          <span class="guide-proof-chip guide-proof-good">Ink on green · 8.43:1</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3. TYPE ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">Typography</h2>
+      <p class="guide-section-sub">Urbanist, with negative tracking that grows with size — a geometric face looks loose at default spacing.</p>
+    </div>
+
+    <div class="lx-card">
+      <div class="lx-card__body guide-type">
+        <div class="guide-type-row">
+          <span class="guide-type-meta">display · 56 / 700 / −0.03em</span>
+          <span class="lx-display">$482,140</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">h1 · 30 / 700 / −0.02em</span>
+          <span class="lx-h1">Revenue overview</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">h2 · 24 / 600 / −0.02em</span>
+          <span class="lx-h2">Outstanding invoices</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">title · 18 / 600 / −0.01em</span>
+          <span class="lx-title">Cash runway</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">metric · 36 / 700 / tabular</span>
+          <span class="lx-metric">61.8%</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">body · 14 / 400</span>
+          <span class="lx-body">Gross margin rose 2.1 points while revenue grew 12.4%.</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">caption · 12 / 500</span>
+          <span class="lx-caption">Updated 4 minutes ago</span>
+        </div>
+        <div class="guide-type-row">
+          <span class="guide-type-meta">overline · 11 / 600 / +0.08em</span>
+          <span class="lx-overline">Net revenue</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lx-card guide-callout">
+      <div class="lx-card__body">
+        <p class="lx-overline">Why figures are tabular</p>
+        <p class="guide-callout-body">
+          Proportional digits shift width as values tick, so a KPI reflows and a money column
+          stops aligning. Every figure in this system sets
+          <code>font-variant-numeric: tabular-nums lining-nums</code>.
+        </p>
+        <div class="guide-tabular-demo">
+          <div><span class="guide-type-meta">proportional</span><span class="guide-prop">111,111<br>888,888</span></div>
+          <div><span class="guide-type-meta">tabular</span><span class="guide-tab">111,111<br>888,888</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4. COMPONENTS ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">Components</h2>
+      <p class="guide-section-sub">Every one is a <code>.lx-*</code> class with a matching React wrapper. All of them are live below.</p>
+    </div>
+
+    <div class="guide-comp-grid">
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Buttons</h3></div>
+        <div class="lx-card__body guide-stack">
+          <div class="guide-row">
+            <button class="lx-btn lx-btn--primary">Primary</button>
+            <button class="lx-btn lx-btn--signal">Signal</button>
+            <button class="lx-btn lx-btn--secondary">Secondary</button>
+          </div>
+          <div class="guide-row">
+            <button class="lx-btn lx-btn--ghost">Ghost</button>
+            <button class="lx-btn lx-btn--subtle">Subtle</button>
+            <button class="lx-btn lx-btn--danger">Delete</button>
+          </div>
+          <div class="guide-row">
+            <button class="lx-btn lx-btn--primary lx-btn--sm">Small</button>
+            <button class="lx-btn lx-btn--primary">Medium</button>
+            <button class="lx-btn lx-btn--primary lx-btn--lg lx-btn--pill">Large pill</button>
+            <button class="lx-btn lx-btn--secondary" disabled>Disabled</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Badges &amp; deltas</h3></div>
+        <div class="lx-card__body guide-stack">
+          <div class="guide-row">
+            <span class="lx-badge"><span class="lx-badge__dot"></span>Draft</span>
+            <span class="lx-badge lx-badge--brand">Active</span>
+            <span class="lx-badge lx-badge--success">Paid</span>
+            <span class="lx-badge lx-badge--warning">Due soon</span>
+            <span class="lx-badge lx-badge--danger">Overdue</span>
+            <span class="lx-badge lx-badge--info">Pending</span>
+            <span class="lx-badge lx-badge--signal">New</span>
+            <span class="lx-badge lx-badge--outline">Archived</span>
+          </div>
+          <div class="guide-row">
+            <span class="lx-delta lx-delta--up"><span aria-hidden="true">▲</span>+12.4%</span>
+            <span class="lx-delta lx-delta--down"><span aria-hidden="true">▼</span>-3.1%</span>
+            <span class="lx-delta lx-delta--flat"><span aria-hidden="true">—</span>0.0%</span>
+          </div>
+          <p class="guide-note">Direction is never colour alone — the arrow carries it too.</p>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Form controls</h3></div>
+        <div class="lx-card__body guide-stack">
+          <div class="lx-search">
+            <span class="lx-search__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </span>
+            <input class="lx-input" type="search" placeholder="Search invoices, clients…" aria-label="Search">
+          </div>
+          <div class="lx-field">
+            <label class="lx-label" for="f1">Invoice amount</label>
+            <input class="lx-input" id="f1" value="24,800.00" inputmode="decimal">
+            <span class="lx-hint">Excludes tax.</span>
+          </div>
+          <div class="lx-field">
+            <label class="lx-label" for="f2">Client email</label>
+            <input class="lx-input" id="f2" value="billing@northfield" aria-invalid="true">
+            <span class="lx-error">Enter a complete email address.</span>
+          </div>
+          <div class="guide-row guide-row--between">
+            <span class="lx-body">Auto-send reminders</span>
+            <button class="lx-switch" role="switch" aria-checked="true" aria-label="Auto-send reminders"></button>
+          </div>
+          <div class="lx-segmented" role="tablist" aria-label="View">
+            <button class="lx-segmented__item" role="tab" aria-selected="true">Monthly</button>
+            <button class="lx-segmented__item" role="tab" aria-selected="false">Quarterly</button>
+            <button class="lx-segmented__item" role="tab" aria-selected="false">Annual</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Progress, meters, avatars</h3></div>
+        <div class="lx-card__body guide-stack">
+          <div>
+            <div class="guide-row guide-row--between guide-mb"><span class="lx-caption">Q3 target</span><span class="lx-caption lx-numeric">78%</span></div>
+            <div class="lx-progress"><div class="lx-progress__bar" style="width:78%"></div></div>
+          </div>
+          <div>
+            <div class="guide-row guide-row--between guide-mb"><span class="lx-caption">Budget used</span><span class="lx-caption lx-numeric">94%</span></div>
+            <div class="lx-progress"><div class="lx-progress__bar lx-progress__bar--danger" style="width:94%"></div></div>
+          </div>
+          <div>
+            <div class="guide-row guide-row--between guide-mb"><span class="lx-caption">Spend allocation</span></div>
+            <div class="lx-meter">
+              <div class="lx-meter__seg" style="width:44%;background:var(--lx-chart-1)" title="Payroll"></div>
+              <div class="lx-meter__seg" style="width:24%;background:var(--lx-chart-2)" title="Software"></div>
+              <div class="lx-meter__seg" style="width:18%;background:var(--lx-chart-3)" title="Marketing"></div>
+              <div class="lx-meter__seg" style="width:14%;background:var(--lx-chart-8)" title="Other"></div>
+            </div>
+            <div class="lx-chart__legend guide-mt">
+              <span class="lx-chart__legend-item"><span class="lx-chart__swatch" style="background:var(--lx-chart-1)"></span>Payroll 44%</span>
+              <span class="lx-chart__legend-item"><span class="lx-chart__swatch" style="background:var(--lx-chart-2)"></span>Software 24%</span>
+              <span class="lx-chart__legend-item"><span class="lx-chart__swatch" style="background:var(--lx-chart-3)"></span>Marketing 18%</span>
+              <span class="lx-chart__legend-item"><span class="lx-chart__swatch" style="background:var(--lx-chart-8)"></span>Other 14%</span>
+            </div>
+          </div>
+          <div class="guide-row">
+            <span class="lx-avatar lx-avatar--sm">JR</span>
+            <span class="lx-avatar">AL</span>
+            <span class="lx-avatar lx-avatar--lg">MK</span>
+            <span class="lx-avatar-group">
+              <span class="lx-avatar lx-avatar--sm">NF</span>
+              <span class="lx-avatar lx-avatar--sm">HV</span>
+              <span class="lx-avatar lx-avatar--sm">QP</span>
+              <span class="lx-avatar lx-avatar--sm">+4</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Surfaces</h3></div>
+        <div class="lx-card__body guide-stack">
+          <div class="lx-card lx-card--inverse">
+            <div class="lx-card__body">
+              <p class="lx-overline">Total balance</p>
+              <p class="lx-metric">$1,284,900</p>
+            </div>
+          </div>
+          <div class="lx-card lx-card--brand">
+            <div class="lx-card__body">
+              <p class="lx-overline" style="color:inherit;opacity:.7">Available to draw</p>
+              <p class="lx-metric" style="color:inherit">$240,000</p>
+            </div>
+          </div>
+          <p class="guide-note">One emphasis panel per screen. Two competing is none.</p>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Loading &amp; empty</h3></div>
+        <div class="lx-card__body guide-stack">
+          <div class="lx-skeleton" style="height:12px;width:40%"></div>
+          <div class="lx-skeleton" style="height:32px;width:70%"></div>
+          <div class="lx-skeleton" style="height:12px;width:55%"></div>
+          <hr class="lx-divider">
+          <div class="lx-empty">
+            <span style="font-size:24px" aria-hidden="true">◌</span>
+            <p class="lx-body-strong">No invoices this period</p>
+            <p class="lx-caption">Invoices you create will appear here.</p>
+            <button class="lx-btn lx-btn--primary lx-btn--sm">New invoice</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5. CHARTS ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">Charts</h2>
+      <p class="guide-section-sub">Horizontal grid only, no axis lines, tabular ticks — and one emphasis rule that does most of the work.</p>
+    </div>
+
+    <div class="guide-chart-grid">
+      <div class="lx-card">
+        <div class="lx-card__header">
+          <div>
+            <h3 class="lx-card__title">One bright, rest quiet</h3>
+            <p class="lx-card__subtitle">When one value is the answer and the rest are context</p>
+          </div>
+        </div>
+        <div class="lx-card__body lx-chart">
+          <svg id="emphasisChart" viewBox="0 0 460 190" role="img" aria-label="Twelve monthly bars, one emphasised in brand green, the other eleven in muted neutral."></svg>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header">
+          <div>
+            <h3 class="lx-card__title">Categorical ramp</h3>
+            <p class="lx-card__subtitle">For genuinely peer-level series only</p>
+          </div>
+        </div>
+        <div class="lx-card__body">
+          <div class="guide-ramp" id="chartRamp"></div>
+          <p class="guide-note">
+            Light steps sit deeper than the equivalent UI colours so every mark clears 3:1 on a
+            white card — <code>green-500</code> is 2.28:1 there, and lime is 1.23:1. That is why
+            the lime signal is a fill-with-ink-text and a dark-surface accent, never a mark on white.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 6. FOUNDATIONS ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">Radius, space, elevation</h2>
+      <p class="guide-section-sub">Radius is assigned by role, not by size. Two cards with different radii is the fastest way to lose the look.</p>
+    </div>
+
+    <div class="guide-found-grid">
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Radius by role</h3></div>
+        <div class="lx-card__body">
+          <div class="guide-radii">
+            <div><div class="guide-radius-box" style="border-radius:var(--lx-radius-md)"></div><span class="guide-type-meta">control · 12</span></div>
+            <div><div class="guide-radius-box" style="border-radius:var(--lx-radius-lg)"></div><span class="guide-type-meta">tile · 16</span></div>
+            <div><div class="guide-radius-box guide-radius-key" style="border-radius:var(--lx-radius-xl)"></div><span class="guide-type-meta">card · 20</span></div>
+            <div><div class="guide-radius-box" style="border-radius:var(--lx-radius-2xl)"></div><span class="guide-type-meta">panel · 24</span></div>
+            <div><div class="guide-radius-box" style="border-radius:var(--lx-radius-full)"></div><span class="guide-type-meta">chip · pill</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Space · 4px grid</h3></div>
+        <div class="lx-card__body">
+          <div class="guide-space" id="spaceScale"></div>
+          <p class="guide-note">Card padding is 20. Grid gutter is 20–24. Staying on those two is most of what makes screens feel like one product.</p>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Elevation</h3></div>
+        <div class="lx-card__body">
+          <div class="guide-elev">
+            <div class="guide-elev-box" style="box-shadow:var(--lx-shadow-xs)">xs</div>
+            <div class="guide-elev-box" style="box-shadow:var(--lx-shadow-sm)">sm</div>
+            <div class="guide-elev-box" style="box-shadow:var(--lx-shadow-md)">md</div>
+            <div class="guide-elev-box" style="box-shadow:var(--lx-shadow-lg)">lg</div>
+          </div>
+          <p class="guide-note">Dark mode drops these to near-nothing and builds depth from a surface ladder instead — shadows on near-black are invisible. Toggle the theme and watch the cards separate by lightness, not shade.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 7. USE IT ===================== -->
+  <section class="guide-section">
+    <div class="guide-section-head">
+      <h2 class="lx-h2">Use it</h2>
+      <p class="guide-section-sub">Pick a layer. Plain CSS is a complete answer; so is Tailwind with no classes from this file at all.</p>
+    </div>
+
+    <div class="guide-use-grid">
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Any project</h3></div>
+        <div class="lx-card__body">
+<pre class="guide-code"><code>&lt;link rel="stylesheet" href="ledgerix/tokens.css"&gt;
+&lt;link rel="stylesheet" href="ledgerix/components.css"&gt;
+
+&lt;body class="lx-root"&gt;
+  &lt;button class="lx-btn lx-btn--primary"&gt;Export&lt;/button&gt;
+&lt;/body&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">React</h3></div>
+        <div class="lx-card__body">
+<pre class="guide-code"><code>import { StatCard } from "./ledgerix/react";
+import { formatCurrency } from "./ledgerix/tokens";
+
+&lt;StatCard
+  label="Net revenue"
+  value={formatCurrency(482140, { compact: true })}
+  delta={0.124}
+  comparison="vs last month"
+/&gt;</code></pre>
+        </div>
+      </div>
+
+      <div class="lx-card">
+        <div class="lx-card__header"><h3 class="lx-card__title">Tailwind</h3></div>
+        <div class="lx-card__body">
+<pre class="guide-code"><code>import ledgerix from "./ledgerix/tailwind.preset";
+export default { presets: [ledgerix], content: [...] };
+
+// then, with no dark: variants needed
+&lt;div class="bg-surface border border-line
+            rounded-card p-5 text-ink"&gt;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="lx-card guide-callout">
+      <div class="lx-card__body">
+        <p class="lx-overline">Provenance</p>
+        <p class="guide-callout-body">
+          Behance, Dribbble and rondesignlab.com are blocked at the network layer in the
+          environment this was built in, so the source renders could not be viewed. The system is
+          reconstructed from RonDesignLab's own published rationale for
+          <strong>Ledgerix CRM — FMS</strong> — the Urbanist typeface, and a vibrant green for
+          action, growth and reliability against neutral black, white and grey — then engineered
+          out into a complete, internally consistent system. Faithful to the stated design
+          language, not pixel-matched to the renders. The README's <em>Tuning to the source</em>
+          section closes that gap from a screenshot in about five edits, all of them in
+          <code>tokens.css</code>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="guide-footer">
+    <p class="lx-caption">
+      Design language derived from Ledgerix CRM by RonDesignLab · Urbanist by Corey Hu (SIL OFL 1.1)
+    </p>
+  </footer>
+</main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+
+  /* ---------- theme toggle -------------------------------------------- */
+  var toggle = document.getElementById("themeToggle");
+  var label = document.getElementById("themeLabel");
+
+  function currentIsDark() {
+    var stamped = root.getAttribute("data-theme");
+    if (stamped === "dark") return true;
+    if (stamped === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  function syncLabel() {
+    // The button offers the theme you'd switch TO.
+    label.textContent = currentIsDark() ? "Light" : "Dark";
+  }
+
+  toggle.addEventListener("click", function () {
+    root.setAttribute("data-theme", currentIsDark() ? "light" : "dark");
+    syncLabel();
+    render();
+  });
+
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+    if (!root.getAttribute("data-theme")) { syncLabel(); render(); }
+  });
+
+  /* ---------- token helpers ------------------------------------------- */
+  function token(name) {
+    return getComputedStyle(root).getPropertyValue("--lx-" + name).trim();
+  }
+
+  function el(tag, attrs, kids) {
+    var n = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    (kids || []).forEach(function (c) { n.appendChild(c); });
+    return n;
+  }
+
+  /* ---------- data ----------------------------------------------------- */
+  var MONTHS = ["Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug"];
+  var ACTUAL   = [28.4, 30.1, 29.2, 33.8, 31.6, 35.2, 38.9, 37.4, 41.8, 44.2, 47.6, 52.1];
+  var FORECAST = [29.0, 30.8, 31.5, 32.4, 33.2, 34.4, 35.9, 37.2, 38.8, 40.5, 42.4, 44.6];
+
+  /* ---------- area chart ------------------------------------------------ */
+  function renderArea() {
+    var svg = document.getElementById("areaChart");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var W = 720, H = 240, padT = 16, padB = 8;
+    var max = 58, min = 22;
+    var x = function (i) { return (i / (ACTUAL.length - 1)) * W; };
+    var y = function (v) { return padT + (1 - (v - min) / (max - min)) * (H - padT - padB); };
+
+    // grid
+    var grid = el("g", {});
+    [25, 35, 45, 55].forEach(function (v) {
+      grid.appendChild(el("line", {
+        x1: 0, x2: W, y1: y(v), y2: y(v),
+        stroke: token("chart-grid"), "stroke-width": 1
+      }));
+    });
+    svg.appendChild(grid);
+
+    function linePath(series) {
+      return series.map(function (v, i) {
+        return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1);
+      }).join(" ");
+    }
+
+    // gradient fill under actual
+    var defs = el("defs", {});
+    var lg = el("linearGradient", { id: "lxArea", x1: "0", y1: "0", x2: "0", y2: "1" });
+    lg.appendChild(el("stop", { offset: "0%", "stop-color": token("chart-1"), "stop-opacity": "0.28" }));
+    lg.appendChild(el("stop", { offset: "100%", "stop-color": token("chart-1"), "stop-opacity": "0" }));
+    defs.appendChild(lg);
+    svg.appendChild(defs);
+
+    svg.appendChild(el("path", {
+      d: linePath(ACTUAL) + " L" + W + " " + H + " L0 " + H + " Z",
+      fill: "url(#lxArea)"
+    }));
+
+    // forecast — dashed, quieter, sits behind
+    svg.appendChild(el("path", {
+      d: linePath(FORECAST), fill: "none", stroke: token("chart-2"),
+      "stroke-width": 2, "stroke-dasharray": "5 5", "stroke-linecap": "round", opacity: "0.85"
+    }));
+
+    // actual
+    svg.appendChild(el("path", {
+      d: linePath(ACTUAL), fill: "none", stroke: token("chart-1"),
+      "stroke-width": 2.5, "stroke-linecap": "round", "stroke-linejoin": "round"
+    }));
+
+    // emphasised endpoint
+    var last = ACTUAL.length - 1;
+    svg.appendChild(el("circle", {
+      cx: x(last), cy: y(ACTUAL[last]), r: 6,
+      fill: token("chart-1"), stroke: token("surface"), "stroke-width": 3
+    }));
+  }
+
+  function renderAreaAxis() {
+    var wrap = document.getElementById("areaAxis");
+    wrap.innerHTML = MONTHS.map(function (m) { return "<span>" + m + "</span>"; }).join("");
+  }
+
+  /* ---------- small bar chart (demo card) ------------------------------- */
+  function renderBars() {
+    var svg = document.getElementById("barChart");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var W = 320, H = 200, n = 6, gap = 10;
+    var vals = ACTUAL.slice(-6);
+    var labels = MONTHS.slice(-6);
+    var bw = (W - gap * (n - 1)) / n;
+    var max = 58;
+
+    vals.forEach(function (v, i) {
+      var h = (v / max) * (H - 28);
+      var isLast = i === n - 1;
+      svg.appendChild(el("rect", {
+        x: i * (bw + gap), y: H - 22 - h, width: bw, height: h,
+        rx: 6, fill: isLast ? token("chart-1") : token("chart-neutral")
+      }));
+      var t = el("text", {
+        x: i * (bw + gap) + bw / 2, y: H - 6,
+        "text-anchor": "middle", fill: token("text-muted"),
+        "font-size": "11", "font-weight": "600", "font-family": token("font-sans")
+      });
+      t.textContent = labels[i];
+      svg.appendChild(t);
+    });
+  }
+
+  /* ---------- emphasis chart (charts section) --------------------------- */
+  function renderEmphasis() {
+    var svg = document.getElementById("emphasisChart");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    var W = 460, H = 190, n = 12, gap = 7;
+    var bw = (W - gap * (n - 1)) / n;
+    var max = 58;
+    var emphasis = 11;
+
+    ACTUAL.forEach(function (v, i) {
+      var h = (v / max) * (H - 30);
+      svg.appendChild(el("rect", {
+        x: i * (bw + gap), y: H - 24 - h, width: bw, height: h,
+        rx: 5, fill: i === emphasis ? token("chart-1") : token("chart-neutral")
+      }));
+      var t = el("text", {
+        x: i * (bw + gap) + bw / 2, y: H - 8,
+        "text-anchor": "middle",
+        fill: i === emphasis ? token("text") : token("text-muted"),
+        "font-size": "10",
+        "font-weight": i === emphasis ? "700" : "500",
+        "font-family": token("font-sans")
+      });
+      t.textContent = MONTHS[i];
+      svg.appendChild(t);
+    });
+  }
+
+  /* ---------- swatches --------------------------------------------------- */
+  var BRAND = [
+    ["50", "#e8fbf0"], ["100", "#c6f5dc"], ["200", "#92ecbe"], ["300", "#52de9a"],
+    ["400", "#17cd78"], ["500", "#00c56a"], ["600", "#00a257"], ["700", "#007f44"],
+    ["800", "#0a5c34"], ["900", "#0b3d25"]
+  ];
+  var LIME = [
+    ["300", "#dcfb7f"], ["400", "#cef95a"], ["500", "#c8f94e"],
+    ["600", "#b0e02f"], ["700", "#8bb520"], ["800", "#6f9212"]
+  ];
+  var NEUTRAL = [
+    ["0", "#ffffff"], ["50", "#f5f7f3"], ["100", "#eef1ea"], ["200", "#e2e6de"],
+    ["300", "#cdd3c8"], ["400", "#a8b0a3"], ["500", "#8a9186"], ["600", "#6b7268"],
+    ["700", "#4d5449"], ["800", "#333a30"], ["900", "#1a1d18"], ["950", "#0d0f0c"],
+    ["975", "#0a0b0a"]
+  ];
+
+  function fillSwatches(id, list, key) {
+    var host = document.getElementById(id);
+    host.innerHTML = list.map(function (s) {
+      var isKey = s[0] === key;
+      return '<div class="guide-swatch' + (isKey ? " guide-swatch--key" : "") + '">' +
+             '<div class="guide-swatch-chip" style="background:' + s[1] + '"></div>' +
+             '<span class="guide-swatch-step">' + s[0] + '</span>' +
+             '<span class="guide-swatch-hex">' + s[1].toUpperCase() + '</span>' +
+             '</div>';
+    }).join("");
+  }
+
+  var ROLES = [
+    ["canvas", "page ground"], ["surface", "card"], ["surface-sunken", "well"],
+    ["text", "primary text"], ["text-secondary", "secondary"], ["text-muted", "meta"],
+    ["border", "hairline"], ["border-control", "input edge"],
+    ["brand", "primary fill"], ["signal", "highlight"],
+    ["positive", "value up"], ["negative", "value down"],
+    ["warning", "caution"], ["info", "neutral note"]
+  ];
+
+  function fillRoles() {
+    var host = document.getElementById("swRoles");
+    host.innerHTML = ROLES.map(function (r) {
+      return '<div class="guide-role">' +
+             '<span class="guide-role-chip" style="background:var(--lx-' + r[0] + ')"></span>' +
+             '<span class="guide-role-name">--lx-' + r[0] + '</span>' +
+             '<span class="guide-role-use">' + r[1] + '</span>' +
+             '</div>';
+    }).join("");
+  }
+
+  function fillRamp() {
+    var host = document.getElementById("chartRamp");
+    var out = "";
+    for (var i = 1; i <= 8; i++) {
+      out += '<div class="guide-ramp-item">' +
+             '<span class="guide-ramp-chip" style="background:var(--lx-chart-' + i + ')"></span>' +
+             '<span class="guide-type-meta">chart-' + i + '</span>' +
+             '</div>';
+    }
+    host.innerHTML = out;
+  }
+
+  function fillSpace() {
+    var host = document.getElementById("spaceScale");
+    var steps = [["1", 4], ["2", 8], ["3", 12], ["4", 16], ["5", 20], ["6", 24], ["8", 32], ["10", 40], ["12", 48]];
+    host.innerHTML = steps.map(function (s) {
+      return '<div class="guide-space-row">' +
+             '<span class="guide-type-meta">space-' + s[0] + '</span>' +
+             '<span class="guide-space-bar" style="width:' + s[1] + 'px"></span>' +
+             '<span class="guide-space-px">' + s[1] + '</span>' +
+             '</div>';
+    }).join("");
+  }
+
+  /* ---------- render ---------------------------------------------------- */
+  function render() {
+    renderArea();
+    renderBars();
+    renderEmphasis();
+  }
+
+  fillSwatches("swBrand", BRAND, "500");
+  fillSwatches("swLime", LIME, "500");
+  fillSwatches("swNeutral", NEUTRAL, null);
+  fillRoles();
+  fillRamp();
+  fillSpace();
+  renderAreaAxis();
+  syncLabel();
+  render();
+})();
+</script>

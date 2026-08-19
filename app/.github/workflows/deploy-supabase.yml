@@ -1,0 +1,321 @@
+name: Deploy Supabase
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-supabase-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verify workflow commit is the live main revision
+        env:
+          WORKFLOW_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          live_main_sha="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)"
+          if [ -z "$live_main_sha" ] || [ "$live_main_sha" != "$WORKFLOW_SHA" ]; then
+            echo "::error::Refusing to deploy a workflow commit that is not the live main revision."
+            exit 1
+          fi
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: v2.x
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf # v2.1.1
+        with:
+          version: 2.84.2
+
+      - name: Revalidate exact commit before production mutation
+        run: |
+          npm run security:check-auth-config
+          npm run edge:check-jwt-config
+          npm run verify:migrations
+          npm run edge:verify
+
+      - name: Confirm main did not advance during validation
+        env:
+          WORKFLOW_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          live_main_sha="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)"
+          if [ -z "$live_main_sha" ] || [ "$live_main_sha" != "$WORKFLOW_SHA" ]; then
+            echo "::error::Main advanced during validation; a newer workflow run must deploy instead."
+            exit 1
+          fi
+
+      - name: Enforce hosted Auth security baseline
+        env:
+          SESSION_IDLE_TIMEOUT_SECONDS: ${{ vars.PRODUCTION_SESSION_IDLE_TIMEOUT_SECONDS }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          case "${SESSION_IDLE_TIMEOUT_SECONDS:-}" in
+            ''|*[!0-9]*)
+              echo "::error::PRODUCTION_SESSION_IDLE_TIMEOUT_SECONDS must be a whole number between 300 and 3600."
+              exit 1
+              ;;
+          esac
+          if [ "$SESSION_IDLE_TIMEOUT_SECONDS" -lt 300 ] || [ "$SESSION_IDLE_TIMEOUT_SECONDS" -gt 3600 ]; then
+            echo "::error::PRODUCTION_SESSION_IDLE_TIMEOUT_SECONDS must be between 300 and 3600."
+            exit 1
+          fi
+          auth_config="$RUNNER_TEMP/auth-config.json"
+          auth_payload="$RUNNER_TEMP/auth-config-payload.json"
+          jq --null-input --argjson inactivity "$SESSION_IDLE_TIMEOUT_SECONDS" \
+            '{disable_signup:true,password_hibp_enabled:true,sessions_inactivity_timeout:$inactivity}' \
+            >"$auth_payload"
+          curl --fail-with-body --silent --show-error --request PATCH \
+            "https://api.supabase.com/v1/projects/${PROJECT_ID}/config/auth" \
+            --header "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data @"$auth_payload" \
+            --output "$auth_config"
+          jq '{disable_signup, password_hibp_enabled, sessions_inactivity_timeout}' "$auth_config"
+          if ! jq -e --argjson inactivity "$SESSION_IDLE_TIMEOUT_SECONDS" \
+            '.disable_signup == true and .password_hibp_enabled == true and .sessions_inactivity_timeout == $inactivity' \
+            "$auth_config" >/dev/null; then
+            echo "::error::Hosted Auth security baseline was not applied. Leaked-password and session controls require Supabase Pro or above."
+            exit 1
+          fi
+
+      - name: Link Supabase Project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: supabase link --project-ref "$PROJECT_ID"
+
+      - name: Verify clinical AI provider configuration
+        env:
+          CLINICAL_AI_DISABLED: ${{ vars.CLINICAL_AI_DISABLED }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          # Clinical AI is key-based: it runs whenever at least one provider
+          # credential exists, resolving Gemini-first with automatic failover.
+          # CLINICAL_AI_DISABLED=true is the operational kill switch.
+          disabled_flag="false"
+          if [ "${CLINICAL_AI_DISABLED:-}" = "true" ]; then
+            disabled_flag="true"
+          fi
+          supabase secrets set "CLINICAL_AI_DISABLED=${disabled_flag}" --project-ref "$PROJECT_ID"
+
+          secret_names="$(supabase secrets list --project-ref "$PROJECT_ID" --output json)"
+          configured=()
+          for key in OPENAI_API_KEY GEMINI_API_KEY GROQ_API_KEY; do
+            if jq -e --arg name "$key" 'map(.name) | index($name) != null' <<<"$secret_names" >/dev/null; then
+              configured+=("$key")
+            fi
+          done
+
+          if [ "$disabled_flag" = "true" ]; then
+            echo "::notice::Clinical AI is explicitly disabled via CLINICAL_AI_DISABLED; AI endpoints return 503 until it is re-enabled."
+            exit 0
+          fi
+
+          if [ "${#configured[@]}" -eq 0 ]; then
+            echo "::warning::No clinical AI provider key (GEMINI_API_KEY, OPENAI_API_KEY, or GROQ_API_KEY) is configured; clinical AI endpoints will report 'not configured' until one is added."
+            exit 0
+          fi
+
+          echo "::notice::Clinical AI enabled with provider keys: ${configured[*]} (Gemini-first resolution with automatic failover)."
+
+      - name: Configure protected health monitor
+        env:
+          HEALTHCHECK_TOKEN: ${{ secrets.HEALTHCHECK_TOKEN }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          if [ "${#HEALTHCHECK_TOKEN}" -lt 32 ]; then
+            echo "::error::HEALTHCHECK_TOKEN must be configured as a random value of at least 32 characters."
+            exit 1
+          fi
+          supabase secrets set \
+            "HEALTHCHECK_TOKEN=${HEALTHCHECK_TOKEN}" \
+            --project-ref "$PROJECT_ID"
+
+      - name: Wait for database health
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase db ping
+
+      - name: Push Database Migrations
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase db push
+
+      - name: Deploy Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase functions deploy
+
+      - name: Smoke test — first-party telemetry ingest
+        env:
+          ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          payload="$RUNNER_TEMP/telemetry-smoke.json"
+          response="$RUNNER_TEMP/telemetry-smoke-response.json"
+          jq --null-input \
+            --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+            --arg session "deploy_${GITHUB_RUN_ID}" \
+            '[{
+              app: "round-robin-notes",
+              context: {},
+              env: "production",
+              level: "info",
+              message: "monitor.ingest_probe",
+              sessionId: $session,
+              timestamp: $timestamp
+            }]' >"$payload"
+          curl --fail --silent --show-error \
+            --request POST "https://${PROJECT_ID}.supabase.co/functions/v1/telemetry" \
+            --header "Authorization: Bearer $ANON_KEY" \
+            --header "apikey: $ANON_KEY" \
+            --header "Content-Type: application/json" \
+            --data @"$payload" \
+            --output "$response"
+          jq -e '.accepted == 1' "$response" >/dev/null
+
+      - name: Smoke test — healthcheck edge function
+        env:
+          ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          HEALTHCHECK_TOKEN: ${{ secrets.HEALTHCHECK_TOKEN }}
+          PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ANON_KEY:-}" ]; then
+            echo "::error::SUPABASE_ANON_KEY is not configured. Add it in Repo Settings → Secrets (same value as the Supabase anon/public API key). See docs/deployment.md."
+            exit 1
+          fi
+          if [ "${#HEALTHCHECK_TOKEN}" -lt 32 ]; then
+            echo "::error::HEALTHCHECK_TOKEN is missing or too short. See docs/deployment.md."
+            exit 1
+          fi
+          BASE="https://${PROJECT_ID}.supabase.co"
+          echo "GET $BASE/functions/v1/healthcheck"
+          code=$(curl -sS -o "$RUNNER_TEMP/hc.json" -w "%{http_code}" \
+            "$BASE/functions/v1/healthcheck" \
+            -H "Authorization: Bearer $ANON_KEY" \
+            -H "apikey: $ANON_KEY" \
+            -H "x-healthcheck-token: $HEALTHCHECK_TOKEN")
+          echo "HTTP status: $code"
+          cat "$RUNNER_TEMP/hc.json"
+          echo
+          if [ "$code" != "200" ]; then
+            echo "::error::healthcheck failed with HTTP $code"
+            exit 1
+          fi
+          if ! grep -q '"status"[[:space:]]*:[[:space:]]*"healthy"' "$RUNNER_TEMP/hc.json"; then
+            echo "::error::healthcheck body missing status healthy"
+            exit 1
+          fi
+          echo "Smoke test passed."
+
+      - name: Confirm main still matches before frontend release
+        env:
+          WORKFLOW_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          live_main_sha="$(git ls-remote "https://github.com/${GITHUB_REPOSITORY}.git" refs/heads/main | cut -f1)"
+          if [ -z "$live_main_sha" ] || [ "$live_main_sha" != "$WORKFLOW_SHA" ]; then
+            echo "::error::Main advanced during backend deployment; leave the compatible backend in place and let the newer release deploy its frontend."
+            exit 1
+          fi
+
+      - name: Deploy and verify the exact frontend revision
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+          PRODUCTION_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
+          SESSION_IDLE_TIMEOUT_SECONDS: ${{ vars.PRODUCTION_SESSION_IDLE_TIMEOUT_SECONDS }}
+          WORKFLOW_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VERCEL_DEPLOY_HOOK_URL:-}" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK_URL is required because automatic main-branch Vercel deployment is disabled."
+            exit 1
+          fi
+          if [ -z "${PRODUCTION_APP_URL:-}" ]; then
+            echo "::error::Set repository variable PRODUCTION_APP_URL to the canonical production origin."
+            exit 1
+          fi
+
+          hook_response="$RUNNER_TEMP/vercel-hook-response.json"
+          curl --fail-with-body --silent --show-error --request POST \
+            "$VERCEL_DEPLOY_HOOK_URL" --output "$hook_response"
+
+          package_version="$(node --input-type=module -e "import pkg from './package.json' with { type: 'json' }; process.stdout.write(pkg.version)")"
+          expected_version="${package_version}+${WORKFLOW_SHA:0:7}"
+          production_origin="${PRODUCTION_APP_URL%/}"
+
+          for attempt in $(seq 1 40); do
+            probe_url="${production_origin}/?release_probe=${WORKFLOW_SHA}&attempt=${attempt}"
+            if html="$(curl --fail --silent --show-error --max-time 20 \
+              --header 'Cache-Control: no-cache' "$probe_url")"; then
+              if grep --fixed-strings --quiet \
+                "<meta name=\"app-version\" content=\"${expected_version}\"" <<<"$html" \
+                && grep --fixed-strings --quiet \
+                  "<link rel=\"canonical\" href=\"${production_origin}/\"" <<<"$html" \
+                && grep --fixed-strings --quiet \
+                  "<meta name=\"session-idle-timeout\" content=\"${SESSION_IDLE_TIMEOUT_SECONDS}\"" <<<"$html"; then
+                llms_url="${production_origin}/llms.txt?release_probe=${WORKFLOW_SHA}&attempt=${attempt}"
+                if llms="$(curl --fail --silent --show-error --max-time 20 \
+                  --header 'Cache-Control: no-cache' "$llms_url")" \
+                  && grep --fixed-strings --quiet "# Rolling Rounds" <<<"$llms" \
+                  && grep --fixed-strings --quiet \
+                    "[Product overview](${production_origin}/)" <<<"$llms" \
+                  && grep --fixed-strings --quiet \
+                    "[Security and deployment guidance](${production_origin}/security)" <<<"$llms" \
+                  && ! grep --fixed-strings --quiet "/auth" <<<"$llms" \
+                  && ! grep --fixed-strings --quiet "/fhir/" <<<"$llms"; then
+                  echo "Verified production frontend release ${expected_version}, session policy, canonical origin, and public machine-readable index."
+                  exit 0
+                fi
+              fi
+            fi
+            if [ $((attempt % 5)) -eq 0 ]; then
+              echo "Waiting for production frontend ${expected_version} (attempt ${attempt}/40)."
+            fi
+            sleep 15
+          done
+
+          echo "::error::Vercel did not publish the expected frontend revision ${expected_version} within 10 minutes."
+          exit 1
+        
+      # Optional: To enforce strict type-safe databases locally vs prod
+      # - name: Verify Database Types
+      #   run: |
+      #     supabase gen types typescript --linked > types.ts
+      #     git diff --exit-code types.ts || echo "Remote types do not match local definitions. Run `supabase gen types typescript --local` and commit changes." && exit 1

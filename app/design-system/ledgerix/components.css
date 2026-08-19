@@ -1,0 +1,1225 @@
+/* =========================================================================
+   LEDGERIX DESIGN SYSTEM — COMPONENTS
+   -------------------------------------------------------------------------
+   Framework-free component classes. Every declaration resolves to a token
+   from tokens.css — there are no literal colours, sizes or durations below.
+
+   Import order matters:
+       @import "./tokens.css";
+       @import "./components.css";
+
+   Naming: .lx-<block>, .lx-<block>__<element>, .lx-<block>--<modifier>.
+   ========================================================================= */
+
+/* =========================================================================
+   RESET-ISH
+   Scoped to the system so it can coexist with an existing app's styles.
+   ========================================================================= */
+
+.lx-root *,
+.lx-root *::before,
+.lx-root *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================================
+   TYPOGRAPHY UTILITIES
+   Semantic roles, not sizes: use .lx-metric for a KPI figure rather than
+   remembering that KPI figures happen to be 36px.
+   ========================================================================= */
+
+.lx-display {
+  font-size: var(--lx-text-6xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-none);
+  letter-spacing: var(--lx-tracking-tighter);
+}
+
+.lx-display-sm {
+  font-size: var(--lx-text-5xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-tight);
+  letter-spacing: var(--lx-tracking-tighter);
+}
+
+.lx-h1 {
+  font-size: var(--lx-text-3xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-tight);
+  letter-spacing: var(--lx-tracking-tight);
+}
+
+.lx-h2 {
+  font-size: var(--lx-text-2xl);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-tight);
+}
+
+.lx-h3 {
+  font-size: var(--lx-text-xl);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-snug);
+}
+
+.lx-title {
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-snug);
+}
+
+.lx-body {
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-regular);
+  line-height: var(--lx-leading-normal);
+}
+
+.lx-body-strong {
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-normal);
+}
+
+.lx-caption {
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+  line-height: var(--lx-leading-snug);
+  color: var(--lx-text-secondary);
+}
+
+/* The eyebrow above a KPI figure or a section. Wide tracking is load-bearing
+   here — without it, 11px uppercase turns into a smudge. */
+.lx-overline {
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+}
+
+/* The big money number. Tabular figures stop it reflowing as values tick. */
+.lx-metric {
+  font-family: var(--lx-font-numeric);
+  font-size: var(--lx-text-4xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-none);
+  letter-spacing: var(--lx-tracking-tight);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--lx-text);
+}
+
+.lx-metric--sm {
+  font-size: var(--lx-text-2xl);
+}
+
+.lx-metric--lg {
+  font-size: var(--lx-text-5xl);
+}
+
+.lx-text-secondary { color: var(--lx-text-secondary); }
+.lx-text-muted { color: var(--lx-text-muted); }
+.lx-text-brand { color: var(--lx-text-brand); }
+.lx-text-positive { color: var(--lx-positive); }
+.lx-text-negative { color: var(--lx-negative); }
+.lx-numeric { font-variant-numeric: tabular-nums lining-nums; }
+
+/* =========================================================================
+   FOCUS
+   One ring, everywhere, and only for keyboard users.
+   ========================================================================= */
+
+.lx-root :focus-visible {
+  outline: 2px solid var(--lx-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--lx-radius-xs);
+}
+
+/* =========================================================================
+   SURFACE / CARD
+   The workhorse. 20px radius + hairline border + near-flat shadow.
+   ========================================================================= */
+
+.lx-card {
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border);
+  border-radius: var(--lx-radius-xl);
+  box-shadow: var(--lx-shadow-xs);
+  transition: var(--lx-transition);
+}
+
+.lx-card--interactive {
+  cursor: pointer;
+}
+
+.lx-card--interactive:hover {
+  border-color: var(--lx-border-strong);
+  box-shadow: var(--lx-shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Full-bleed emphasis card: the one dark panel on a light dashboard (or the
+   one green panel). Used for the primary balance / hero KPI. */
+.lx-card--inverse {
+  background-color: var(--lx-surface-inverse);
+  border-color: transparent;
+  color: var(--lx-text-inverse);
+}
+
+.lx-card--inverse .lx-metric,
+.lx-card--inverse .lx-card__title {
+  color: var(--lx-text-inverse);
+}
+
+.lx-card--inverse .lx-overline,
+.lx-card--inverse .lx-caption {
+  color: color-mix(in srgb, var(--lx-text-inverse) 62%, transparent);
+}
+
+.lx-card--brand {
+  background-color: var(--lx-brand);
+  border-color: transparent;
+  color: var(--lx-on-brand);
+}
+
+.lx-card--flat {
+  box-shadow: none;
+}
+
+.lx-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--lx-space-4);
+  padding: var(--lx-space-5) var(--lx-space-5) 0;
+}
+
+.lx-card__title {
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-snug);
+  line-height: var(--lx-leading-snug);
+  color: var(--lx-text);
+  margin: 0;
+}
+
+.lx-card__subtitle {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+  margin: var(--lx-space-1) 0 0;
+}
+
+.lx-card__body {
+  padding: var(--lx-space-5);
+}
+
+.lx-card__footer {
+  padding: var(--lx-space-4) var(--lx-space-5);
+  border-top: 1px solid var(--lx-border-subtle);
+}
+
+/* Header + body both padded would double-pad; collapse the gap. */
+.lx-card__header + .lx-card__body {
+  padding-top: var(--lx-space-4);
+}
+
+/* =========================================================================
+   STAT CARD  (KPI tile)
+   The single most repeated object in the product. Structure is fixed:
+     overline label → metric figure → delta chip + comparison caption.
+   ========================================================================= */
+
+.lx-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-3);
+  padding: var(--lx-space-5);
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border);
+  border-radius: var(--lx-radius-xl);
+  box-shadow: var(--lx-shadow-xs);
+  transition: var(--lx-transition);
+  overflow: hidden;
+}
+
+.lx-stat:hover {
+  border-color: var(--lx-border-strong);
+  box-shadow: var(--lx-shadow-sm);
+}
+
+.lx-stat__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lx-space-3);
+}
+
+.lx-stat__label {
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+}
+
+/* The tinted square that holds the tile's icon. */
+.lx-stat__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: var(--lx-radius-md);
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+}
+
+.lx-stat__icon--neutral {
+  background-color: var(--lx-surface-sunken);
+  color: var(--lx-text-secondary);
+}
+
+.lx-stat__value {
+  font-size: var(--lx-text-4xl);
+  font-weight: var(--lx-weight-bold);
+  line-height: var(--lx-leading-none);
+  letter-spacing: var(--lx-tracking-tight);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--lx-text);
+}
+
+.lx-stat__foot {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2);
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+}
+
+/* Inline sparkline slot — sits flush to the tile's bottom edge. */
+.lx-stat__spark {
+  margin: var(--lx-space-1) calc(var(--lx-space-5) * -1) calc(var(--lx-space-5) * -1);
+  height: 56px;
+}
+
+/* =========================================================================
+   DELTA CHIP
+   The ▲ +12.4% pill. Direction tokens, not success/error tokens.
+   ========================================================================= */
+
+.lx-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-1);
+  padding: var(--lx-space-0-5) var(--lx-space-2);
+  border-radius: var(--lx-radius-full);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-semibold);
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: var(--lx-leading-snug);
+  white-space: nowrap;
+}
+
+.lx-delta--up {
+  color: var(--lx-positive);
+  background-color: var(--lx-positive-bg);
+}
+
+.lx-delta--down {
+  color: var(--lx-negative);
+  background-color: var(--lx-negative-bg);
+}
+
+.lx-delta--flat {
+  color: var(--lx-neutral-fg);
+  background-color: var(--lx-neutral-bg);
+}
+
+/* =========================================================================
+   BUTTONS
+   Sizes: sm 32 / md 40 / lg 48. Radius 12 (--lx-radius-md) across the board;
+   .lx-btn--pill for the marketing/hero variant.
+   ========================================================================= */
+
+.lx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lx-space-2);
+  height: 40px;
+  padding: 0 var(--lx-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--lx-radius-md);
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-semibold);
+  line-height: 1;
+  letter-spacing: var(--lx-tracking-normal);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  transition: var(--lx-transition);
+}
+
+.lx-btn:disabled,
+.lx-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.lx-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Primary — solid green. One per view; two primaries means neither is. */
+.lx-btn--primary {
+  background-color: var(--lx-brand);
+  color: var(--lx-on-brand);
+  box-shadow: var(--lx-shadow-brand);
+}
+
+.lx-btn--primary:hover:not(:disabled) {
+  background-color: var(--lx-brand-hover);
+}
+
+.lx-btn--primary:active:not(:disabled) {
+  background-color: var(--lx-brand-active);
+}
+
+/* Signal — the lime hero CTA. Ink text, never white. */
+.lx-btn--signal {
+  background-color: var(--lx-signal);
+  color: var(--lx-on-signal);
+}
+
+.lx-btn--signal:hover:not(:disabled) {
+  background-color: var(--lx-signal-hover);
+}
+
+/* Secondary — bordered, the default for most actions. */
+.lx-btn--secondary {
+  background-color: var(--lx-surface);
+  border-color: var(--lx-border);
+  color: var(--lx-text);
+}
+
+.lx-btn--secondary:hover:not(:disabled) {
+  background-color: var(--lx-surface-hover);
+  border-color: var(--lx-border-strong);
+}
+
+/* Ghost — toolbars, table row actions, icon buttons. */
+.lx-btn--ghost {
+  background-color: transparent;
+  color: var(--lx-text-secondary);
+}
+
+.lx-btn--ghost:hover:not(:disabled) {
+  background-color: var(--lx-surface-hover);
+  color: var(--lx-text);
+}
+
+.lx-btn--subtle {
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+}
+
+.lx-btn--subtle:hover:not(:disabled) {
+  background-color: var(--lx-brand-subtle-hover);
+}
+
+.lx-btn--inverse {
+  background-color: var(--lx-surface-inverse);
+  color: var(--lx-text-inverse);
+}
+
+.lx-btn--danger {
+  background-color: var(--lx-danger);
+  color: #fff;
+}
+
+.lx-btn--danger:hover:not(:disabled) {
+  filter: brightness(0.94);
+}
+
+.lx-btn--sm {
+  height: 32px;
+  padding: 0 var(--lx-space-3);
+  font-size: var(--lx-text-sm);
+  border-radius: var(--lx-radius-sm);
+}
+
+.lx-btn--lg {
+  height: 48px;
+  padding: 0 var(--lx-space-6);
+  font-size: var(--lx-text-md);
+  border-radius: var(--lx-radius-lg);
+}
+
+.lx-btn--pill {
+  border-radius: var(--lx-radius-full);
+}
+
+.lx-btn--icon {
+  width: 40px;
+  padding: 0;
+  flex: none;
+}
+
+.lx-btn--icon.lx-btn--sm { width: 32px; }
+.lx-btn--icon.lx-btn--lg { width: 48px; }
+
+.lx-btn--block {
+  width: 100%;
+}
+
+/* =========================================================================
+   BADGE / TAG
+   Status pills. Same shape as .lx-delta but semantic rather than directional.
+   ========================================================================= */
+
+.lx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-1-5);
+  padding: var(--lx-space-1) var(--lx-space-2-5);
+  border-radius: var(--lx-radius-full);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-semibold);
+  line-height: var(--lx-leading-snug);
+  white-space: nowrap;
+  background-color: var(--lx-neutral-bg);
+  color: var(--lx-neutral-fg);
+}
+
+.lx-badge--brand { background-color: var(--lx-brand-subtle); color: var(--lx-text-brand); }
+.lx-badge--success { background-color: var(--lx-success-bg); color: var(--lx-success-fg); }
+.lx-badge--warning { background-color: var(--lx-warning-bg); color: var(--lx-warning-fg); }
+.lx-badge--danger { background-color: var(--lx-danger-bg); color: var(--lx-danger-fg); }
+.lx-badge--info { background-color: var(--lx-info-bg); color: var(--lx-info-fg); }
+.lx-badge--signal { background-color: var(--lx-signal); color: var(--lx-on-signal); }
+
+.lx-badge--outline {
+  background-color: transparent;
+  border: 1px solid var(--lx-border);
+  color: var(--lx-text-secondary);
+}
+
+/* The leading status dot. Colour is inherited from the badge modifier. */
+.lx-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--lx-radius-full);
+  background-color: currentColor;
+  flex: none;
+}
+
+/* =========================================================================
+   FORM CONTROLS
+   ========================================================================= */
+
+.lx-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-1-5);
+}
+
+.lx-label {
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text-secondary);
+}
+
+.lx-input,
+.lx-select,
+.lx-textarea {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--lx-space-3);
+  background-color: var(--lx-surface);
+  border: 1px solid var(--lx-border-control);
+  border-radius: var(--lx-radius-md);
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-base);
+  color: var(--lx-text);
+  transition: var(--lx-transition);
+}
+
+.lx-textarea {
+  height: auto;
+  min-height: 96px;
+  padding: var(--lx-space-2-5) var(--lx-space-3);
+  line-height: var(--lx-leading-normal);
+  resize: vertical;
+}
+
+.lx-input::placeholder,
+.lx-textarea::placeholder {
+  color: var(--lx-text-disabled);
+}
+
+.lx-input:hover,
+.lx-select:hover,
+.lx-textarea:hover {
+  border-color: var(--lx-border-strong);
+}
+
+.lx-input:focus,
+.lx-select:focus,
+.lx-textarea:focus {
+  outline: none;
+  border-color: var(--lx-border-focus);
+  box-shadow: var(--lx-shadow-focus);
+}
+
+.lx-input:disabled,
+.lx-select:disabled,
+.lx-textarea:disabled {
+  background-color: var(--lx-surface-sunken);
+  color: var(--lx-text-disabled);
+  cursor: not-allowed;
+}
+
+.lx-input--invalid,
+.lx-input[aria-invalid="true"] {
+  border-color: var(--lx-danger);
+}
+
+.lx-input--invalid:focus,
+.lx-input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px var(--lx-danger-bg);
+}
+
+.lx-hint {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+}
+
+.lx-error {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-danger-fg);
+}
+
+/* Search input with a leading icon. */
+.lx-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lx-search__icon {
+  position: absolute;
+  left: var(--lx-space-3);
+  display: inline-flex;
+  color: var(--lx-text-muted);
+  pointer-events: none;
+}
+
+.lx-search .lx-input {
+  padding-left: var(--lx-space-10);
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-surface-sunken);
+  border-color: transparent;
+}
+
+.lx-search .lx-input:focus {
+  background-color: var(--lx-surface);
+  border-color: var(--lx-border-focus);
+}
+
+/* --- Switch ------------------------------------------------------------- */
+
+.lx-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-surface-active);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--lx-transition);
+}
+
+.lx-switch::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-neutral-0);
+  box-shadow: var(--lx-shadow-sm);
+  transition: transform var(--lx-duration-base) var(--lx-ease);
+}
+
+.lx-switch[aria-checked="true"],
+.lx-switch[data-state="checked"] {
+  background-color: var(--lx-brand);
+}
+
+.lx-switch[aria-checked="true"]::after,
+.lx-switch[data-state="checked"]::after {
+  transform: translateX(20px);
+}
+
+/* --- Segmented control -------------------------------------------------- */
+
+.lx-segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-0-5);
+  padding: var(--lx-space-1);
+  background-color: var(--lx-surface-sunken);
+  border-radius: var(--lx-radius-md);
+}
+
+.lx-segmented__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 var(--lx-space-3);
+  border: none;
+  border-radius: var(--lx-radius-sm);
+  background-color: transparent;
+  font-family: var(--lx-font-sans);
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text-muted);
+  cursor: pointer;
+  transition: var(--lx-transition);
+}
+
+.lx-segmented__item:hover {
+  color: var(--lx-text);
+}
+
+.lx-segmented__item[aria-selected="true"],
+.lx-segmented__item[data-state="active"] {
+  background-color: var(--lx-surface);
+  color: var(--lx-text);
+  box-shadow: var(--lx-shadow-xs);
+}
+
+/* =========================================================================
+   AVATAR
+   ========================================================================= */
+
+.lx-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-bold);
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.lx-avatar--sm { width: 28px; height: 28px; font-size: var(--lx-text-2xs); }
+.lx-avatar--lg { width: 56px; height: 56px; font-size: var(--lx-text-lg); }
+
+.lx-avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.lx-avatar-group > .lx-avatar + .lx-avatar {
+  margin-left: -10px;
+}
+
+.lx-avatar-group > .lx-avatar {
+  border: 2px solid var(--lx-surface);
+}
+
+/* =========================================================================
+   TABLE
+   Borderless rows, sunken header, right-aligned numerics. No vertical rules:
+   whitespace separates columns.
+   ========================================================================= */
+
+.lx-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.lx-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--lx-text-base);
+}
+
+.lx-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--lx-space-3) var(--lx-space-4);
+  background-color: var(--lx-surface-sunken);
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lx-table thead th:first-child { border-top-left-radius: var(--lx-radius-md); border-bottom-left-radius: var(--lx-radius-md); }
+.lx-table thead th:last-child { border-top-right-radius: var(--lx-radius-md); border-bottom-right-radius: var(--lx-radius-md); }
+
+.lx-table tbody td {
+  padding: var(--lx-space-4);
+  border-bottom: 1px solid var(--lx-border-subtle);
+  color: var(--lx-text);
+  vertical-align: middle;
+}
+
+.lx-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.lx-table tbody tr {
+  transition: background-color var(--lx-duration-fast) var(--lx-ease);
+}
+
+.lx-table tbody tr:hover td {
+  background-color: var(--lx-surface-hover);
+}
+
+/* Money and counts go right, always, with tabular figures. */
+.lx-table .lx-num,
+.lx-table th.lx-num,
+.lx-table td.lx-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: var(--lx-weight-semibold);
+}
+
+.lx-table__primary {
+  font-weight: var(--lx-weight-semibold);
+  color: var(--lx-text);
+}
+
+.lx-table__secondary {
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-muted);
+}
+
+/* =========================================================================
+   APP SHELL — sidebar, topbar, page
+   ========================================================================= */
+
+.lx-shell {
+  display: grid;
+  grid-template-columns: var(--lx-sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--lx-canvas);
+}
+
+.lx-shell--collapsed {
+  grid-template-columns: var(--lx-sidebar-width-collapsed) minmax(0, 1fr);
+}
+
+@media (max-width: 1023px) {
+  .lx-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.lx-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-6);
+  padding: var(--lx-space-5) var(--lx-space-4);
+  background-color: var(--lx-surface);
+  border-right: 1px solid var(--lx-border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+@media (max-width: 1023px) {
+  .lx-sidebar { display: none; }
+}
+
+.lx-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2-5);
+  padding: var(--lx-space-1) var(--lx-space-2);
+  font-size: var(--lx-text-lg);
+  font-weight: var(--lx-weight-extrabold);
+  letter-spacing: var(--lx-tracking-tight);
+  color: var(--lx-text);
+}
+
+.lx-sidebar__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: var(--lx-radius-sm);
+  background-color: var(--lx-brand);
+  color: var(--lx-on-brand);
+}
+
+.lx-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lx-space-0-5);
+}
+
+.lx-nav__section {
+  padding: var(--lx-space-3) var(--lx-space-2) var(--lx-space-1);
+  font-size: var(--lx-text-2xs);
+  font-weight: var(--lx-weight-semibold);
+  letter-spacing: var(--lx-tracking-wider);
+  text-transform: uppercase;
+  color: var(--lx-text-muted);
+}
+
+/* The nav pill. Active state is a tinted fill, not a left border — the fill
+   is what reads at a glance in a 264px rail. */
+.lx-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-3);
+  height: 42px;
+  padding: 0 var(--lx-space-3);
+  border-radius: var(--lx-radius-md);
+  font-size: var(--lx-text-base);
+  font-weight: var(--lx-weight-medium);
+  color: var(--lx-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--lx-transition);
+}
+
+.lx-nav__item:hover {
+  background-color: var(--lx-surface-hover);
+  color: var(--lx-text);
+}
+
+.lx-nav__item[aria-current="page"],
+.lx-nav__item--active {
+  background-color: var(--lx-brand-subtle);
+  color: var(--lx-text-brand);
+  font-weight: var(--lx-weight-semibold);
+}
+
+.lx-nav__icon {
+  display: inline-flex;
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.lx-nav__badge {
+  margin-left: auto;
+}
+
+.lx-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lx-space-4);
+  height: var(--lx-topbar-height);
+  padding: 0 var(--lx-page-gutter);
+  background-color: color-mix(in srgb, var(--lx-canvas) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--lx-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--lx-z-sticky);
+}
+
+.lx-topbar__title {
+  font-size: var(--lx-text-xl);
+  font-weight: var(--lx-weight-bold);
+  letter-spacing: var(--lx-tracking-tight);
+  color: var(--lx-text);
+}
+
+.lx-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2);
+}
+
+.lx-page {
+  padding: var(--lx-space-6) var(--lx-page-gutter) var(--lx-space-12);
+  max-width: var(--lx-content-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lx-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--lx-space-4);
+  margin-bottom: var(--lx-space-6);
+}
+
+/* --- Dashboard grid ------------------------------------------------------
+   12 columns at desktop, collapsing to 1 on mobile. Span helpers below cover
+   the layouts this system actually uses; anything else is a one-off. */
+
+.lx-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--lx-grid-gap);
+}
+
+.lx-col-3 { grid-column: span 3; }
+.lx-col-4 { grid-column: span 4; }
+.lx-col-5 { grid-column: span 5; }
+.lx-col-6 { grid-column: span 6; }
+.lx-col-7 { grid-column: span 7; }
+.lx-col-8 { grid-column: span 8; }
+.lx-col-9 { grid-column: span 9; }
+.lx-col-12 { grid-column: span 12; }
+
+@media (max-width: 1279px) {
+  .lx-col-3 { grid-column: span 6; }
+  .lx-col-4 { grid-column: span 6; }
+  .lx-col-5 { grid-column: span 12; }
+  .lx-col-7 { grid-column: span 12; }
+  .lx-col-8 { grid-column: span 12; }
+  .lx-col-9 { grid-column: span 12; }
+}
+
+@media (max-width: 767px) {
+  .lx-col-3,
+  .lx-col-4,
+  .lx-col-6 { grid-column: span 12; }
+}
+
+/* =========================================================================
+   CHART CHROME
+   The frame around a chart: title row, legend, and the axis/grid styling
+   applied to SVG produced by Recharts / D3 / Chart.js.
+   ========================================================================= */
+
+.lx-chart {
+  width: 100%;
+}
+
+.lx-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-4);
+  font-size: var(--lx-text-xs);
+  color: var(--lx-text-secondary);
+}
+
+.lx-chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-2);
+}
+
+.lx-chart__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+/* Recharts hooks — these keep charts on-system without prop-drilling colours
+   into every <XAxis>. */
+.lx-chart .recharts-cartesian-grid line {
+  stroke: var(--lx-chart-grid);
+}
+
+.lx-chart .recharts-cartesian-axis-line,
+.lx-chart .recharts-cartesian-axis-tick-line {
+  stroke: transparent;
+}
+
+.lx-chart .recharts-cartesian-axis-tick-value {
+  fill: var(--lx-text-muted);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+}
+
+.lx-chart__tooltip {
+  padding: var(--lx-space-2-5) var(--lx-space-3);
+  background-color: var(--lx-chart-tooltip-bg);
+  color: var(--lx-chart-tooltip-fg);
+  border-radius: var(--lx-radius-md);
+  box-shadow: var(--lx-shadow-lg);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.lx-chart__tooltip-label {
+  color: color-mix(in srgb, var(--lx-chart-tooltip-fg) 65%, transparent);
+  margin-bottom: var(--lx-space-1);
+}
+
+/* =========================================================================
+   PROGRESS / METER
+   ========================================================================= */
+
+.lx-progress {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-surface-sunken);
+  overflow: hidden;
+}
+
+.lx-progress__bar {
+  height: 100%;
+  border-radius: var(--lx-radius-full);
+  background-color: var(--lx-brand);
+  transition: width var(--lx-duration-slow) var(--lx-ease);
+}
+
+.lx-progress__bar--signal { background-color: var(--lx-signal); }
+.lx-progress__bar--warning { background-color: var(--lx-warning); }
+.lx-progress__bar--danger { background-color: var(--lx-danger); }
+
+/* Stacked budget/allocation bar. */
+.lx-meter {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  gap: 2px;
+  border-radius: var(--lx-radius-full);
+  overflow: hidden;
+}
+
+.lx-meter__seg {
+  height: 100%;
+}
+
+/* =========================================================================
+   AI INSIGHT CARD
+   The product's signature element: a generated observation, visually distinct
+   from user-entered data so a reader always knows which is which.
+   ========================================================================= */
+
+.lx-insight {
+  position: relative;
+  display: flex;
+  gap: var(--lx-space-3);
+  padding: var(--lx-space-4) var(--lx-space-5);
+  border-radius: var(--lx-radius-lg);
+  background-color: var(--lx-brand-subtle);
+  border: 1px solid var(--lx-brand-muted);
+  color: var(--lx-text);
+}
+
+.lx-insight__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  border-radius: var(--lx-radius-sm);
+  background-color: var(--lx-brand);
+  color: var(--lx-on-brand);
+}
+
+.lx-insight__title {
+  font-size: var(--lx-text-sm);
+  font-weight: var(--lx-weight-bold);
+  color: var(--lx-text-brand);
+  margin: 0 0 var(--lx-space-1);
+}
+
+.lx-insight__body {
+  font-size: var(--lx-text-sm);
+  line-height: var(--lx-leading-normal);
+  color: var(--lx-text-secondary);
+  margin: 0;
+}
+
+/* =========================================================================
+   MISC
+   ========================================================================= */
+
+.lx-divider {
+  height: 1px;
+  border: none;
+  background-color: var(--lx-border);
+  margin: var(--lx-space-4) 0;
+}
+
+.lx-tooltip {
+  padding: var(--lx-space-2) var(--lx-space-2-5);
+  background-color: var(--lx-surface-inverse);
+  color: var(--lx-text-inverse);
+  border-radius: var(--lx-radius-sm);
+  font-size: var(--lx-text-xs);
+  font-weight: var(--lx-weight-medium);
+  box-shadow: var(--lx-shadow-lg);
+}
+
+.lx-skeleton {
+  border-radius: var(--lx-radius-sm);
+  background: linear-gradient(
+      90deg,
+      var(--lx-skeleton) 0%,
+      var(--lx-skeleton-shine) 50%,
+      var(--lx-skeleton) 100%
+    )
+    0 0 / 200% 100%;
+  animation: lx-shimmer 1.4s var(--lx-ease-in-out) infinite;
+}
+
+@keyframes lx-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-skeleton { animation: none; }
+}
+
+.lx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lx-space-2);
+  padding: var(--lx-space-12) var(--lx-space-6);
+  text-align: center;
+  color: var(--lx-text-muted);
+}
+
+/* A hairline scrollbar that matches the chrome. */
+.lx-root ::-webkit-scrollbar { width: 10px; height: 10px; }
+.lx-root ::-webkit-scrollbar-track { background: transparent; }
+.lx-root ::-webkit-scrollbar-thumb {
+  background-color: var(--lx-border-strong);
+  border-radius: var(--lx-radius-full);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.lx-root ::-webkit-scrollbar-thumb:hover { background-color: var(--lx-text-muted); }

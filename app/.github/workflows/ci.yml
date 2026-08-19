@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web quality gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Assert pinned toolchain
+        run: |
+          set -euo pipefail
+          node --version | grep -E '^v22\.' || { echo "::error::Node must be 22.x (see .nvmrc / packageManager)"; exit 1; }
+          npm --version | grep -E '^10\.' || { echo "::error::npm must be 10.x (see packageManager: npm@10.9.8)"; exit 1; }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run security:check-auth-config
+      - run: npm run edge:check-jwt-config
+      - run: npm run verify:migrations
+      - run: npm run audit:prod
+      - name: Build without exposing server credentials
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_CONTACT_EMAIL: ${{ vars.PRODUCTION_CONTACT_EMAIL }}
+          VITE_PRIVACY_NOTICE_URL: ${{ vars.PRODUCTION_PRIVACY_NOTICE_URL }}
+          VITE_PUBLIC_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
+          VITE_SENTRY_DSN: ${{ vars.PRODUCTION_SENTRY_DSN }}
+          VITE_TELEMETRY_INGEST_URL: ${{ vars.PRODUCTION_TELEMETRY_INGEST_URL }}
+          VITE_APPROVED_OAUTH_PROVIDERS: ${{ vars.VITE_APPROVED_OAUTH_PROVIDERS }}
+          VITE_SESSION_IDLE_TIMEOUT_SECONDS: ${{ vars.PRODUCTION_SESSION_IDLE_TIMEOUT_SECONDS }}
+          VITE_OPENAI_API_KEY: roundrobin-openai-client-secret-canary
+          VITE_HINDSIGHT_API_KEY: roundrobin-hindsight-client-secret-canary
+          CLIENT_SECRET_CANARIES: roundrobin-openai-client-secret-canary,roundrobin-hindsight-client-secret-canary
+        run: |
+          npm run build
+          npm run security:check-client-bundle
+          npm run security:check-bundle-reachability
+
+  edge-functions:
+    name: Edge function checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
+        with:
+          deno-version: v2.x
+      - run: npm run edge:verify
+
+  clinical-mcp:
+    name: Clinical MCP checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: clinical-mcp-server/package-lock.json
+      - run: npm ci --prefix clinical-mcp-server
+      - run: npm run clinical:typecheck
+      - run: npm run clinical:test
+      - run: npm run clinical:build
+      - run: npm audit --prefix clinical-mcp-server --omit=dev
+
+  browser-smoke:
+    name: Browser smoke test
+    needs: web
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: e2e-shared-account
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_CONTACT_EMAIL: ${{ vars.PRODUCTION_CONTACT_EMAIL }}
+          VITE_PRIVACY_NOTICE_URL: ${{ vars.PRODUCTION_PRIVACY_NOTICE_URL }}
+          VITE_PUBLIC_APP_URL: ${{ vars.PRODUCTION_APP_URL }}
+          VITE_SENTRY_DSN: ${{ vars.PRODUCTION_SENTRY_DSN }}
+          VITE_TELEMETRY_INGEST_URL: ${{ vars.PRODUCTION_TELEMETRY_INGEST_URL }}
+          VITE_APPROVED_OAUTH_PROVIDERS: ${{ vars.VITE_APPROVED_OAUTH_PROVIDERS }}
+          VITE_SESSION_IDLE_TIMEOUT_SECONDS: ${{ vars.PRODUCTION_SESSION_IDLE_TIMEOUT_SECONDS }}
+      - name: Public Chromium and WebKit auth-page smoke
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
+        env:
+          E2E_USE_PREVIEW: "1"
+          # The auth-bootstrap contract seeds a cached session under the
+          # Supabase storage key, so it needs the project ref at test runtime.
+          # Non-secret repo variable, same one the build step above consumes.
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+        run: npm run test:e2e:public
+      - name: Required authenticated Chromium suite
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          E2E_REQUIRE_FULL_SUITE: "1"
+          E2E_USE_PREVIEW: "1"
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: npm run test:e2e
+      - name: Required authenticated WebKit suite
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          E2E_REQUIRE_FULL_SUITE: "1"
+          E2E_USE_PREVIEW: "1"
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+          E2E_TEST_PASSWORD: ${{ secrets.E2E_TEST_PASSWORD }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: npm run test:e2e:webkit

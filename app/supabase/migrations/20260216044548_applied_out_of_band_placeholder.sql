@@ -1,0 +1,5 @@
+-- Placeholder for a migration applied out-of-band (recorded in production
+-- supabase_migrations under this version). Its content exists in this repo
+-- under the original version noted in the production history row, or was
+-- superseded by later consolidation migrations. Intentionally a no-op so
+-- `supabase db push` sees matching local/remote history.

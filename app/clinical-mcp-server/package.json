@@ -1,0 +1,28 @@
+{
+    "name": "clinical-mcp-server",
+    "version": "1.0.0",
+    "description": "Clinical MCP server with validated calculations and explicitly limited demo content",
+    "type": "module",
+    "main": "dist/index.js",
+    "scripts": {
+        "start": "node dist/index.js",
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "typecheck": "tsc --project tsconfig.test.json",
+        "test": "tsx --test src/tools/*.test.ts",
+        "clean": "rm -rf dist"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.6.1",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.0",
+        "esbuild": "0.28.2",
+        "tsx": "^4.19.2",
+        "typescript": "^5.7.2"
+    }
+}

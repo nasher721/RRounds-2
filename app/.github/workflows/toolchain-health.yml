@@ -1,0 +1,21 @@
+name: Toolchain Health
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Verify baseline npm scripts and lockfile toolchain packages
+        run: node scripts/check-toolchain-health.mjs
