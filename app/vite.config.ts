@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { networkInterfaces } from "node:os";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
@@ -26,6 +27,17 @@ function resolveAppVersion(): string {
     return `${pkg.version}+${sha}`;
   }
   return pkg.version;
+}
+
+/**
+ * Dev server bind address. `::` accepts IPv4 too on dual-stack hosts, but fails
+ * with EAFNOSUPPORT where the kernel has no IPv6 (slim containers, some CI).
+ */
+function resolveDevHost(): string {
+  const hasIpv6 = Object.values(networkInterfaces())
+    .flatMap((entries) => entries ?? [])
+    .some((entry) => entry.family === "IPv6");
+  return hasIpv6 ? "::" : "0.0.0.0";
 }
 
 function resolvePublicOrigin(
@@ -144,7 +156,7 @@ export default defineConfig(({ mode, command }) => {
 
   return {
     server: {
-      host: "::",
+      host: resolveDevHost(),
       port: 8080,
     },
     plugins: [
