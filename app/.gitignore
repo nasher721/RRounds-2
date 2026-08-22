@@ -55,3 +55,6 @@ design-system/ledgerix-design-system.zip
 
 # Pre-change revert copies (superseded by git history)
 *.prebreak-backup
+
+# Electron build output
+release/

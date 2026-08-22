@@ -24,6 +24,7 @@
     "desktop:test": "node --test electron/*.test.cjs",
     "desktop:dist": "npm run build && electron-builder",
     "desktop:dist:mac": "npm run build && electron-builder --mac dmg",
+    "desktop:dist:mac:local": "npm run build:dev && electron-builder --mac dmg",
     "test": "node --import ./scripts/test-setup.mjs --loader ./scripts/test-mock-loader.mjs --loader ./scripts/supabase-mock-loader.mjs --loader ./scripts/ts-loader.mjs --test \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
     "test:auth": "node --import ./scripts/test-setup.mjs --loader ./scripts/supabase-mock-loader.mjs --loader ./scripts/ts-loader.mjs --test src/hooks/__tests__/useAuth.test.tsx src/pages/__tests__/Auth.test.tsx",
     "test:e2e": "playwright test --project=chromium",
