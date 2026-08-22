@@ -7,6 +7,11 @@ const { app, BrowserWindow, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
+const {
+  isAllowedNavigation,
+  isExternalNavigation,
+  resolveDesktopAsset,
+} = require("./desktop-runtime.cjs");
 
 const DIST_DIR = path.join(__dirname, "..", "dist");
 const DEV_URL = "http://localhost:8080";
@@ -45,7 +50,7 @@ function startServer() {
       if (pathname === "/") pathname = "/index.html";
 
       let file = path.normalize(path.join(DIST_DIR, pathname));
-      if (!file.startsWith(DIST_DIR)) {
+      if (file !== DIST_DIR && !file.startsWith(`${DIST_DIR}${path.sep}`)) {
         res.writeHead(403);
         res.end("Forbidden");
         return;
@@ -82,24 +87,35 @@ async function createWindow() {
     minHeight: 600,
     title: "Rolling Rounds",
     backgroundColor: "#f5f7f3",
-    icon: path.join(__dirname, "..", "public", "icons", "icon-512.png"),
+    icon: resolveDesktopAsset("public/icons/rolling-rounds.icns"),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
     },
   });
 
   mainWindow.setMenuBarVisibility(false);
   await mainWindow.loadURL(loadUrl);
 
-  // Open any external (non-loopback) navigation in the system browser.
+  // Open external HTTP(S) links in the system browser; keep app navigation on
+  // the loopback origin so auth, routing, and service workers remain intact.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:/i.test(url) && !url.startsWith("http://127.0.0.1")) {
+    if (isExternalNavigation(url)) {
       shell.openExternal(url);
       return { action: "deny" };
     }
-    return { action: "allow" };
+    return { action: isAllowedNavigation(url) ? "allow" : "deny" };
+  });
+
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    if (isExternalNavigation(url)) {
+      event.preventDefault();
+      shell.openExternal(url);
+    } else if (!isAllowedNavigation(url)) {
+      event.preventDefault();
+    }
   });
 
   mainWindow.on("closed", () => {

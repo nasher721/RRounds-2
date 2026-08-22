@@ -21,7 +21,9 @@
     "desktop": "electron .",
     "desktop:dev": "concurrently -k \"vite\" \"wait-on tcp:127.0.0.1:8080 && electron .\"",
     "desktop:preview": "npm run build:dev && ELECTRON_SERVE_DIST=1 electron .",
+    "desktop:test": "node --test electron/*.test.cjs",
     "desktop:dist": "npm run build && electron-builder",
+    "desktop:dist:mac": "npm run build && electron-builder --mac dmg",
     "test": "node --import ./scripts/test-setup.mjs --loader ./scripts/test-mock-loader.mjs --loader ./scripts/supabase-mock-loader.mjs --loader ./scripts/ts-loader.mjs --test \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
     "test:auth": "node --import ./scripts/test-setup.mjs --loader ./scripts/supabase-mock-loader.mjs --loader ./scripts/ts-loader.mjs --test src/hooks/__tests__/useAuth.test.tsx src/pages/__tests__/Auth.test.tsx",
     "test:e2e": "playwright test --project=chromium",
@@ -160,7 +162,7 @@
     "productName": "Rolling Rounds",
     "directories": { "output": "release" },
     "files": ["dist/**/*", "electron/**/*", "public/icons/**/*", "package.json"],
-    "mac": { "category": "public.app-category.medical", "target": ["dmg"] },
+    "mac": { "category": "public.app-category.medical", "icon": "public/icons/rolling-rounds.icns", "target": ["dmg"] },
     "win": { "target": ["nsis"] },
     "linux": { "target": ["AppImage"] }
   }
