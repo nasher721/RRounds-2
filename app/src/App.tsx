@@ -21,6 +21,7 @@ import { MotionConfig } from "framer-motion";
 import { ServiceWorkerUpdatePrompt } from "@/components/ServiceWorkerUpdatePrompt";
 import { RouteMetadata } from "@/components/RouteMetadata";
 import { SupabaseConfigurationScreen } from "@/components/SupabaseConfigurationScreen";
+import { DesktopPrivacyCurtain } from "@/components/DesktopPrivacyCurtain";
 import { hasSupabaseConfig } from "@/integrations/supabase/client";
 
 // Auth and the FHIR callback stay in the app graph so recovery routes cannot
@@ -121,6 +122,7 @@ function AppContent(): React.ReactElement {
 
   return (
     <>
+      <DesktopPrivacyCurtain enabled={Boolean(user)} />
       <LiveRegionWrapper />
       <NavigationBreadcrumbTracker />
       <SkipToContent />

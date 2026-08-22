@@ -3,7 +3,7 @@
 // Packaged (or ELECTRON_SERVE_DIST=1): serves ./dist over a local loopback
 // origin and loads it. Serving over http://127.0.0.1 keeps a real origin so
 // Supabase auth, browser routing, and the service worker behave like the web.
-const { app, BrowserWindow, shell } = require("electron");
+const { app, BrowserWindow, Menu, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -12,6 +12,7 @@ const {
   isExternalNavigation,
   resolveDesktopAsset,
 } = require("./desktop-runtime.cjs");
+const { createApplicationMenuTemplate } = require("./desktop-menu.cjs");
 
 const DIST_DIR = path.join(__dirname, "..", "dist");
 const DEV_URL = "http://localhost:8080";
@@ -98,6 +99,20 @@ function startServer() {
 
 let mainWindow = null;
 
+function sendDesktopCommand(command) {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  mainWindow.webContents.send("desktop-command", command);
+}
+
+function installApplicationMenu() {
+  const template = createApplicationMenuTemplate({
+    appName: "Rolling Rounds",
+    platform: process.platform,
+    onCommand: sendDesktopCommand,
+  });
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
 async function createWindow() {
   const serveDist = app.isPackaged || process.env.ELECTRON_SERVE_DIST === "1";
   const loadUrl = serveDist ? `http://127.0.0.1:${await startServer()}` : DEV_URL;
@@ -162,7 +177,10 @@ async function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  installApplicationMenu();
+  return createWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

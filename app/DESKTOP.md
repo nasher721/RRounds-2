@@ -8,8 +8,9 @@ The app runs as a desktop application via Electron, in addition to the web build
   - **Dev** (not packaged): loads the Vite dev server at `http://localhost:8080`.
   - **Packaged** (or `ELECTRON_SERVE_DIST=1`): starts a tiny loopback static server over
     `./dist` and loads `http://127.0.0.1:<port>`.
-- `electron/preload.cjs` — exposes a read-only `window.desktop` bridge
-  (`{ isDesktop, platform, versions }`) with `contextIsolation` on and `nodeIntegration` off.
+- `electron/preload.cjs` — exposes a narrow `window.desktop` bridge for platform
+  metadata and validated main-process commands; `contextIsolation` stays on and
+  `nodeIntegration` stays off.
 
 Serving `dist/` over a real `http://127.0.0.1` origin (rather than `file://`) keeps
 Supabase auth, `BrowserRouter`, and the service worker working exactly as they do on the web.
@@ -32,6 +33,15 @@ The Codex Run action and shell-first debug entrypoint are also available:
 ./script/build_and_run.sh --verify    # build, launch, and verify the process
 ./script/build_and_run.sh --debug     # launch with Electron logging
 ```
+
+## macOS desktop controls
+
+The desktop build installs a native macOS menu with standard Edit, View, and
+Window behavior. The **Privacy** menu includes **Show Privacy Curtain**
+(`⌘⇧L`). It places an opaque shield over the authenticated workspace and makes
+the underlying interface inert until the clinician deliberately reveals it.
+The same shortcut reveals the workspace again. This is a visual privacy aid,
+not a replacement for signing out or the configured inactivity timeout.
 
 Before sign-in, copy `.env.example` to `.env.local` and provide
 `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY`. The app now shows an

@@ -24,3 +24,18 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+type DesktopCommand = "toggle-privacy-curtain";
+
+interface Window {
+  readonly desktop?: {
+    readonly isDesktop: true;
+    readonly platform: string;
+    readonly versions: {
+      readonly electron: string;
+      readonly chrome: string;
+      readonly node: string;
+    };
+    readonly onCommand: (callback: (command: DesktopCommand) => void) => () => void;
+  };
+}
