@@ -4,9 +4,9 @@ import type { Database } from './types';
 import { apiFetch } from '@/api/apiClient';
 import { createSafeStorage } from '@/utils/safeStorage';
 import { readUnexpiredCachedSession } from '@/lib/auth/authBootstrap';
-import { getSupabaseRuntimeConfig } from '@/config/supabaseRuntime';
+import { getSupabaseRuntimeConfig, type SupabaseRuntimeEnv } from '@/config/supabaseRuntime';
 
-const runtimeConfig = getSupabaseRuntimeConfig(import.meta.env);
+const runtimeConfig = getSupabaseRuntimeConfig(import.meta.env as unknown as SupabaseRuntimeEnv);
 export const hasSupabaseConfig = runtimeConfig.available;
 
 // Keep module evaluation safe when a local desktop build has not been given
