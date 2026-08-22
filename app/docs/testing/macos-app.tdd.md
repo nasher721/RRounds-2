@@ -40,3 +40,19 @@ Source plan: none. User journeys were derived during this TDD run from the reque
 - `npm run verify:lockfile` still reports the existing guard’s Expo/React-Native optional-dependency policy under the available npm 11 runtime, even though `npm ci --ignore-scripts` resolves cleanly. Re-run the guard with the repository-pinned Node 22/npm 10.9.8 toolchain before release.
 - Credential-gated Playwright E2E and clinical release gates were not claimed; they require the configured deployment and test account described in the project release docs.
 
+## Follow-up black-window fix
+
+The reported blank Electron window was reproduced with `ELECTRON_DEBUG=1`. The renderer logged:
+
+`Uncaught Error: [Supabase] Missing required environment variables. Application startup blocked.`
+
+The Supabase client threw during module evaluation, before `GlobalErrorBoundary` could mount. The fix makes missing configuration an explicit UI state, uses an inert client only while that state is displayed, and adds Electron renderer/load diagnostics plus a local CSP.
+
+| Stage | Command | Result |
+|---|---|---|
+| RED | targeted `supabaseRuntime.test.ts` | FAIL: missing runtime helper |
+| GREEN | targeted `supabaseRuntime.test.ts` | 3/3 passed |
+| Runtime | Electron + Playwright CDP inspection | Visible `Rolling Rounds needs a connection setup`; zero console errors |
+| Packaged runtime | arm64 `.app` + Playwright CDP inspection | Same visible setup screen; zero console errors |
+
+The Supabase endpoint for project `zsavxqvnseqxusfwdovu` is reachable, but the unauthenticated settings probe returns `401 UNAUTHORIZED_MISSING_API_KEY`. A real public key must be supplied in `app/.env.local` or the production build environment; it is not safe to infer or hard-code one.

@@ -17,10 +17,26 @@ Supabase auth, `BrowserRouter`, and the service worker working exactly as they d
 ## Commands
 
 ```sh
+npm ci                    # install the pinned desktop toolchain
+npm run desktop:test      # test the Electron runtime policy
 npm run desktop:dev       # Vite dev server + Electron (hot reload)
 npm run desktop:preview   # npm run build:dev, then Electron over the built dist
+npm run desktop:dist:mac:local # development-configured arm64 DMG for local use
 npm run desktop:dist      # npm run build + electron-builder → installers in ./release
 ```
+
+The Codex Run action and shell-first debug entrypoint are also available:
+
+```sh
+./script/build_and_run.sh             # build and launch
+./script/build_and_run.sh --verify    # build, launch, and verify the process
+./script/build_and_run.sh --debug     # launch with Electron logging
+```
+
+Before sign-in, copy `.env.example` to `.env.local` and provide
+`VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY`. The app now shows an
+explicit setup screen when these public values are absent instead of opening a
+blank window. Never put a Supabase service-role key in this file.
 
 ## Packaging
 

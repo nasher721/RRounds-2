@@ -32,6 +32,23 @@ const MIME = {
   ".xml": "application/xml; charset=utf-8",
 };
 
+const CONTENT_SECURITY_POLICY = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "img-src 'self' data: blob: https://*.supabase.co",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io",
+  "media-src 'self' blob:",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "frame-src 'none'",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
 function contentType(file) {
   return MIME[path.extname(file).toLowerCase()] || "application/octet-stream";
 }
@@ -65,7 +82,12 @@ function startServer() {
           res.end("Not found");
           return;
         }
-        res.writeHead(200, { "Content-Type": contentType(file) });
+        res.writeHead(200, {
+          "Content-Type": contentType(file),
+          "Content-Security-Policy": CONTENT_SECURITY_POLICY,
+          "X-Content-Type-Options": "nosniff",
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+        });
         res.end(data);
       });
     });
