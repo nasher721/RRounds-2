@@ -1,0 +1,35 @@
+{
+  "packetId": "TPX-2026-08-22-PLANNING",
+  "status": "BLOCKED-PREFLIGHT",
+  "pilot": true,
+  "pilotMeaning": "pilot track/schema classification only; execution_enabled=false; no execution evidence",
+  "execution_enabled": false,
+  "productionApproval": false,
+  "executionAuthorized": false,
+  "scope": "planning-and-pilot-evidence-only",
+  "createdAt": "2026-08-22",
+  "decisionDates": {"A": "2026-09-05", "B": "2026-09-12", "C": "2026-09-12", "shared": "2026-09-19"},
+  "owners": {
+    "technical": "UNASSIGNED — named owner required before execution",
+    "clinicalSafety": "UNASSIGNED — named reviewer required before execution",
+    "privacySecurity": "UNASSIGNED — named reviewer required before execution",
+    "accessibility": "UNASSIGNED — named reviewer required before execution",
+    "businessDecision": "UNASSIGNED — named decision owner required before execution",
+    "release": "UNASSIGNED — named release owner required before execution",
+    "independentVerifier": "UNASSIGNED — named verifier required before execution"
+  },
+  "identities": {"authorized": ["AUTH-A", "AUTH-B"], "unauthorized": ["AUTH-U"], "realAccountsAllowed": false, "phiAllowed": false},
+  "featureFlags": {"synthea": false, "yjs": false, "rxdb": false, "productionTargeting": false},
+  "environment": {"runDirectory": "${TMPDIR}/rolling-rounds-third-party-pilots/TPX-2026-08-22", "applicationDataDirectoryAllowed": false, "productionUrlsAllowed": false, "credentialsInEvidenceAllowed": false},
+  "namespaces": {"A": "pilot-third-party/A/", "B": "pilot-third-party/B/", "C": "pilot-third-party/C/", "shared": "pilot-third-party/shared/"},
+  "dependencies": {
+    "existingControl": ["@syncedstore/core@^0.6.0", "@syncedstore/react@^0.6.0", "yjs@^13.6.29", "y-indexeddb@^9.0.12", "dexie@^4.3.0", "Supabase client", "Playwright"],
+    "newPilotOnly": ["Synthea + pinned Java/toolchain", "RxDB + only benchmark-required plugins", "pinned WebSocket client/server if required"],
+    "notAuthorized": ["production replication service", "durable Yjs server persistence", "Supabase migration", "broad dependency upgrade"]
+  },
+  "controlPaths": ["app/e2e/fixture-state.ts", "app/src/lib/fhir.ts", "app/src/lib/offline/database.ts", "app/src/lib/offline/indexedDBQueue.ts", "app/src/lib/offline/syncEngine.ts"],
+  "preflightContracts": ["fhir-contract.md", "rxdb-contract.md", "websocket-boundary.md", "browser-device-matrix.md", "retention-policy.md", "evidence-storage.md", "value-cost-thresholds.md"],
+  "hardStops": ["any PHI or secret", "production target", "authorization bypass", "silent loss", "unreviewed chart write", "unverified recovery", "broad purge", "missing named approval"],
+  "immutableEvidenceStore": {"status": "UNSELECTED — approval required", "uri": null, "sha256": null},
+  "decision": "STOP — preflight contracts and named approvals are incomplete"
+}

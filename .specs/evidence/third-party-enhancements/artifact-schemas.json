@@ -1,0 +1,11 @@
+{
+  "status": "BLOCKED-PREFLIGHT / NOT EXECUTED",
+  "schemas": {
+    "packetCompleteness": {"required": ["packetId", "track", "status", "rawResults", "metricDefinitions", "sampleCounts", "independentCheck", "owners", "signatures", "immutableEvidenceUri", "immutableEvidenceSha256", "recoveryReceipt", "contentBearingRecoveryArtifact", "knownLimitations", "unresolvedRisks", "decision", "nextAction", "dueDate"]},
+    "check": {"required": ["checkId", "packetId", "checkedAt", "checker", "inputs", "checks", "result", "outputReference", "disposition"]},
+    "recalculation": {"required": ["calculationId", "formula", "rawInputReferences", "baseline", "candidate", "computedResult", "independentVerifier", "checkedAt", "result"]},
+    "recovery": {"required": ["receiptId", "track", "namespace", "ownerScopeHash", "stateClass", "byteCount", "contentSha256", "metadataReceiptUri", "contentArtifactUri", "contentArtifactSha256", "readParseIntegrityOwnerChecks", "verifiedAt", "verifier", "result"]},
+    "killSwitch": {"required": ["rehearsalId", "flagVersion", "disabledAt", "admissionRejected", "sessionsReadOnly", "queuesQuiesced", "providersClosed", "recoveryDisposition", "crossOwnerCheck", "currentPathCheck", "outputReference", "verifier", "result"]}
+  },
+  "blockedRecord": {"status": "NOT EXECUTED / BLOCKED", "reason": "Preflight owners, pinned inputs, and immutable evidence-store authority are UNASSIGNED", "observed": false, "productionApproval": false, "fabricatedResults": false}
+}

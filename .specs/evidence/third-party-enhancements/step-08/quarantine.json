@@ -1,0 +1,1 @@
+{"status":"NOT EXECUTED — no pilot namespaces created","purgeList":[],"quarantineList":[],"rule":"never purge from metadata receipt/checksum alone; preserve uncertain state read-only with finite retention, owner, disposition, and review date","broadIndexedDBPurgeAllowed":false}

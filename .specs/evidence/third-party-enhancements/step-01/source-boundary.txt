@@ -1,0 +1,6 @@
+Planning artifact created without application-source or dependency-manifest edits.
+
+Commands: `git status --short -- app/src app/electron app/supabase app/package.json app/package-lock.json`; `git diff --exit-code -- app/src app/electron app/supabase app/package.json app/package-lock.json`
+
+Observed 2026-08-22: source status clean; source diff exit 0; no application
+source/manifests changed by this task; no pilot output is under application data.

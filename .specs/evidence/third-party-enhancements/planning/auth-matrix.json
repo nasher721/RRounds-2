@@ -1,0 +1,15 @@
+{
+  "matrixId": "TPX-AUTH-2026-08-22",
+  "status": "PRE-REGISTERED / EXECUTION BLOCKED",
+  "scope": {"tenant": "SYNTHETIC-TENANT", "team": "SYNTHETIC-TEAM", "patient": "SYNTHETIC-PATIENT-001", "round": "SYNTHETIC-ROUND-001", "field": "clinicalSummary"},
+  "identities": {"AUTH-A": "authorized exact scope", "AUTH-B": "authorized exact scope", "AUTH-U": "unauthorized wrong-scope and same-tenant-no-grant cases"},
+  "cases": [
+    {"identity":"AUTH-A","case":"exact-scope","roomAdmission":"allow","read":"allow","mutate":"allow-within-pilot","presence":"allow-ephemeral","recovery":"allow-owned-scope"},
+    {"identity":"AUTH-B","case":"exact-scope","roomAdmission":"allow","read":"allow","mutate":"allow-within-pilot","presence":"allow-ephemeral","recovery":"allow-owned-scope"},
+    {"identity":"AUTH-U","case":"wrong-tenant","roomAdmission":"deny","read":"deny","mutate":"deny","presence":"deny","recovery":"deny"},
+    {"identity":"AUTH-U","case":"same-tenant-missing-patient-round-field-grant","roomAdmission":"deny","read":"deny","mutate":"deny","presence":"deny","recovery":"deny"},
+    {"identity":"AUTH-A|AUTH-B","case":"revoked-or-expired","roomAdmission":"deny","read":"deny","mutate":"deny","presence":"close","recovery":"deny-or-quarantine-by-policy"},
+    {"identity":"any","case":"guessed-or-stale-room-document-id","roomAdmission":"deny","read":"deny","mutate":"deny","presence":"deny","recovery":"deny"}
+  ],
+  "requiredAssertions": ["authorization before WebSocket upgrade", "no bearer token/patient ID/note text in opaque IDs", "no content or metadata leak", "owner checked before read/write/export/purge"]
+}

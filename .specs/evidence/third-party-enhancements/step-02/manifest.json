@@ -1,0 +1,12 @@
+{
+  "status": "PLANNED / NOT EXECUTED",
+  "fixtureId": "TPX-FIXTURE-2026-08-22",
+  "generator": {"tool":"Synthea","version":"UNASSIGNED — pin before run","commit":"UNASSIGNED","java":"UNASSIGNED","seed":"UNASSIGNED","population":3,"locale":"en-US","timezone":"UTC"},
+  "normalizationVersion":"tpx-normalized-fhir-v1",
+  "resources":{"Patient":3,"Observation":10,"MedicationRequest_or_MedicationStatement":3,"AllergyIntolerance":2,"timelineEvents":"multiple"},
+  "resetContract":"app/e2e/fixture-state.ts",
+  "fixtureHash":null,
+  "trackCWorkload":"three synthetic patients; 20 draft_field mutations; reload/reconnect/failure matrix from preflight/rxdb-contract.md",
+  "provenance":"synthetic-only; no PHI; no production endpoint; payload content retained only in controlled disposable namespace",
+  "decision":"BLOCKED-PREFLIGHT"
+}

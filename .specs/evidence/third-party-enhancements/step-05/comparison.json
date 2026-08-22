@@ -1,0 +1,1 @@
+{"status":"NOT EXECUTED — RxDB workload/schema and owner approval incomplete","control":"existing Dexie/IndexedDB","candidate":"RxDB pilot-only, not installed","timing":{"repetitions":30,"correctnessRuns":20,"primaryMetric":"reconnect-to-drain-complete","requiredP95Improvement":0.2},"metrics":null,"migrationRequired":null,"decision":"NO-GO UNTIL PREFLIGHT CLOSED"}

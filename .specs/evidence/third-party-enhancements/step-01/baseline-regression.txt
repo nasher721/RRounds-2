@@ -1,0 +1,10 @@
+Baseline verification record — 2026-08-22
+
+Safe checks executed: lint [running at handoff]; typecheck [running at handoff];
+focused auth/offline/round tests [running at handoff]; verify:lockfile [FAIL].
+
+Lockfile failure: Expo/React-Native packages reappeared transitively through
+`fhirclient -> isomorphic-webcrypto` optional dependencies; the repository
+checker requires them pinned out via the existing overrides. Synthetic
+Chromium/WebKit E2E and build were not run because preflight is incomplete.
+This is not pilot evidence and does not waive the lockfile failure.

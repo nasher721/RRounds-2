@@ -1,0 +1,12 @@
+{
+  "status": "PLANNED / NOT EXECUTED",
+  "root": "${TMPDIR}/rolling-rounds-third-party-pilots/TPX-2026-08-22",
+  "applicationDataDirectoryAllowed": false,
+  "tracks": {
+    "A": {"namespace":"pilot-third-party/A/fixture", "mutableSharedFixture":false},
+    "B": {"namespace":"pilot-third-party/B/yjs", "ownerDocumentScoped":true},
+    "C": {"namespace":"pilot-third-party/C/rxdb", "ownerDocumentScoped":true}
+  },
+  "purgePolicy": "named closed pilot namespaces only after metadata receipt and separately verified content-bearing recovery artifact; preserve Dexie, chart, approved exports, and uncertain state",
+  "telemetry": "metadata-only: opaque IDs, counts, durations, statuses, queue ages, conflict counts, cleanup results, error classes"
+}
