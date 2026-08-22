@@ -121,6 +121,16 @@ function GuidelinesPanelContent() {
           <h2 className="font-semibold text-sm">Clinical Guidelines</h2>
         </div>
         <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground"
+            onClick={closePanel}
+            aria-label="Close clinical guidelines"
+            title="Close clinical guidelines (Esc)"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" title="Keyboard: Ctrl+G">
             <Keyboard className="h-4 w-4" />
           </Button>
