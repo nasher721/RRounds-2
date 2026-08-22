@@ -1,4 +1,5 @@
-import { describe, expect, test } from "node:test";
+import assert from "node:assert/strict";
+import { describe, test } from "node:test";
 import {
   getSupabaseRuntimeConfig,
   type SupabaseRuntimeEnv,
@@ -6,7 +7,7 @@ import {
 
 describe("Supabase runtime configuration", () => {
   test("returns unavailable when both required public values are missing", () => {
-    expect(getSupabaseRuntimeConfig({})).toEqual({
+    assert.deepEqual(getSupabaseRuntimeConfig({}), {
       available: false,
       reason: "missing",
     });
@@ -16,29 +17,28 @@ describe("Supabase runtime configuration", () => {
     const partial: SupabaseRuntimeEnv = {
       VITE_SUPABASE_URL: " https://example.supabase.co ",
     };
-    expect(getSupabaseRuntimeConfig(partial)).toEqual({
+    assert.deepEqual(getSupabaseRuntimeConfig(partial), {
       available: false,
       reason: "missing",
     });
 
-    expect(getSupabaseRuntimeConfig({
+    assert.deepEqual(getSupabaseRuntimeConfig({
       VITE_SUPABASE_URL: "not-a-url",
       VITE_SUPABASE_PUBLISHABLE_KEY: "public-key",
-    })).toEqual({
+    }), {
       available: false,
       reason: "invalid",
     });
   });
 
   test("accepts a valid URL and either supported public key name", () => {
-    expect(getSupabaseRuntimeConfig({
+    assert.deepEqual(getSupabaseRuntimeConfig({
       VITE_SUPABASE_URL: " https://example.supabase.co/ ",
       VITE_SUPABASE_ANON_KEY: " anon-key ",
-    })).toEqual({
+    }), {
       available: true,
       url: "https://example.supabase.co",
       key: "anon-key",
     });
   });
 });
-

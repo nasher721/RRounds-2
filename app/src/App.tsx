@@ -20,6 +20,8 @@ import { AnnouncerProvider, useAnnouncerContext, LiveRegion } from "@/hooks/useA
 import { MotionConfig } from "framer-motion";
 import { ServiceWorkerUpdatePrompt } from "@/components/ServiceWorkerUpdatePrompt";
 import { RouteMetadata } from "@/components/RouteMetadata";
+import { SupabaseConfigurationScreen } from "@/components/SupabaseConfigurationScreen";
+import { hasSupabaseConfig } from "@/integrations/supabase/client";
 
 // Auth and the FHIR callback stay in the app graph so recovery routes cannot
 // be stranded behind a stale lazy chunk. The print harness is development-only
@@ -155,6 +157,10 @@ function LiveRegionWrapper(): React.ReactElement {
 }
 
 function App(): React.ReactElement {
+  if (!hasSupabaseConfig) {
+    return <SupabaseConfigurationScreen />;
+  }
+
   return (
     <GlobalErrorBoundary>
     <QueryClientProvider client={queryClient}>

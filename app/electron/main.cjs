@@ -87,7 +87,9 @@ async function createWindow() {
     minHeight: 600,
     title: "Rolling Rounds",
     backgroundColor: "#f5f7f3",
-    icon: resolveDesktopAsset("public/icons/rolling-rounds.icns"),
+    ...(process.platform === "darwin"
+      ? {}
+      : { icon: resolveDesktopAsset("public/icons/icon-512.png") }),
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -97,7 +99,22 @@ async function createWindow() {
   });
 
   mainWindow.setMenuBarVisibility(false);
-  await mainWindow.loadURL(loadUrl);
+  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (isMainFrame) {
+      console.error(`[Rolling Rounds] Renderer failed to load (${errorCode}): ${errorDescription} ${validatedURL}`);
+    }
+  });
+  mainWindow.webContents.on("render-process-gone", (_event, details) => {
+    console.error(`[Rolling Rounds] Renderer exited: ${details.reason}`);
+  });
+  if (process.env.ELECTRON_DEBUG === "1") {
+    mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
+      console.error(`[Rolling Rounds] renderer console level=${level} ${sourceId}:${line} ${message}`);
+    });
+  }
+  await mainWindow.loadURL(loadUrl).catch((error) => {
+    console.error("[Rolling Rounds] Unable to load the application shell", error);
+  });
 
   // Open external HTTP(S) links in the system browser; keep app navigation on
   // the loopback origin so auth, routing, and service workers remain intact.

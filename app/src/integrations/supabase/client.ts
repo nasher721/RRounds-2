@@ -4,17 +4,19 @@ import type { Database } from './types';
 import { apiFetch } from '@/api/apiClient';
 import { createSafeStorage } from '@/utils/safeStorage';
 import { readUnexpiredCachedSession } from '@/lib/auth/authBootstrap';
+import { getSupabaseRuntimeConfig } from '@/config/supabaseRuntime';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "";
-const SUPABASE_KEY =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
+const runtimeConfig = getSupabaseRuntimeConfig(import.meta.env);
+export const hasSupabaseConfig = runtimeConfig.available;
 
-export const hasSupabaseConfig = Boolean(SUPABASE_URL && SUPABASE_KEY);
-
-if (!hasSupabaseConfig) {
-  const message = '[Supabase] Missing required environment variables.';
-  throw new Error(`${message} Application startup blocked.`);
-}
+// Keep module evaluation safe when a local desktop build has not been given
+// deployment configuration. App.tsx renders a setup screen in this state, and
+// this inert client prevents unrelated imports from turning that state into a
+// blank renderer before React can mount.
+const SUPABASE_URL = runtimeConfig.available
+  ? runtimeConfig.url
+  : "https://missing-supabase.invalid";
+const SUPABASE_KEY = runtimeConfig.available ? runtimeConfig.key : "missing-supabase-config";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
