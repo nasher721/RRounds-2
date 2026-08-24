@@ -1279,3 +1279,157 @@ body *:not(.animate-spin)::after {
   white-space: nowrap;
 }
 .rr-chip .rr-dot { width: 6px; height: 6px; }
+
+/* Marketing surface: a quieter, more editorial entry point for the clinical app. */
+.landing-page {
+  --landing-ink: #10251f;
+  --landing-muted: #5f706a;
+  --landing-line: rgba(22, 67, 56, 0.12);
+  background:
+    radial-gradient(circle at 84% 10%, rgba(73, 209, 151, 0.15), transparent 26rem),
+    linear-gradient(180deg, #f8fbf9 0%, #f4f8f6 100%);
+}
+
+.landing-header {
+  border-color: var(--landing-line);
+  background-color: rgba(248, 251, 249, 0.84);
+}
+
+.landing-brand-mark {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid rgba(22, 67, 56, 0.14);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(16, 37, 31, 0.08);
+}
+
+.landing-hero {
+  background:
+    linear-gradient(90deg, rgba(248, 251, 249, 0.96), rgba(248, 251, 249, 0.78)),
+    radial-gradient(circle at 68% 45%, rgba(29, 190, 123, 0.1), transparent 24rem);
+}
+
+.landing-hero::after {
+  position: absolute;
+  right: 8%;
+  bottom: 12%;
+  width: 11rem;
+  height: 11rem;
+  border: 1px solid rgba(30, 145, 105, 0.14);
+  border-radius: 999px;
+  content: "";
+  pointer-events: none;
+}
+
+.landing-eyebrow {
+  border-color: rgba(25, 125, 91, 0.2);
+  background: rgba(255, 255, 255, 0.72);
+  color: #45635a;
+  letter-spacing: 0.01em;
+}
+
+.landing-title {
+  color: var(--landing-ink);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+}
+
+.landing-preview-wrap {
+  isolation: isolate;
+}
+
+.landing-preview-glow {
+  position: absolute;
+  inset: 8% -4% -8% 8%;
+  z-index: -1;
+  border-radius: 2rem;
+  background: rgba(35, 166, 112, 0.18);
+  filter: blur(34px);
+  transform: rotate(-3deg);
+}
+
+.landing-preview {
+  overflow: hidden;
+  border-color: rgba(22, 67, 56, 0.16);
+  box-shadow: 0 30px 80px -26px rgba(16, 37, 31, 0.3), 0 4px 12px rgba(16, 37, 31, 0.06);
+  transform: rotate(1deg);
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+.landing-preview:hover {
+  box-shadow: 0 34px 90px -24px rgba(16, 37, 31, 0.36), 0 8px 18px rgba(16, 37, 31, 0.08);
+  transform: rotate(0deg) translateY(-4px);
+}
+
+.landing-preview-icon {
+  box-shadow: inset 0 0 0 1px rgba(25, 125, 91, 0.12);
+}
+
+.landing-sync {
+  box-shadow: inset 0 0 0 1px rgba(27, 147, 91, 0.08);
+}
+
+@media (max-width: 639px) {
+  .landing-preview {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-preview {
+    transition: none;
+  }
+
+  .landing-preview:hover {
+    transform: none;
+  }
+}
+
+.landing-feature-section,
+.landing-security-section {
+  border-color: var(--landing-line);
+}
+
+.landing-stat {
+  border-color: var(--landing-line);
+  background: rgba(244, 248, 246, 0.78);
+}
+
+.landing-stat p:first-child {
+  color: #147953;
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-feature-card {
+  border-color: var(--landing-line);
+  box-shadow: 0 8px 24px -20px rgba(16, 37, 31, 0.38);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.landing-feature-card:hover {
+  border-color: rgba(25, 125, 91, 0.28);
+  box-shadow: 0 18px 30px -22px rgba(16, 37, 31, 0.42);
+  transform: translateY(-2px);
+}
+
+.auth-page {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(73, 209, 151, 0.12), transparent 24rem),
+    linear-gradient(135deg, #f8fbf9 0%, #eef5f1 100%);
+}
+
+.auth-card {
+  border-color: rgba(22, 67, 56, 0.16);
+  box-shadow: 0 28px 70px -30px rgba(16, 37, 31, 0.3), 0 4px 12px rgba(16, 37, 31, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-feature-card {
+    transition: none;
+  }
+
+  .landing-feature-card:hover {
+    transform: none;
+  }
+}

@@ -76,11 +76,11 @@ const FeatureHighlights: React.FC<FeatureHighlightsProps> = () => {
 
   return (
     <>
-      <section id="features" className="scroll-mt-20 border-b border-slate-200/80 bg-white px-4 py-16 sm:px-6 lg:px-8">
+      <section id="features" className="landing-feature-section scroll-mt-20 border-b border-slate-200/80 bg-white px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-4 md:grid-cols-3">
             {stats.map((stat) => (
-              <div key={stat.label} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+              <div key={stat.label} className="landing-stat rounded-xl border border-slate-200 bg-slate-50 p-5">
                 <p className="text-3xl font-semibold tracking-tight text-slate-950">{stat.value}</p>
                 <p className="mt-1 text-sm font-semibold text-slate-800">{stat.label}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{stat.detail}</p>
@@ -103,7 +103,7 @@ const FeatureHighlights: React.FC<FeatureHighlightsProps> = () => {
               {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <article key={feature.title} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <article key={feature.title} className="landing-feature-card rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Icon className="h-4 w-4" aria-hidden="true" />
                     </div>
@@ -117,7 +117,7 @@ const FeatureHighlights: React.FC<FeatureHighlightsProps> = () => {
         </div>
       </section>
 
-      <section id="security" className="scroll-mt-20 border-b border-slate-200/80 bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
+      <section id="security" className="landing-security-section scroll-mt-20 border-b border-slate-200/80 bg-slate-50 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">

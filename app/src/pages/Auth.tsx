@@ -161,7 +161,7 @@ const Auth = () => {
     <main
       id="main-content"
       tabIndex={-1}
-      className="min-h-[100dvh] bg-[#f7f9fb] px-4 py-6 text-slate-950 sm:px-6 lg:px-8"
+      className="auth-page min-h-[100dvh] bg-[#f7f9fb] px-4 py-6 text-slate-950 sm:px-6 lg:px-8"
       aria-labelledby="auth-heading"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -202,7 +202,7 @@ const Auth = () => {
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_-15px_rgba(15,23,42,0.1)]">
+        <section className="auth-card mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_-15px_rgba(15,23,42,0.1)]">
           <div className="h-1 bg-gradient-to-r from-primary/60 via-primary to-primary/60" />
           <div className="p-6 sm:p-8">
             <div className="mb-8">

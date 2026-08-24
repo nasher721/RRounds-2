@@ -32,7 +32,7 @@ const Landing: React.FC = () => {
   return (
     <div className="landing-page min-h-[100dvh] bg-[#f7f9fb] text-slate-950">
       {/* Header */}
-      <header className="sticky top-0 z-[90] border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
+      <header className="landing-header sticky top-0 z-[90] border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <a
             href="#top"
@@ -42,7 +42,9 @@ const Landing: React.FC = () => {
               window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
             }}
           >
-            <img src="/icons/favicon-64.png" alt="" className="h-7 w-7 rounded-md" aria-hidden="true" />
+            <span className="landing-brand-mark" aria-hidden="true">
+              <img src="/icons/favicon-64.png" alt="" className="h-7 w-7 rounded-md" />
+            </span>
             <span className="truncate text-sm font-semibold tracking-tight text-slate-950">Rolling Rounds</span>
           </a>
 
@@ -80,7 +82,7 @@ const Landing: React.FC = () => {
 
       <main id="main-content" tabIndex={-1}>
         {/* Hero */}
-        <section id="top" className="relative overflow-hidden">
+        <section id="top" className="landing-hero relative overflow-hidden">
           <div
             className="absolute inset-0 opacity-40"
             style={{
@@ -91,11 +93,11 @@ const Landing: React.FC = () => {
           />
           <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-28">
             <div className="max-w-2xl">
-              <div className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-slate-200/80 bg-white/70 px-4 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur-sm">
+              <div className="landing-eyebrow mb-7 inline-flex items-center gap-2.5 rounded-full border border-slate-200/80 bg-white/70 px-4 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur-sm">
                 <ShieldCheck className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
                 Built for clinical rounding teams
               </div>
-              <h1 className="max-w-xl text-4xl font-semibold leading-[1.1] tracking-tight text-slate-950 sm:text-5xl lg:text-[3.5rem]">
+              <h1 className="landing-title max-w-xl text-4xl font-semibold leading-[1.1] tracking-tight text-slate-950 sm:text-5xl lg:text-[3.5rem]">
                 A cleaner command center for rounds.
               </h1>
               <p className="mt-6 max-w-xl text-[1.05rem] leading-7 text-slate-500">
@@ -134,11 +136,12 @@ const Landing: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_-15px_rgba(15,23,42,0.1)]">
+            <div className="landing-preview-wrap relative">
+              <div className="landing-preview-glow" aria-hidden="true" />
+              <div className="landing-preview relative rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_-15px_rgba(15,23,42,0.1)]">
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3.5">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <div className="landing-preview-icon flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <ClipboardList className="h-4 w-4" aria-hidden="true" />
                     </div>
                     <div>
@@ -146,7 +149,7 @@ const Landing: React.FC = () => {
                       <p className="text-xs text-slate-400">4 active patients</p>
                     </div>
                   </div>
-                  <div className="rounded-full border border-emerald-200/60 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-600">
+                  <div className="landing-sync rounded-full border border-emerald-200/60 bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-600">
                     Synced
                   </div>
                 </div>
