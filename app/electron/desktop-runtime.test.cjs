@@ -29,3 +29,9 @@ test("resolves the packaged macOS icon inside the project", () => {
   assert.equal(fs.existsSync(iconPath), true);
 });
 
+test("resolves the packaged Windows icon inside the project", () => {
+  const iconPath = resolveDesktopAsset("public/icons/rolling-rounds.ico");
+  assert.equal(path.basename(iconPath), "rolling-rounds.ico");
+  assert.equal(fs.existsSync(iconPath), true);
+});
+

@@ -32,8 +32,8 @@ const Landing: React.FC = () => {
   return (
     <div className="landing-page min-h-[100dvh] bg-[#f7f9fb] text-slate-950">
       {/* Header */}
-      <header className="landing-header sticky top-0 z-[90] border-b border-slate-200/60 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <header className="landing-header sticky top-4 z-[90] mx-4 rounded-full border border-white/80 bg-white/82 shadow-[0_20px_48px_-36px_rgba(10,45,32,0.5),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-3 sm:px-5 lg:px-6">
           <a
             href="#top"
             className="flex min-w-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -72,10 +72,10 @@ const Landing: React.FC = () => {
               recordMarketingEvent("headerSignIn");
               handleSignIn();
             }}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="group inline-flex min-h-11 items-center justify-center gap-3 rounded-full bg-primary py-1.5 pl-5 pr-1.5 text-sm font-semibold text-primary-foreground shadow-[0_14px_32px_-22px_rgba(0,122,70,0.9)] transition-[transform,box-shadow,background-color] duration-500 ease-premium hover:-translate-y-0.5 hover:bg-primary/92 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98]"
           >
             Sign in
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-500 ease-premium group-hover:translate-x-0.5" aria-hidden="true"><ArrowRight className="h-3.5 w-3.5 stroke-[1.5]" /></span>
           </button>
         </div>
       </header>
@@ -110,10 +110,10 @@ const Landing: React.FC = () => {
                     recordMarketingEvent("heroSignIn");
                     handleSignIn();
                   }}
-                  className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md transition-colors hover:bg-primary/90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-primary py-2 pl-6 pr-2 text-sm font-semibold text-primary-foreground shadow-[0_18px_38px_-24px_rgba(0,122,70,0.85)] transition-[transform,box-shadow,background-color] duration-700 ease-premium hover:-translate-y-1 hover:bg-primary/92 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98]"
                 >
                   Sign in to workspace
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-500 ease-premium group-hover:translate-x-1 group-hover:-translate-y-px" aria-hidden="true"><ArrowRight className="h-3.5 w-3.5 stroke-[1.5]" /></span>
                 </button>
                 <button
                   type="button"
@@ -121,7 +121,7 @@ const Landing: React.FC = () => {
                     recordMarketingEvent("featureExplore");
                     scrollToSection("features");
                   }}
-                  className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-slate-200/70 bg-white px-6 text-sm font-semibold text-slate-700 shadow-[0_14px_30px_-26px_rgba(10,45,32,0.55),inset_0_1px_0_rgba(255,255,255,0.9)] transition-[transform,box-shadow,border-color] duration-700 ease-premium hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_18px_34px_-24px_rgba(10,45,32,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98]"
                 >
                   Explore features
                 </button>

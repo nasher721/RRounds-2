@@ -478,7 +478,7 @@ export const DesktopDashboard = () => {
 
   return (
     <div
-      className="min-h-screen bg-background"
+      className="app-shell-premium min-h-[100dvh] bg-background px-3 pb-3 pt-px"
       id="main-content"
       role="main"
       data-testid="dashboard"
@@ -488,12 +488,12 @@ export const DesktopDashboard = () => {
       data-focus-mode={String(focusModeActive)}
     >
       <motion.header
-        className="sticky top-0 z-50 isolate border-b border-border/20 bg-card/95 backdrop-blur-xl no-print shadow-card gradient-mesh-subtle"
+        className="premium-island sticky top-3 z-50 isolate mx-auto mt-3 w-full max-w-[1800px] rounded-[1.75rem] border border-white/70 bg-card/88 backdrop-blur-2xl no-print shadow-[0_22px_55px_-38px_rgba(7,40,27,0.52),inset_0_1px_0_rgba(255,255,255,0.9)]"
         initial={shouldReduceMotion ? false : { opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={transitions.smooth}
       >
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-2.5">
+        <div className="mx-auto w-full px-4 py-2.5 md:px-6 lg:px-8">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
@@ -635,7 +635,7 @@ export const DesktopDashboard = () => {
         </div>
       </motion.header>
 
-      <div ref={dashUtilRef} style={{ opacity: 0 }} className="container mx-auto px-4 md:px-6 lg:px-8 pt-1.5 pb-1.5 no-print relative z-20">
+      <div ref={dashUtilRef} className="mx-auto w-full max-w-[1800px] px-1 pb-1.5 pt-2.5 no-print relative z-20 md:px-3">
         {profileCoaching.showBanner ? (
           <ProfileCoachingBanner message={profileCoaching.message} className="mb-3" />
         ) : null}
@@ -673,8 +673,8 @@ export const DesktopDashboard = () => {
         />
       </div>
 
-      <div ref={dashListRef} style={{ opacity: 0 }} className="h-[calc(100vh-10rem)] w-full no-print pb-4">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 h-full">
+      <div ref={dashListRef} className="h-[calc(100dvh-9.5rem)] w-full no-print pb-2">
+        <div className="mx-auto h-full w-full max-w-[1800px] rounded-[2rem] border border-white/80 bg-black/[0.025] p-1.5 shadow-[0_30px_80px_-52px_rgba(7,40,27,0.6),inset_0_1px_0_rgba(255,255,255,0.85)] dark:border-white/10 dark:bg-white/[0.035]">
           {patients.length === 0 ? (
             <div className="flex flex-col h-full bg-background relative z-10 border-y border-border/25">
               <div className="p-3 md:p-4 pb-0">
@@ -687,7 +687,7 @@ export const DesktopDashboard = () => {
               </ScrollArea>
             </div>
           ) : (
-            <div className="flex h-full bg-background relative z-10 border-y border-border/25">
+            <div className="flex h-full overflow-hidden rounded-[calc(2rem-0.375rem)] border border-border/40 bg-card relative z-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
               {!panelLeftCollapsed ? (
                 <PatientRosterRail
                   searchInputRef={searchInputRef}
@@ -711,6 +711,9 @@ export const DesktopDashboard = () => {
                   >
                     <PanelLeftOpen className="h-4 w-4" aria-hidden="true" />
                   </Button>
+                  <span className="mt-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground [writing-mode:vertical-rl]">
+                    Patients
+                  </span>
                 </div>
               )}
               {filteredPatients.length === 0 ? (

@@ -202,8 +202,9 @@ const Auth = () => {
           </div>
         </section>
 
-        <section className="auth-card mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_-15px_rgba(15,23,42,0.1)]">
-          <div className="h-1 bg-gradient-to-r from-primary/60 via-primary to-primary/60" />
+        <section className="auth-card mx-auto w-full max-w-md rounded-[2.25rem] border border-white/85 bg-black/[0.025] p-1.5 shadow-[0_38px_90px_-46px_rgba(7,40,27,0.48),inset_0_1px_0_rgba(255,255,255,0.95)]">
+          <div className="overflow-hidden rounded-[calc(2.25rem-0.375rem)] border border-slate-200/65 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
+          <div className="h-1 bg-gradient-to-r from-primary/20 via-primary/80 to-primary/20" />
           <div className="p-6 sm:p-8">
             <div className="mb-8">
               <h2 id="auth-heading" className="text-2xl font-semibold tracking-tight text-slate-950">
@@ -328,6 +329,7 @@ const Auth = () => {
             <p className="mt-6 text-center text-xs text-slate-600">
               Access is restricted to accounts provisioned by your administrator.
             </p>
+          </div>
           </div>
         </section>
       </div>

@@ -5,6 +5,7 @@ import { cardHover, collapseVariants } from '@/lib/animations';
 import { durations, ease, staggers } from '@/lib/anime-presets';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { FileText, Calendar, Copy, Trash2, ChevronDown, ChevronUp, Clock, ImageIcon, TestTube, Sparkles, Loader2, History, Settings2, X, Eraser, ClipboardList, AlertTriangle, User } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -37,6 +38,7 @@ import { useChangeTracking } from "@/contexts/ChangeTrackingContext";
 import { useTeam } from "@/contexts/TeamContext";
 import { DashboardFocusTarget, SystemsReviewMode } from "@/lib/dashboardPrefs";
 import { cn } from "@/lib/utils";
+import { stripHtml } from "@/lib/sanitize";
 import { normalizePatientAlerts, patientSafetyLabel } from "@/lib/patientIdentity";
 import { extractPatientImageObjectKeyList } from "@/lib/patientImages";
 import {
@@ -88,6 +90,46 @@ interface PatientCardProps {
   chrome?: "card" | "workspace";
 }
 
+interface TimedIntervalEvent {
+  id: string;
+  label: string;
+  minutes: number;
+  text: string;
+}
+
+const parseTimedIntervalEvents = (value: string): TimedIntervalEvent[] =>
+  value
+    .split(/\r?\n/)
+    .map((line, index) => {
+      const clockMatch = line.match(/\b(\d{1,2}):(\d{2})\s*(AM|PM)?\b/i);
+      const hourMatch = clockMatch ? null : line.match(/\b(\d{1,2})\s*(AM|PM)\b/i);
+      if (!clockMatch && !hourMatch) return null;
+
+      const rawHour = Number((clockMatch ?? hourMatch)?.[1] ?? 0);
+      const minute = Number(clockMatch?.[2] ?? 0);
+      const meridiem = (clockMatch?.[3] ?? hourMatch?.[2] ?? "").toUpperCase();
+      if (rawHour > (meridiem ? 12 : 23) || minute > 59) return null;
+
+      let hour = rawHour;
+      if (meridiem === "PM" && hour < 12) hour += 12;
+      if (meridiem === "AM" && hour === 12) hour = 0;
+      const matchedTime = (clockMatch ?? hourMatch)?.[0] ?? "";
+      const text = line
+        .replace(matchedTime, "")
+        .replace(/^\s*[-–—:|]\s*/, "")
+        .trim();
+      if (!text) return null;
+
+      return {
+        id: `${index}-${hour}-${minute}`,
+        label: matchedTime.toUpperCase(),
+        minutes: hour * 60 + minute,
+        text,
+      };
+    })
+    .filter((event): event is TimedIntervalEvent => event !== null)
+    .sort((a, b) => a.minutes - b.minutes);
+
 const PatientCardComponent = ({
   patient,
   onUpdate,
@@ -118,6 +160,15 @@ const PatientCardComponent = ({
   const [showSystemsConfig, setShowSystemsConfig] = React.useState(false);
   const [pendingClearField, setPendingClearField] = React.useState<string | null>(null);
   const [showClearSystemsDialog, setShowClearSystemsDialog] = React.useState(false);
+  const [intervalEventsView, setIntervalEventsView] = React.useState<"entry" | "timeline">("entry");
+  const intervalEventsPlainText = React.useMemo(
+    () => stripHtml(patient.intervalEvents ?? ""),
+    [patient.intervalEvents],
+  );
+  const timedIntervalEvents = React.useMemo(
+    () => parseTimedIntervalEvents(intervalEventsPlainText),
+    [intervalEventsPlainText],
+  );
   const clearSectionLabel = React.useMemo(() => {
     if (!pendingClearField) return "this section";
     const labels: Record<string, string> = {
@@ -665,6 +716,41 @@ const PatientCardComponent = ({
                 </div>
               )}
 
+              {/* Systems Review — primary rounds workspace */}
+              {sectionVisibility.systemsReview && (
+                <div
+                  ref={bindFocusContainer("systemsReview")}
+                  onFocusCapture={handleEditableFocus("systemsReview")}
+                  data-editor-type="systems-review"
+                  data-documentation-section="systems"
+                  id="documentation-section-systems"
+                  className="scroll-mt-32 rounded-[1.5rem] border border-primary/15 bg-card p-1.5 shadow-[0_24px_54px_-42px_hsl(var(--primary)/0.55),inset_0_1px_0_rgba(255,255,255,0.85)]"
+                >
+                  <div className="rounded-[calc(1.5rem-0.375rem)] bg-background/35 p-2 sm:p-3">
+                    <PatientSystemsReview
+                      patient={patient}
+                      todos={todos}
+                      generating={generating}
+                      autotexts={autotexts}
+                      globalFontSize={globalFontSize}
+                      changeTracking={changeTracking}
+                      onUpdate={onUpdate}
+                      addTodo={addTodo}
+                      toggleTodo={toggleTodo}
+                      deleteTodo={deleteTodo}
+                      generateTodos={(section) => generateTodos(patient, section as TodoSection)}
+                      onClearAll={clearAllSystems}
+                      onOpenConfig={() => setShowSystemsConfig(true)}
+                      systemsReviewMode={systemsReviewMode}
+                      systemsCustomCombineKeys={systemsCustomCombineKeys}
+                      onSystemsReviewModeChange={onSystemsReviewModeChange}
+                      onSystemsCustomCombineKeysChange={onSystemsCustomCombineKeysChange}
+                      onAnyEditorFocus={() => handleEditorFocusIntent("systemsReview")}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Clinical Summary */}
               {sectionVisibility.clinicalSummary && (
                 <div
@@ -771,6 +857,38 @@ const PatientCardComponent = ({
                       )}
                     </div>
                     <div className="flex gap-1 no-print">
+                      <div
+                        className="mr-1 inline-flex rounded-full border border-border/40 bg-muted/60 p-0.5"
+                        role="group"
+                        aria-label="Interval events view"
+                      >
+                        <button
+                          type="button"
+                          className={cn(
+                            "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                            intervalEventsView === "entry"
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                          onClick={() => setIntervalEventsView("entry")}
+                          aria-pressed={intervalEventsView === "entry"}
+                        >
+                          Text
+                        </button>
+                        <button
+                          type="button"
+                          className={cn(
+                            "rounded-full px-3 py-1.5 text-xs font-semibold transition-colors",
+                            intervalEventsView === "timeline"
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                          onClick={() => setIntervalEventsView("timeline")}
+                          aria-pressed={intervalEventsView === "timeline"}
+                        >
+                          Timeline
+                        </button>
+                      </div>
                       {!isWorkspace && (
                         <>
                           {isGeneratingEvents || isGeneratingSummary ? (
@@ -858,26 +976,50 @@ const PatientCardComponent = ({
                       )}
                     </div>
                   </div>
-                  <div
-                    className="space-y-1"
-                    ref={bindFocusContainer("intervalEvents")}
-                    onFocusCapture={handleEditableFocus("intervalEvents")}
-                  >
-                    <div className="bg-background/50 rounded-lg p-3 border border-border/40 focus-within:border-primary/40 focus-within:bg-background">
-                      <RichTextEditor
-                        value={patient.intervalEvents}
-                        onChange={(value) => onUpdate(patient.id, 'intervalEvents', value)}
-                        placeholder="Enter interval events..."
-                        minHeight="80px"
-                        autotexts={autotexts}
-                        fontSize={globalFontSize}
-                        changeTracking={changeTracking}
+                  {intervalEventsView === "entry" ? (
+                    <div
+                      className="space-y-1"
+                      ref={bindFocusContainer("intervalEvents")}
+                      onFocusCapture={handleEditableFocus("intervalEvents")}
+                    >
+                      <Textarea
+                        value={intervalEventsPlainText}
+                        onChange={(event) => onUpdate(patient.id, "intervalEvents", event.target.value)}
+                        placeholder={"Enter interval events. Start timed events with 06:30 or 2 PM to include them in Timeline view."}
+                        className="min-h-[132px] resize-y bg-card text-sm leading-6"
+                        style={{ fontSize: `${globalFontSize}px` }}
+                        aria-label="Interval events"
                       />
+                      {!isWorkspace && (
+                        <FieldTimestamp timestamp={patient.fieldTimestamps?.intervalEvents} className="pl-1" />
+                      )}
                     </div>
-                    {!isWorkspace && (
-                      <FieldTimestamp timestamp={patient.fieldTimestamps?.intervalEvents} className="pl-1" />
-                    )}
-                  </div>
+                  ) : (
+                    <div className="rounded-[1.25rem] border border-border/40 bg-card p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
+                      {timedIntervalEvents.length > 0 ? (
+                        <ol className="relative space-y-4 before:absolute before:bottom-2 before:left-[4.55rem] before:top-2 before:w-px before:bg-border/60">
+                          {timedIntervalEvents.map((event) => (
+                            <li key={event.id} className="relative grid grid-cols-[4rem_1fr] gap-5">
+                              <time className="pt-0.5 text-right text-xs font-semibold tabular-nums text-muted-foreground">
+                                {event.label}
+                              </time>
+                              <div className="relative rounded-xl border border-border/35 bg-background/65 px-3.5 py-2.5 text-sm leading-5 text-foreground/90 before:absolute before:-left-[1.03rem] before:top-3.5 before:h-2 before:w-2 before:rounded-full before:bg-primary before:ring-4 before:ring-card">
+                                {event.text}
+                              </div>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <div className="flex min-h-28 flex-col items-center justify-center px-4 text-center">
+                          <Clock className="mb-2 h-5 w-5 text-primary" aria-hidden="true" />
+                          <p className="text-sm font-semibold">No timed events yet</p>
+                          <p className="mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
+                            Add a time such as 06:30 or 2 PM to any line in Text view and it will appear here.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {isWorkspace && (
                     <SectionFooterChrome
                       fieldLabel="interval events"
@@ -1086,38 +1228,6 @@ const PatientCardComponent = ({
                 </div>
               )}
 
-              {/* Systems Review */}
-              {sectionVisibility.systemsReview && (
-                <div
-                  ref={bindFocusContainer("systemsReview")}
-                  onFocusCapture={handleEditableFocus("systemsReview")}
-                  data-editor-type="systems-review"
-                  data-documentation-section="systems"
-                  id="documentation-section-systems"
-                  className="scroll-mt-32"
-                >
-                  <PatientSystemsReview
-                    patient={patient}
-                    todos={todos}
-                    generating={generating}
-                    autotexts={autotexts}
-                    globalFontSize={globalFontSize}
-                    changeTracking={changeTracking}
-                    onUpdate={onUpdate}
-                    addTodo={addTodo}
-                    toggleTodo={toggleTodo}
-                    deleteTodo={deleteTodo}
-                    generateTodos={(section) => generateTodos(patient, section as TodoSection)}
-                    onClearAll={clearAllSystems}
-                    onOpenConfig={() => setShowSystemsConfig(true)}
-                    systemsReviewMode={systemsReviewMode}
-                    systemsCustomCombineKeys={systemsCustomCombineKeys}
-                    onSystemsReviewModeChange={onSystemsReviewModeChange}
-                    onSystemsCustomCombineKeysChange={onSystemsCustomCombineKeysChange}
-                    onAnyEditorFocus={() => handleEditorFocusIntent("systemsReview")}
-                  />
-                </div>
-              )}
             </div>
           </motion.div>
         )}

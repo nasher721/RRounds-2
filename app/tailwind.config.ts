@@ -246,18 +246,14 @@ export default {
 				shake: 'shake 0.35s ease-in-out',
 				'glow-pulse': 'glow-pulse 3s ease-in-out infinite'
 			},
+			transitionTimingFunction: {
+				premium: 'cubic-bezier(0.32, 0.72, 0, 1)'
+			},
 			fontFamily: {
 			sans: [
 				'Urbanist',
 				'ui-sans-serif',
 				'system-ui',
-				'-apple-system',
-				'BlinkMacSystemFont',
-				'Segoe UI',
-				'Roboto',
-				'Helvetica Neue',
-				'Arial',
-				'Noto Sans',
 				'sans-serif'
 			],
 			serif: [

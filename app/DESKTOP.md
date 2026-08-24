@@ -22,7 +22,8 @@ npm ci                    # install the pinned desktop toolchain
 npm run desktop:test      # test the Electron runtime policy
 npm run desktop:dev       # Vite dev server + Electron (hot reload)
 npm run desktop:preview   # npm run build:dev, then Electron over the built dist
-npm run desktop:dist:mac:local # development-configured arm64 DMG for local use
+npm run desktop:dist:win:local # unsigned Windows x64 NSIS installer for local use
+npm run desktop:dist:mac:local # unsigned macOS DMG for local use (run on macOS)
 npm run desktop:dist      # npm run build + electron-builder → installers in ./release
 ```
 
@@ -52,12 +53,21 @@ blank window. Never put a Supabase service-role key in this file.
 
 `desktop:dist` uses electron-builder (config under the `build` key in `package.json`):
 
-- macOS → `.dmg`
-- Windows → NSIS installer
+- macOS Intel + Apple Silicon → one universal `.dmg` using
+  `public/icons/rolling-rounds.icns`
+- Windows x64 → assisted NSIS installer using `public/icons/rolling-rounds.ico`, with
+  selectable install location plus Start Menu and desktop shortcuts
 - Linux → AppImage
 
-Before distributing, provide proper app icons (an `.icns` for macOS / `.ico` for Windows);
-the config currently points at `public/icons/icon-512.png` as a placeholder.
+Local installers are intentionally unsigned. Windows may show a SmartScreen warning,
+and macOS may require opening the app from Finder's context menu. Public distribution
+requires an Authenticode certificate on Windows and an Apple Developer ID application
+certificate plus notarization on macOS.
+
+The manual `Desktop installers` GitHub Actions workflow builds both operating-system
+artifacts on native runners and uploads them separately. It uses the development build
+configuration and never embeds a service-role key. For a connected production build,
+provide the public Vite/Supabase values through the normal build environment.
 
 ## Supabase origin note
 

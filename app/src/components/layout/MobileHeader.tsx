@@ -37,10 +37,10 @@ export const MobileHeader = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-background/85 backdrop-blur-xl border-b border-border/30 safe-area-top">
+    <header className="safe-area-top sticky top-2 z-40 mx-2 rounded-[1.35rem] border border-white/70 bg-background/84 shadow-[0_18px_42px_-32px_rgba(7,40,27,0.5),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl">
       <div className="flex items-center justify-between h-14 px-4">
         {isSearchOpen && onSearchChange ? (
-          <div className="flex items-center gap-2 flex-1 animate-fade-in">
+          <div className="flex flex-1 items-center gap-2 animate-[fade-in_500ms_cubic-bezier(0.32,0.72,0,1)]">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
               <Input

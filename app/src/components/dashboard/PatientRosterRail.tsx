@@ -202,7 +202,7 @@ export const PatientRosterRail = ({
 
   return (
     <aside
-      className="rr-ws flex h-full min-h-0 w-[288px] flex-none flex-col border-r"
+      className="rr-ws flex h-full min-h-0 w-[300px] flex-none flex-col border-r shadow-[inset_-1px_0_0_rgba(255,255,255,0.7)]"
       style={{ background: "var(--rr-bg-secondary)", borderColor: "var(--rr-sep)" }}
       aria-label="Patient list"
     >
@@ -232,12 +232,14 @@ export const PatientRosterRail = ({
         ) : null}
         <button
           type="button"
-          className="rr-icon-btn"
+          className="rr-btn rr-btn-secondary h-8 gap-1.5 px-2.5 text-xs"
           aria-label="Collapse patient list"
           title="Collapse patient list"
           onClick={() => setLeftPanelCollapsed(true)}
+          aria-expanded="true"
         >
           <PanelLeftClose className="h-4 w-4" aria-hidden="true" />
+          Collapse
         </button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

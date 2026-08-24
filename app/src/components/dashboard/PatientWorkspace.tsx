@@ -160,7 +160,7 @@ export const PatientWorkspace = ({ onOpenAIPalette }: PatientWorkspaceProps) => 
   const chartBodyRef = React.useRef<HTMLDivElement | null>(null);
   const [signOffOpen, setSignOffOpen] = React.useState(false);
   const [handoffOpen, setHandoffOpen] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<DocumentationSectionId>("summary");
+  const [activeTab, setActiveTab] = React.useState<DocumentationSectionId>("systems");
   const [isSwitchingPatient, setIsSwitchingPatient] = React.useState(false);
   const previousPatientIdRef = React.useRef<string | null>(null);
 
@@ -179,7 +179,7 @@ export const PatientWorkspace = ({ onOpenAIPalette }: PatientWorkspaceProps) => 
     }
     if (previousPatientIdRef.current && previousPatientIdRef.current !== nextId) {
       setIsSwitchingPatient(true);
-      setActiveTab("summary");
+      setActiveTab("systems");
       if (chartBodyRef.current) chartBodyRef.current.scrollTop = 0;
       const timer = window.setTimeout(() => setIsSwitchingPatient(false), 160);
       previousPatientIdRef.current = nextId;

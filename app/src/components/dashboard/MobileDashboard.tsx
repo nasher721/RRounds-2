@@ -215,12 +215,12 @@ export const MobileDashboard = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="app-shell-premium min-h-[100dvh] bg-background">
       {/* Patient Detail View */}
       {selectedPatient ? (
         isPatientTransitioning ? (
           <div
-            className="min-h-screen bg-background safe-area-top"
+            className="min-h-[100dvh] bg-transparent safe-area-top"
             role="status"
             aria-live="polite"
             aria-label={`Loading ${selectedPatient.name || "patient"}`}

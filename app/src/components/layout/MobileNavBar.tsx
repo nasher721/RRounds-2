@@ -20,7 +20,7 @@ export const MobileNavBar = ({ activeTab, onTabChange, patientCount = 0 }: Mobil
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-t border-border/30 safe-area-bottom gradient-mesh-subtle"
+      className="safe-area-bottom fixed bottom-2 left-2 right-2 z-50 rounded-[1.5rem] border border-white/70 bg-background/86 shadow-[0_24px_55px_-34px_rgba(7,40,27,0.58),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl"
       aria-label="Main sections"
     >
       <div className="flex items-center justify-around h-16 px-2">
@@ -36,19 +36,19 @@ export const MobileNavBar = ({ activeTab, onTabChange, patientCount = 0 }: Mobil
                 : label
             }
             className={cn(
-              "flex flex-col items-center justify-center flex-1 min-h-[48px] h-full gap-0.5 transition-all duration-200 relative rounded-lg active:scale-95 motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+              "relative flex h-full min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl transition-[transform,color,background-color] duration-500 ease-premium active:scale-[0.97] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               activeTab === id
                 ? "text-primary"
                 : "text-muted-foreground/60"
             )}
           >
             {activeTab === id && (
-              <span className="absolute top-0 left-1/4 right-1/4 h-[3px] rounded-full bg-primary" aria-hidden />
+              <span className="absolute left-1/3 right-1/3 top-0 h-0.5 rounded-full bg-primary shadow-[0_4px_12px_hsl(var(--primary)/0.35)]" aria-hidden />
             )}
             <div
               className={cn(
-                "relative px-4 py-1.5 rounded-2xl transition-all duration-200",
-                activeTab === id && "bg-primary/8 shadow-sm"
+                "relative rounded-2xl px-4 py-1.5 transition-[transform,background-color,box-shadow] duration-500 ease-premium",
+                activeTab === id && "-translate-y-0.5 bg-primary/[0.08] shadow-[inset_0_0_0_1px_hsl(var(--primary)/0.08)]"
               )}
             >
               <Icon className={cn("h-5 w-5", activeTab === id && "text-primary")} aria-hidden />
