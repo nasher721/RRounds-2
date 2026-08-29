@@ -1,11 +1,14 @@
 import * as React from "react";
-import { BookOpen, ExternalLink, ClipboardList, Stethoscope, Calculator, Info, Loader2, ShieldCheck } from "lucide-react";
+import { BookOpen, ExternalLink, ClipboardList, Stethoscope, Calculator, Info, Loader2, ShieldCheck, Microscope, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useIBCCState } from "@/contexts/IBCCContext";
+import { useOpenEvidenceState } from "@/hooks/useOpenEvidenceState";
 
 export const MobileReferencePanel = () => {
   const { allChapters, isDataLoaded, ensureDataLoaded, openPanel, viewChapter } = useIBCCState();
+  const { query, setQuery, search } = useOpenEvidenceState();
 
   React.useEffect(() => {
     void ensureDataLoaded();
@@ -48,6 +51,34 @@ export const MobileReferencePanel = () => {
       <p className="text-sm text-muted-foreground mb-4">
         Quick access to IBCC clinical guidelines and protocols.
       </p>
+
+      <Card className="p-3 space-y-2">
+        <div className="flex items-center gap-2">
+          <Microscope className="h-4 w-4 text-primary" aria-hidden />
+          <h3 className="text-sm font-medium">Search Open Evidence</h3>
+        </div>
+        <form
+          className="flex items-center gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            search(query, "mobile");
+          }}
+        >
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="e.g. tranexamic acid in trauma"
+            aria-label="Search Open Evidence"
+            className="min-h-11"
+          />
+          <Button type="submit" size="icon" className="min-h-11 min-w-11 flex-shrink-0" disabled={!query.trim()} aria-label="Search">
+            <Search className="h-4 w-4" aria-hidden />
+          </Button>
+        </form>
+        <p className="text-[11px] text-muted-foreground">
+          Opens openevidence.com in a new tab. Don&apos;t include patient identifiers.
+        </p>
+      </Card>
 
       {!isDataLoaded ? (
         <div className="flex min-h-28 items-center justify-center gap-2 text-sm text-muted-foreground" role="status">

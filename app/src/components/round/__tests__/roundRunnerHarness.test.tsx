@@ -15,6 +15,7 @@ import { DashboardProvider } from "@/contexts/DashboardContext";
 import { DashboardTodosProvider } from "@/contexts/DashboardTodosContext";
 import { IBCCProvider } from "@/contexts/IBCCContext";
 import { ClinicalGuidelinesProvider } from "@/contexts/ClinicalGuidelinesContext";
+import { OpenEvidenceProvider } from "@/contexts/OpenEvidenceContext";
 import { DashboardLayoutProvider } from "@/context/DashboardLayoutContext";
 import { RoundSessionProvider } from "@/contexts/RoundSessionContext";
 import { createContinuityMeta, roundSyncEngine } from "@/lib/round/sync";
@@ -167,26 +168,28 @@ function RoundProviders({
             <DashboardLayoutProvider>
               <IBCCProvider>
                 <ClinicalGuidelinesProvider>
-                  <TooltipProvider>
-                    <ChangeTrackingProvider>
-                      <DashboardProvider {...buildDashboardValue(patients, patientVerification, filteredPatients)}>
-                        <DashboardTodosProvider
-                          todosMap={makeDashboardTodosMap(patients)}
-                          verification={todosVerification}
-                        >
-                          <RoundSessionProvider
-                            userId="test-user"
-                            patientIds={patientIds}
-                            patientSaveStates={patientSaveStates}
-                            dataVerificationBlocked={dataVerificationBlocked}
-                            disablePersistence={disablePersistence}
+                  <OpenEvidenceProvider>
+                    <TooltipProvider>
+                      <ChangeTrackingProvider>
+                        <DashboardProvider {...buildDashboardValue(patients, patientVerification, filteredPatients)}>
+                          <DashboardTodosProvider
+                            todosMap={makeDashboardTodosMap(patients)}
+                            verification={todosVerification}
                           >
-                            {children}
-                          </RoundSessionProvider>
-                        </DashboardTodosProvider>
-                      </DashboardProvider>
-                    </ChangeTrackingProvider>
-                  </TooltipProvider>
+                            <RoundSessionProvider
+                              userId="test-user"
+                              patientIds={patientIds}
+                              patientSaveStates={patientSaveStates}
+                              dataVerificationBlocked={dataVerificationBlocked}
+                              disablePersistence={disablePersistence}
+                            >
+                              {children}
+                            </RoundSessionProvider>
+                          </DashboardTodosProvider>
+                        </DashboardProvider>
+                      </ChangeTrackingProvider>
+                    </TooltipProvider>
+                  </OpenEvidenceProvider>
                 </ClinicalGuidelinesProvider>
               </IBCCProvider>
             </DashboardLayoutProvider>

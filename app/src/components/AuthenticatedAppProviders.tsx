@@ -4,8 +4,10 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { DashboardLayoutProvider } from "@/context/DashboardLayoutContext";
 import { IBCCProvider } from "@/contexts/IBCCContext";
 import { ClinicalGuidelinesProvider } from "@/contexts/ClinicalGuidelinesContext";
+import { OpenEvidenceProvider } from "@/contexts/OpenEvidenceContext";
 import { CurrentPatientsProvider } from "@/contexts/CurrentPatientsContext";
 import { SessionTimeoutGuard } from "@/components/SessionTimeoutGuard";
+import { EvidenceSelectionPopover } from "@/components/open-evidence";
 import { isRoundRunnerEnabled } from "@/lib/round/isRoundRunnerEnabled";
 
 const UnifiedAIChatbot = React.lazy(() =>
@@ -31,15 +33,18 @@ export function AuthenticatedAppProviders({
         <DashboardLayoutProvider>
           <IBCCProvider>
             <ClinicalGuidelinesProvider>
-              <CurrentPatientsProvider>
-                <SessionTimeoutGuard />
-                {showGlobalAssistant ? (
-                  <React.Suspense fallback={null}>
-                    <UnifiedAIChatbot />
-                  </React.Suspense>
-                ) : null}
-                {children}
-              </CurrentPatientsProvider>
+              <OpenEvidenceProvider>
+                <CurrentPatientsProvider>
+                  <SessionTimeoutGuard />
+                  <EvidenceSelectionPopover />
+                  {showGlobalAssistant ? (
+                    <React.Suspense fallback={null}>
+                      <UnifiedAIChatbot />
+                    </React.Suspense>
+                  ) : null}
+                  {children}
+                </CurrentPatientsProvider>
+              </OpenEvidenceProvider>
             </ClinicalGuidelinesProvider>
           </IBCCProvider>
         </DashboardLayoutProvider>
