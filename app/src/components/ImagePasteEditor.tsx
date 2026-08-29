@@ -1846,6 +1846,8 @@ export const ImagePasteEditor = ({
                       src={url}
                       alt={`Thumbnail ${index + 1}`}
                       className="w-16 h-16 object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <span className="flex h-full w-full items-center justify-center bg-muted">
