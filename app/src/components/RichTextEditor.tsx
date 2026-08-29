@@ -669,6 +669,7 @@ export const RichTextEditor = ({
           aria-label={ariaLabelledby ? undefined : section ? `${section} notes` : placeholder}
           spellCheck
           contentEditable
+          data-evidence-selectable="true"
           className={cn(
             "p-3 rounded-lg empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0 prose prose-sm max-w-none relative whitespace-pre-wrap text-foreground",
             showDenseToolbar && "rounded-t-none",

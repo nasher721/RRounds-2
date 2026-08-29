@@ -6,12 +6,14 @@ import { AutotextManager } from "@/components/AutotextManager";
 import { EpicHandoffImport } from "@/components/EpicHandoffImport";
 import { IBCCPanel } from "@/components/ibcc";
 import { GuidelinesPanelLazy } from "@/components/guidelines";
+import { OpenEvidencePanelLazy } from "@/components/open-evidence";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown, Plus, ArrowUpDown, Printer, Trash2, Loader2 } from "lucide-react";
 import type { Patient } from "@/types/patient";
 import type { MobileTab } from "@/components/layout";
 import { useIBCCState } from "@/contexts/IBCCContext";
 import { useClinicalGuidelinesState } from "@/contexts/ClinicalGuidelinesContext";
+import { useOpenEvidenceState } from "@/hooks/useOpenEvidenceState";
 import {
   Dialog,
   DialogContent,
@@ -101,6 +103,7 @@ export const MobileDashboard = () => {
   const changeTracking = useChangeTracking();
   const { closePanel: closeIbccPanel } = useIBCCState();
   const { closePanel: closeGuidelinesPanel } = useClinicalGuidelinesState();
+  const { closePanel: closeOpenEvidencePanel } = useOpenEvidenceState();
 
   const outstandingTodosCount = useMemo(() => {
     return Object.values(todosMap).reduce((total, patientTodos) => {
@@ -143,9 +146,10 @@ export const MobileDashboard = () => {
     if (patient) {
       closeIbccPanel();
       closeGuidelinesPanel();
+      closeOpenEvidencePanel();
     }
     onPatientSelect(patient);
-  }, [onPatientSelect, resetWindowScroll, closeIbccPanel, closeGuidelinesPanel]);
+  }, [onPatientSelect, resetWindowScroll, closeIbccPanel, closeGuidelinesPanel, closeOpenEvidencePanel]);
 
   const handleTabChange = useCallback((tab: MobileTab) => {
     resetWindowScroll();
@@ -530,6 +534,7 @@ export const MobileDashboard = () => {
       {/* Overlay-only panels — never stack into document flow under other tabs */}
       <IBCCPanel variant="overlay" />
       <GuidelinesPanelLazy />
+      <OpenEvidencePanelLazy />
 
       {/* Remove patient confirmation */}
       <AlertDialog open={pendingRemoveId !== null} onOpenChange={(open) => !open && setPendingRemoveId(null)}>

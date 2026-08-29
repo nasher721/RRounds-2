@@ -12,6 +12,7 @@ import { DashboardProvider } from "@/contexts/DashboardContext";
 import { DashboardTodosProvider } from "@/contexts/DashboardTodosContext";
 import { IBCCProvider } from "@/contexts/IBCCContext";
 import { ClinicalGuidelinesProvider } from "@/contexts/ClinicalGuidelinesContext";
+import { OpenEvidenceProvider } from "@/contexts/OpenEvidenceContext";
 import { DashboardLayoutProvider } from "@/context/DashboardLayoutContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DesktopDashboard } from "@/components/dashboard/DesktopDashboard";
@@ -232,35 +233,37 @@ function AppProviders({
             <DashboardLayoutProvider>
               <IBCCProvider>
                 <ClinicalGuidelinesProvider>
-                  <TooltipProvider>
-                    <ChangeTrackingProvider>
-                      <DashboardProvider
-                        {...buildDashboardValue({
-                          patients,
-                          filteredPatients,
-                          mobileTab,
-                          selectedPatient,
-                          desktopSelectedPatientId,
-                          setDesktopSelectedPatientId,
-                          searchQuery,
-                          setSearchQuery,
-                          filter,
-                          setFilter,
-                          onAddPatient,
-                          onRemovePatient,
-                          onDuplicatePatient,
-                          onClearAll,
-                          onRefetchPatients,
-                          patientListViewMode,
-                          setPatientListViewMode,
-                        })}
-                      >
-                        <DashboardTodosProvider todosMap={makeDashboardTodosMap(patients)}>
-                          {children}
-                        </DashboardTodosProvider>
-                      </DashboardProvider>
-                    </ChangeTrackingProvider>
-                  </TooltipProvider>
+                  <OpenEvidenceProvider>
+                    <TooltipProvider>
+                      <ChangeTrackingProvider>
+                        <DashboardProvider
+                          {...buildDashboardValue({
+                            patients,
+                            filteredPatients,
+                            mobileTab,
+                            selectedPatient,
+                            desktopSelectedPatientId,
+                            setDesktopSelectedPatientId,
+                            searchQuery,
+                            setSearchQuery,
+                            filter,
+                            setFilter,
+                            onAddPatient,
+                            onRemovePatient,
+                            onDuplicatePatient,
+                            onClearAll,
+                            onRefetchPatients,
+                            patientListViewMode,
+                            setPatientListViewMode,
+                          })}
+                        >
+                          <DashboardTodosProvider todosMap={makeDashboardTodosMap(patients)}>
+                            {children}
+                          </DashboardTodosProvider>
+                        </DashboardProvider>
+                      </ChangeTrackingProvider>
+                    </TooltipProvider>
+                  </OpenEvidenceProvider>
                 </ClinicalGuidelinesProvider>
               </IBCCProvider>
             </DashboardLayoutProvider>
@@ -916,15 +919,17 @@ describe("production dashboard roster regression harness", () => {
                 <DashboardLayoutProvider>
                   <IBCCProvider>
                     <ClinicalGuidelinesProvider>
-                      <TooltipProvider>
-                        <ChangeTrackingProvider>
-                          <DashboardProvider {...value}>
-                            <DashboardTodosProvider todosMap={makeDashboardTodosMap(dashboardPatients20)}>
-                              <MobileDashboard />
-                            </DashboardTodosProvider>
-                          </DashboardProvider>
-                        </ChangeTrackingProvider>
-                      </TooltipProvider>
+                      <OpenEvidenceProvider>
+                        <TooltipProvider>
+                          <ChangeTrackingProvider>
+                            <DashboardProvider {...value}>
+                              <DashboardTodosProvider todosMap={makeDashboardTodosMap(dashboardPatients20)}>
+                                <MobileDashboard />
+                              </DashboardTodosProvider>
+                            </DashboardProvider>
+                          </ChangeTrackingProvider>
+                        </TooltipProvider>
+                      </OpenEvidenceProvider>
                     </ClinicalGuidelinesProvider>
                   </IBCCProvider>
                 </DashboardLayoutProvider>

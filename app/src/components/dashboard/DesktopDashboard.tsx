@@ -22,6 +22,7 @@ import { ChangeTrackingControls } from "@/components/ChangeTrackingControls";
 import { IBCCPanel } from "@/components/ibcc";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GuidelinesPanel } from "@/components/guidelines";
+import { OpenEvidencePanel } from "@/components/open-evidence";
 import { SectionVisibilityPanel } from "@/components/SectionVisibilityPanel";
 import { DesktopSpecialtySelector } from "@/components/settings/DesktopSpecialtySelector";
 import { DesktopAIModelSettingsDialog } from "@/components/settings/DesktopAIModelSettingsDialog";
@@ -1039,6 +1040,7 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                 <TabsList className="mb-3">
                   <TabsTrigger value="ibcc">IBCC</TabsTrigger>
                   <TabsTrigger value="guidelines">Guidelines</TabsTrigger>
+                  <TabsTrigger value="open-evidence">Open Evidence</TabsTrigger>
                 </TabsList>
                 <TabsContent value="ibcc" className="m-0">
                   <div className="h-72 overflow-hidden rounded-md border border-border/30">
@@ -1048,6 +1050,11 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                 <TabsContent value="guidelines" className="m-0">
                   <div className="h-72 overflow-hidden rounded-md border border-border/30">
                     <GuidelinesPanel />
+                  </div>
+                </TabsContent>
+                <TabsContent value="open-evidence" className="m-0">
+                  <div className="h-72 overflow-hidden rounded-md border border-border/30">
+                    <OpenEvidencePanel />
                   </div>
                 </TabsContent>
               </Tabs>
