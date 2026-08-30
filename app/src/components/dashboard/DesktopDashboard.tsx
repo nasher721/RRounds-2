@@ -19,23 +19,44 @@ import { CSVColumnMapper } from "@/components/import/CSVColumnMapper";
 import { organizeCsvImportRecord } from "@/lib/import/organizeImportedPatient";
 import { SmartPatientImport } from "@/components/SmartPatientImport";
 import { ChangeTrackingControls } from "@/components/ChangeTrackingControls";
-import { IBCCPanel } from "@/components/ibcc";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { GuidelinesPanel } from "@/components/guidelines";
-import { OpenEvidencePanel } from "@/components/open-evidence";
 import { SectionVisibilityPanel } from "@/components/SectionVisibilityPanel";
 import { DesktopSpecialtySelector } from "@/components/settings/DesktopSpecialtySelector";
 import { DesktopAIModelSettingsDialog } from "@/components/settings/DesktopAIModelSettingsDialog";
-import { ObservabilitySupportCard } from "@/components/settings/ObservabilitySupportCard";
 import { OfflineIndicator } from "@/components/OfflineIndicator";
-import { ClinicalRiskCalculator } from "@/components/ClinicalRiskCalculator";
 import { TimelineDialog } from "../tools/timeline/TimelineDialog";
-import { UnitCensusDashboard } from "@/components/UnitCensusDashboard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PresenceIndicator } from "@/components/PresenceIndicator";
 import { TrustIndicators } from "@/components/trust/TrustIndicators";
-import { BatchCourseGenerator } from "@/components/BatchCourseGenerator";
-import { ContextAwareHelp } from "@/components/ContextAwareHelp";
+
+// Lazy-load heavy panels that live behind the Tools menu — keeps initial
+// dashboard chunk smaller and improves LCP on first workspace paint.
+const IBCCPanel = React.lazy(() =>
+  import("@/components/ibcc").then((m) => ({ default: m.IBCCPanel })),
+);
+const GuidelinesPanel = React.lazy(() =>
+  import("@/components/guidelines").then((m) => ({ default: m.GuidelinesPanel })),
+);
+const OpenEvidencePanel = React.lazy(() =>
+  import("@/components/open-evidence").then((m) => ({ default: m.OpenEvidencePanel })),
+);
+const UnitCensusDashboard = React.lazy(() =>
+  import("@/components/UnitCensusDashboard").then((m) => ({ default: m.UnitCensusDashboard })),
+);
+const ClinicalRiskCalculator = React.lazy(() =>
+  import("@/components/ClinicalRiskCalculator").then((m) => ({ default: m.ClinicalRiskCalculator })),
+);
+const BatchCourseGenerator = React.lazy(() =>
+  import("@/components/BatchCourseGenerator").then((m) => ({ default: m.BatchCourseGenerator })),
+);
+const ContextAwareHelp = React.lazy(() =>
+  import("@/components/ContextAwareHelp").then((m) => ({ default: m.ContextAwareHelp })),
+);
+const ObservabilitySupportCard = React.lazy(() =>
+  import("@/components/settings/ObservabilitySupportCard").then((m) => ({
+    default: m.ObservabilitySupportCard,
+  })),
+);
 import { KeyboardShortcutHelp, useKeyboardShortcutHelp } from "@/components/KeyboardShortcutHelp";
 import { SyncHistoryPanel } from "@/components/sync/SyncHistoryPanel";
 import { useAICommandPalette } from "@/hooks/useAICommandPalette";
@@ -1044,17 +1065,23 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                 </TabsList>
                 <TabsContent value="ibcc" className="m-0">
                   <div className="h-72 overflow-hidden rounded-md border border-border/30">
-                    <IBCCPanel />
+                    <React.Suspense fallback={<div className="h-72 animate-pulse bg-muted/20" />}>
+                      <IBCCPanel />
+                    </React.Suspense>
                   </div>
                 </TabsContent>
                 <TabsContent value="guidelines" className="m-0">
                   <div className="h-72 overflow-hidden rounded-md border border-border/30">
-                    <GuidelinesPanel />
+                    <React.Suspense fallback={<div className="h-72 animate-pulse bg-muted/20" />}>
+                      <GuidelinesPanel />
+                    </React.Suspense>
                   </div>
                 </TabsContent>
                 <TabsContent value="open-evidence" className="m-0">
                   <div className="h-72 overflow-hidden rounded-md border border-border/30">
-                    <OpenEvidencePanel />
+                    <React.Suspense fallback={<div className="h-72 animate-pulse bg-muted/20" />}>
+                      <OpenEvidencePanel />
+                    </React.Suspense>
                   </div>
                 </TabsContent>
               </Tabs>
@@ -1077,7 +1104,9 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                       <Sparkles className="h-4 w-4" /> AI Assistant <span className="ml-auto text-xs opacity-60">⌘⇧A</span>
                     </Button>
                     <TimelineDialog />
-                    <ClinicalRiskCalculator />
+                    <React.Suspense fallback={<div className="h-12 animate-pulse rounded-md bg-muted/20" />}>
+                      <ClinicalRiskCalculator />
+                    </React.Suspense>
                   </CollapsibleContent>
                 </Collapsible>
                 <Collapsible className="rounded-md border border-border/30 bg-card/40 animate-[stagger-fade-up_0.3s_ease-out_forwards]" style={{ animationDelay: '100ms', opacity: 0 }}>
@@ -1086,9 +1115,15 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                     <ChevronDown className="h-4 w-4 shrink-0 opacity-70 transition-transform duration-200 group-data-[state=open]:rotate-180" aria-hidden />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-2 px-3 pb-3 pt-0">
-                    <UnitCensusDashboard patients={patients} />
-                    <ContextAwareHelp />
-                    <BatchCourseGenerator patients={patients} todosMap={todosMap} />
+                    <React.Suspense fallback={<div className="h-24 animate-pulse rounded-md bg-muted/20" />}>
+                      <UnitCensusDashboard patients={patients} />
+                    </React.Suspense>
+                    <React.Suspense fallback={<div className="h-12 animate-pulse rounded-md bg-muted/20" />}>
+                      <ContextAwareHelp />
+                    </React.Suspense>
+                    <React.Suspense fallback={<div className="h-24 animate-pulse rounded-md bg-muted/20" />}>
+                      <BatchCourseGenerator patients={patients} todosMap={todosMap} />
+                    </React.Suspense>
                   </CollapsibleContent>
                 </Collapsible>
               </div>
@@ -1178,7 +1213,9 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                   </Button>
                 </div>
                 <div className="sm:col-span-2 lg:col-span-3">
-                  <ObservabilitySupportCard variant="desktop" />
+                  <React.Suspense fallback={<div className="h-24 animate-pulse rounded-md bg-muted/20" />}>
+                    <ObservabilitySupportCard variant="desktop" />
+                  </React.Suspense>
                 </div>
               </div>
             </div>
