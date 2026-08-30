@@ -15,5 +15,8 @@ dist/
 .file-versions/
 .od-skills/
 
+# OpenCode tool runtime state (not project source)
+.omo/
+
 # Export bundles (generated)
 *.zip
