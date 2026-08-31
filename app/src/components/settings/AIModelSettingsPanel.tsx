@@ -1,13 +1,37 @@
-import { Building2, Server, ShieldCheck } from 'lucide-react';
+import * as React from 'react';
+import { Building2, Loader2, RefreshCw, Server, ShieldCheck } from 'lucide-react';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEdgeHealth } from '@/contexts/EdgeHealthContext';
 
 export function AIModelSettingsPanel() {
+  const edgeHealth = useEdgeHealth();
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const status = edgeHealth?.status ?? 'unknown';
+  const statusLabel = {
+    healthy: 'Connected',
+    unhealthy: 'Unavailable',
+    checking: 'Checking',
+    unknown: 'Not verified',
+  }[status];
+
+  const handleRefresh = async () => {
+    if (!edgeHealth) return;
+    setIsRefreshing(true);
+    try {
+      await edgeHealth.refresh({ force: true });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <Card className="border-0 bg-transparent shadow-none">
       <CardHeader className="px-0 pb-4">
-        <CardTitle className="text-xl">Clinical AI</CardTitle>
+        <CardTitle className="text-xl">AI provider and service status</CardTitle>
         <p className="mt-1 text-sm text-muted-foreground">
           Organization-managed processing for approved clinical workflows.
         </p>
@@ -21,6 +45,33 @@ export function AIModelSettingsPanel() {
             Clinical requests are sent through the authenticated Rolling Rounds service. Provider keys are never entered or stored in this browser.
           </AlertDescription>
         </Alert>
+
+        <div className="flex flex-col gap-3 rounded-xl border border-border/60 bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold">Rolling Rounds service</h3>
+              <Badge variant={status === 'healthy' ? 'default' : 'secondary'}>{statusLabel}</Badge>
+            </div>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              This checks the authenticated app service used by approved AI workflows. Provider activation remains an administrator setting.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="shrink-0 gap-1.5"
+            onClick={() => void handleRefresh()}
+            disabled={!edgeHealth || isRefreshing || status === 'checking'}
+          >
+            {isRefreshing || status === 'checking' ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+            ) : (
+              <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+            Check service
+          </Button>
+        </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="flex gap-3 rounded-xl border border-border/60 bg-muted/20 p-4">
@@ -45,7 +96,7 @@ export function AIModelSettingsPanel() {
         </div>
 
         <p className="text-xs leading-relaxed text-muted-foreground">
-          AI output can be incomplete or incorrect. Review generated content before adding it to the clinical record or using it in care decisions.
+          AI output can be incomplete or incorrect. Review generated content before adding it to the clinical record or using it in care decisions. If setup is unavailable, contact the deployment administrator rather than entering a provider key in the browser.
         </p>
       </CardContent>
     </Card>

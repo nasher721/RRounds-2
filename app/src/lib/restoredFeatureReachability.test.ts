@@ -19,6 +19,12 @@ test("restored desktop utilities expose backup export and shortcut customization
   const dashboard = await read("src/components/dashboard/DesktopDashboard.tsx");
 
   assert.match(dashboard, /Export roster backup \(JSON\)/);
+  assert.match(dashboard, /aria-label="Workflow shortcuts"/);
+  assert.match(dashboard, /aria-label="Smart patient import"/);
+  assert.match(dashboard, /aria-label="Import patient list"/);
+  assert.match(dashboard, /aria-label="Import patient list from CSV"/);
+  assert.match(dashboard, /aria-label="Open clinical AI setup"/);
+  assert.match(dashboard, /Print \/ Export/);
   assert.match(dashboard, /<KeyboardShortcutSystem/);
   assert.match(dashboard, /<MedicationDoseCalculators/);
   assert.match(dashboard, /onExportRoster=\{handleExport\}/);
@@ -29,6 +35,16 @@ test("mobile settings expose timeline and renal-function tools", async () => {
 
   assert.match(settings, /<TimelineDialog/);
   assert.match(settings, /<MedicationDoseCalculators/);
+});
+
+test("mobile patient-list import exposes both smart parsing and deterministic CSV mapping", async () => {
+  const dashboard = await read("src/components/dashboard/MobileDashboard.tsx");
+
+  assert.match(dashboard, /<TabsTrigger value="smart-list">Smart list<\/TabsTrigger>/);
+  assert.match(dashboard, /<TabsTrigger value="csv">CSV mapping<\/TabsTrigger>/);
+  assert.match(dashboard, /<EpicHandoffImport/);
+  assert.match(dashboard, /<CSVColumnMapper/);
+  assert.match(dashboard, /records\.map\(organizeCsvImportRecord\)/);
 });
 
 test("roster search includes all documented clinical sections", async () => {

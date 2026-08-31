@@ -53,6 +53,7 @@ interface EpicHandoffImportProps {
   }>) => Promise<void>;
   noDialog?: boolean;
   hideHeader?: boolean;
+  trigger?: React.ReactNode;
 }
 
 export const EpicHandoffImport = ({
@@ -60,6 +61,7 @@ export const EpicHandoffImport = ({
   onImportPatients,
   noDialog = false,
   hideHeader = false,
+  trigger,
 }: EpicHandoffImportProps) => {
   const assertBackendReady = useAssertBackendReady();
   const [open, setOpen] = useState(false);
@@ -603,10 +605,12 @@ export const EpicHandoffImport = ({
   return (
     <Dialog open={open} onOpenChange={(o) => o ? setOpen(true) : handleClose()}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" className="w-full justify-start gap-2">
-          <FileUp className="h-4 w-4" />
-          Import Patient List
-        </Button>
+        {trigger ?? (
+          <Button type="button" variant="outline" className="w-full justify-start gap-2">
+            <FileUp className="h-4 w-4" />
+            Import Patient List
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
         {content}

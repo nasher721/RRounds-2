@@ -440,11 +440,22 @@ describe("production dashboard roster regression harness", () => {
 
     assert.ok(await screen.findByRole("textbox", { name: "Search patients" }));
     assert.ok(screen.getByRole("button", { name: "Filter and sort patients" }));
-    assert.ok(screen.getByRole("button", { name: /Print/i }));
+    assert.ok(screen.getByRole("button", { name: "Smart patient import" }));
+    assert.ok(screen.getByRole("button", { name: "Import patient list" }));
+    assert.ok(screen.getByRole("button", { name: "Import patient list from CSV" }));
+    assert.ok(screen.getByRole("button", { name: "Open clinical AI setup" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Open clinical AI setup" }));
+    assert.ok(await screen.findByRole("heading", { name: "Clinical AI setup" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    await waitFor(() => assert.equal(screen.queryByRole("heading", { name: "Clinical AI setup" }), null));
 
     const rows = screen.getAllByRole("button", { name: /^Select / });
     assert.equal(rows.filter(isUserVisible).length >= 4, true);
     assert.ok(screen.getByRole("button", { name: /Select Alex Morgan, A01/ }));
+
+    fireEvent.click(screen.getByRole("button", { name: /Print \/ Export/i }));
+    assert.ok(await screen.findByRole("heading", { name: "Print & Export" }));
   });
 
   it("opens the AI command palette with selected non-first patient context", async () => {
@@ -965,6 +976,13 @@ describe("production dashboard roster regression harness", () => {
     await waitFor(() => {
       assert.ok(screen.getByRole("button", { name: "Import Patient List - Upload a list file or paste patient text" }));
     });
+
+    fireEvent.click(screen.getByRole("button", { name: "Import Patient List - Upload a list file or paste patient text" }));
+    assert.ok(await screen.findByRole("tab", { name: "Smart list" }));
+    const csvTab = screen.getByRole("tab", { name: "CSV mapping" });
+    fireEvent.mouseDown(csvTab, { button: 0, ctrlKey: false });
+    await waitFor(() => assert.equal(csvTab.getAttribute("aria-selected"), "true"));
+    assert.ok(await screen.findByText("Upload CSV"));
   });
 
   /**

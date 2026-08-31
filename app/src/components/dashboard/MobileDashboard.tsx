@@ -4,6 +4,8 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { useChangeTracking } from "@/contexts/ChangeTrackingContext";
 import { AutotextManager } from "@/components/AutotextManager";
 import { EpicHandoffImport } from "@/components/EpicHandoffImport";
+import { CSVColumnMapper } from "@/components/import/CSVColumnMapper";
+import { organizeCsvImportRecord } from "@/lib/import/organizeImportedPatient";
 import { IBCCPanel } from "@/components/ibcc";
 import { GuidelinesPanelLazy } from "@/components/guidelines";
 import { OpenEvidencePanelLazy } from "@/components/open-evidence";
@@ -37,6 +39,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { patientSafetyLabel } from "@/lib/patientIdentity";
 import { PatientFilterType } from "@/constants/config";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PrintExportModal = React.lazy(() =>
   import("@/components/PrintExportModal").then((module) => ({ default: module.PrintExportModal })),
@@ -159,6 +162,18 @@ export const MobileDashboard = () => {
   const handlePrint = useCallback(() => {
     setShowPrintModal(true);
   }, []);
+
+  const finishPatientListImport = useCallback(async (
+    importedPatients: Parameters<typeof onImportPatients>[0],
+  ) => {
+    await onImportPatients(importedPatients);
+    setShowImportModal(false);
+    setMobileTab("patients");
+  }, [onImportPatients, setMobileTab]);
+
+  const handleCsvImport = useCallback(async (records: Record<string, string>[]) => {
+    await finishPatientListImport(records.map(organizeCsvImportRecord));
+  }, [finishPatientListImport]);
 
   const handleRemovePatient = useCallback((id: string) => {
     setPendingRemoveId(id);
@@ -483,16 +498,34 @@ export const MobileDashboard = () => {
       </React.Suspense>
 
       <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <EpicHandoffImport
-            existingBeds={patients.map(p => p.bed)}
-            onImportPatients={async (importedPatients) => {
-              await onImportPatients(importedPatients);
-              setShowImportModal(false);
-              setMobileTab("patients");
-            }}
-            noDialog
-          />
+        <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Import Patient List</DialogTitle>
+            <DialogDescription>
+              Choose AI-assisted document parsing or deterministic CSV column mapping.
+            </DialogDescription>
+          </DialogHeader>
+          <Tabs defaultValue="smart-list" className="flex min-h-0 flex-1 flex-col">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="smart-list">Smart list</TabsTrigger>
+              <TabsTrigger value="csv">CSV mapping</TabsTrigger>
+            </TabsList>
+            <TabsContent value="smart-list" className="min-h-0 flex-1 overflow-y-auto">
+              <EpicHandoffImport
+                existingBeds={patients.map((patient) => patient.bed)}
+                onImportPatients={finishPatientListImport}
+                noDialog
+                hideHeader
+              />
+            </TabsContent>
+            <TabsContent value="csv" className="min-h-0 flex-1 overflow-y-auto">
+              <CSVColumnMapper
+                onImportPatients={handleCsvImport}
+                noDialog
+                hideHeader
+              />
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 

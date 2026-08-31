@@ -39,6 +39,7 @@ interface CSVColumnMapperProps {
   onImportPatients: (patients: Record<string, string>[]) => Promise<void>;
   noDialog?: boolean;
   hideHeader?: boolean;
+  trigger?: React.ReactNode;
 }
 
 type Step = "upload" | "mapping" | "preview";
@@ -47,6 +48,7 @@ export const CSVColumnMapper = ({
   onImportPatients,
   noDialog = false,
   hideHeader = false,
+  trigger,
 }: CSVColumnMapperProps) => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("upload");
@@ -611,10 +613,12 @@ export const CSVColumnMapper = ({
   return (
     <Dialog open={open} onOpenChange={(o) => o ? setOpen(true) : handleClose()}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" className="w-full justify-start gap-2">
-          <Table2 className="h-4 w-4" />
-          Import from CSV
-        </Button>
+        {trigger ?? (
+          <Button type="button" variant="outline" className="w-full justify-start gap-2">
+            <Table2 className="h-4 w-4" />
+            Import from CSV
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
         {content}

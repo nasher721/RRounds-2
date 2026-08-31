@@ -104,6 +104,9 @@ import {
   Maximize2,
   CheckCircle2,
   Upload,
+  FileUp,
+  Table2,
+  Wand2,
   PanelLeftOpen,
 } from "lucide-react";
 import {
@@ -235,6 +238,10 @@ export const DesktopDashboard = () => {
     link.click();
     URL.revokeObjectURL(url);
   }, [patients]);
+
+  const handleCsvImport = React.useCallback(async (records: Record<string, string>[]) => {
+    await onImportPatients(records.map(organizeCsvImportRecord));
+  }, [onImportPatients]);
 
   const [showClearAllDialog, setShowClearAllDialog] = React.useState(false);
   const [syncingList, setSyncingList] = React.useState(false);
@@ -574,7 +581,7 @@ export const DesktopDashboard = () => {
                         disabled={patients.length === 0}
                       >
                         <Printer className="h-3.5 w-3.5" aria-hidden="true" />
-                        Print
+                        Print / Export
                       </Button>
                     </span>
                   </TooltipTrigger>
@@ -592,7 +599,46 @@ export const DesktopDashboard = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between">
+              <div className="flex min-w-0 flex-wrap items-center gap-1.5" role="group" aria-label="Workflow shortcuts">
+                <SmartPatientImport
+                  onImportPatient={onAddPatientWithData}
+                  trigger={
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1.5 px-2.5 text-xs" aria-label="Smart patient import">
+                      <Wand2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      Smart import
+                    </Button>
+                  }
+                />
+                <EpicHandoffImport
+                  existingBeds={patients.map((patient) => patient.bed)}
+                  onImportPatients={onImportPatients}
+                  trigger={
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1.5 px-2.5 text-xs" aria-label="Import patient list">
+                      <FileUp className="h-3.5 w-3.5" aria-hidden="true" />
+                      Import list
+                    </Button>
+                  }
+                />
+                <CSVColumnMapper
+                  onImportPatients={handleCsvImport}
+                  trigger={
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1.5 px-2.5 text-xs" aria-label="Import patient list from CSV">
+                      <Table2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      CSV import
+                    </Button>
+                  }
+                />
+                <DesktopAIModelSettingsDialog
+                  trigger={
+                    <Button type="button" variant="ghost" size="sm" className="h-8 gap-1.5 px-2.5 text-xs" aria-label="Open clinical AI setup">
+                      <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                      AI setup
+                    </Button>
+                  }
+                />
+              </div>
+
               {patients.length > 0 ? (
                 <div className="flex md:hidden flex-wrap items-center gap-2 px-3 py-1.5 bg-secondary/40 rounded-lg text-xs border border-border/30">
                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
@@ -613,7 +659,7 @@ export const DesktopDashboard = () => {
                 <div className="hidden sm:block" />
               )}
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 xl:justify-end">
                 <OfflineIndicator />
 
                 <div className="hidden min-[1100px]:flex items-center gap-2">

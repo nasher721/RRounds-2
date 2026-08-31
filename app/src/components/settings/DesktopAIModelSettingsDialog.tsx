@@ -11,20 +11,26 @@ import {
 } from "@/components/ui/dialog";
 import { AIModelSettingsPanel } from "@/components/settings/AIModelSettingsPanel";
 
-export function DesktopAIModelSettingsDialog() {
+interface DesktopAIModelSettingsDialogProps {
+  trigger?: React.ReactNode;
+}
+
+export function DesktopAIModelSettingsDialog({ trigger }: DesktopAIModelSettingsDialogProps = {}) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs text-muted-foreground hover:text-foreground">
-          <Sparkles className="h-3.5 w-3.5" />
-          Clinical AI
-        </Button>
+        {trigger ?? (
+          <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs text-muted-foreground hover:text-foreground">
+            <Sparkles className="h-3.5 w-3.5" />
+            Clinical AI
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Clinical AI</DialogTitle>
+          <DialogTitle>Clinical AI setup</DialogTitle>
           <DialogDescription>
             Review how your organization manages clinical AI processing.
           </DialogDescription>
