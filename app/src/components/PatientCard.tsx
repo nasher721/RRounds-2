@@ -5,7 +5,6 @@ import { cardHover, collapseVariants } from '@/lib/animations';
 import { durations, ease, staggers } from '@/lib/anime-presets';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { FileText, Calendar, Copy, Trash2, ChevronDown, ChevronUp, Clock, ImageIcon, TestTube, Sparkles, Loader2, History, Settings2, X, Eraser, ClipboardList, AlertTriangle, User } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
@@ -982,14 +981,17 @@ const PatientCardComponent = ({
                       ref={bindFocusContainer("intervalEvents")}
                       onFocusCapture={handleEditableFocus("intervalEvents")}
                     >
-                      <Textarea
-                        value={intervalEventsPlainText}
-                        onChange={(event) => onUpdate(patient.id, "intervalEvents", event.target.value)}
-                        placeholder={"Enter interval events. Start timed events with 06:30 or 2 PM to include them in Timeline view."}
-                        className="min-h-[132px] resize-y bg-card text-sm leading-6"
-                        style={{ fontSize: `${globalFontSize}px` }}
-                        aria-label="Interval events"
-                      />
+                      <div className="bg-background/50 rounded-lg p-3 border border-border/40 focus-within:border-primary/40 focus-within:bg-background">
+                        <RichTextEditor
+                          value={patient.intervalEvents}
+                          onChange={(value) => onUpdate(patient.id, "intervalEvents", value)}
+                          placeholder="Enter interval events..."
+                          minHeight="80px"
+                          autotexts={autotexts}
+                          fontSize={globalFontSize}
+                          changeTracking={changeTracking}
+                        />
+                      </div>
                       {!isWorkspace && (
                         <FieldTimestamp timestamp={patient.fieldTimestamps?.intervalEvents} className="pl-1" />
                       )}

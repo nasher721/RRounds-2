@@ -7,7 +7,7 @@
   "devCommand": "npm run dev",
   "git": {
     "deploymentEnabled": {
-      "main": true
+      "main": false
     }
   },
   "headers": [
