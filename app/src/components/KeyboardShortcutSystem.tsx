@@ -52,6 +52,13 @@ const DEFAULT_SHORTCUTS: Shortcut[] = [
     category: 'panels',
   },
   {
+    id: 'open-evidence',
+    name: 'Open Evidence',
+    defaultKeys: 'Cmd+E',
+    description: 'Search Open Evidence (Ctrl+E on Windows/Linux)',
+    category: 'panels',
+  },
+  {
     id: 'add-patient',
     name: 'Add Patient',
     defaultKeys: 'Cmd+Shift+N',

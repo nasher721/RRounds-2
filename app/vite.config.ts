@@ -297,9 +297,39 @@ export default defineConfig(({ mode, command }) => {
                 priority: 100,
               },
               {
+                name: "vendor-motion",
+                test: /node_modules[\\/](?:framer-motion|motion)[\\/]/,
+                priority: 95,
+              },
+              {
+                name: "vendor-dnd",
+                test: /node_modules[\\/]@dnd-kit[\\/]/,
+                priority: 94,
+              },
+              {
+                name: "vendor-charts",
+                test: /node_modules[\\/](?:recharts|@unovis)[\\/]/,
+                priority: 93,
+              },
+              {
+                name: "vendor-anime",
+                test: /node_modules[\\/]animejs[\\/]/,
+                priority: 92,
+              },
+              {
+                name: "vendor-date",
+                test: /node_modules[\\/]date-fns[\\/]/,
+                priority: 91,
+              },
+              {
                 name: "vendor-supabase",
                 test: /node_modules[\\/]@supabase[\\/]/,
                 priority: 90,
+              },
+              {
+                name: "vendor-radix",
+                test: /node_modules[\\/]@radix-ui[\\/]/,
+                priority: 88,
               },
             ],
           },

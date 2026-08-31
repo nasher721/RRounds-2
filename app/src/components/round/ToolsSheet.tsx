@@ -4,6 +4,7 @@ import {
   FileText,
   ListTodo,
   LogOut,
+  Microscope,
   Settings2,
   Sparkles,
   Trash2,
@@ -53,9 +54,11 @@ import { DesktopSpecialtySelector } from "@/components/settings/DesktopSpecialty
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { IBCCPanel } from "@/components/ibcc"
 import { GuidelinesPanelLazy } from "@/components/guidelines"
+import { OpenEvidencePanelLazy } from "@/components/open-evidence"
 import { useAICommandPalette } from "@/hooks/useAICommandPalette"
 import { useChangeTracking } from "@/contexts/ChangeTrackingContext"
 import { useClinicalGuidelinesState } from "@/contexts/ClinicalGuidelinesContext"
+import { useOpenEvidenceState } from "@/hooks/useOpenEvidenceState"
 import { useDashboard } from "@/contexts/DashboardContext"
 import { useDashboardTodos } from "@/contexts/DashboardTodosContext"
 import { useIBCCState } from "@/contexts/IBCCContext"
@@ -127,6 +130,7 @@ export const ToolsSheet = ({
   const networkActionsUnavailable = !isOnline || backendUnavailable
   const { openPanel: openIbcc } = useIBCCState()
   const { openPanel: openGuidelines } = useClinicalGuidelinesState()
+  const { openPanel: openOpenEvidence } = useOpenEvidenceState()
   const { isOpen: isAICommandPaletteOpen, setIsOpen: setAICommandPaletteOpen } = useAICommandPalette()
   const {
     enabled: ctEnabled,
@@ -172,6 +176,11 @@ export const ToolsSheet = ({
   const handleOpenGuidelines = () => {
     closeSheet()
     openGuidelines()
+  }
+
+  const handleOpenOpenEvidence = () => {
+    closeSheet()
+    openOpenEvidence()
   }
 
   const handleOpenCompare = () => {
@@ -284,6 +293,18 @@ export const ToolsSheet = ({
               >
                 <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
                 Guidelines
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className={rowClass}
+                onClick={handleOpenOpenEvidence}
+                aria-label="Search Open Evidence"
+                data-testid="tools-open-evidence"
+              >
+                <Microscope className="h-4 w-4 shrink-0" aria-hidden="true" />
+                Open Evidence
+                <span className="ml-auto text-xs opacity-60">⌘E</span>
               </Button>
               <Button
                 type="button"
@@ -540,6 +561,7 @@ export const ToolsSheet = ({
       {/* Overlay panels mounted once for Round shells (same pattern as MobileDashboard). */}
       <IBCCPanel variant="overlay" />
       <GuidelinesPanelLazy />
+      <OpenEvidencePanelLazy />
 
       <React.Suspense fallback={null}>
         <AICommandPalette

@@ -1,7 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import type { Patient } from '@/types/patient';
 import type { SortBy } from '@/contexts/SettingsContext';
 import { PatientFilterType } from '@/constants/config';
+
+function useDebouncedValue<T>(value: T, delayMs: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = window.setTimeout(() => setDebounced(value), delayMs);
+    return () => window.clearTimeout(id);
+  }, [value, delayMs]);
+  return debounced;
+}
 
 // Re-export for convenience
 export { PatientFilterType } from '@/constants/config';
@@ -15,14 +24,17 @@ interface UsePatientFilterOptions {
 export function usePatientFilter({ patients, sortBy, currentUserId }: UsePatientFilterOptions) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<PatientFilterType>(PatientFilterType.All);
+  // Debounce search for filtering — keeps input responsive while coalescing
+  // expensive filter+sort recomputations and roster re-renders on fast typing.
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 150);
 
   const filteredPatients = useMemo(() => {
-    const searchLower = searchQuery.toLowerCase();
+    const searchLower = debouncedSearchQuery.toLowerCase();
 
     return patients
       .filter((patient) => {
         const matchesSearch =
-          !searchQuery ||
+          !debouncedSearchQuery ||
           patient.name.toLowerCase().includes(searchLower) ||
           (patient.mrn ?? "").toLowerCase().includes(searchLower) ||
           patient.bed.toLowerCase().includes(searchLower) ||
@@ -59,7 +71,7 @@ export function usePatientFilter({ patients, sortBy, currentUserId }: UsePatient
             return a.patientNumber - b.patientNumber;
         }
       });
-  }, [patients, searchQuery, filter, sortBy, currentUserId]);
+  }, [patients, debouncedSearchQuery, filter, sortBy, currentUserId]);
 
   return {
     searchQuery,

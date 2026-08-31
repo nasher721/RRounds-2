@@ -43,6 +43,7 @@ export const KEYBOARD_SHORTCUTS: ShortcutDefinition[] = [
   { id: 'print-export', name: 'Print / Export', keys: 'Cmd+P', description: 'Open print and export dialog', category: 'actions' },
   { id: 'ai-command', name: 'AI Workspace', keys: 'Cmd+Shift+A', description: 'Open AI command palette', category: 'actions' },
   { id: 'quick-reference', name: 'Quick Reference', keys: 'Cmd+R', description: 'Open IBCC and clinical guidelines', category: 'actions' },
+  { id: 'open-evidence', name: 'Open Evidence', keys: 'Cmd+E', description: 'Search Open Evidence', category: 'actions' },
   { id: 'bold', name: 'Bold', keys: 'Cmd+B', description: 'Format text as bold', category: 'actions' },
   { id: 'italic', name: 'Italic', keys: 'Cmd+I', description: 'Format text as italic', category: 'actions' },
 ];
