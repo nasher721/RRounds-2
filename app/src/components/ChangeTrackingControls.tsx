@@ -47,6 +47,7 @@ export const ChangeTrackingControls: React.FC<ChangeTrackingControlsProps> = ({
           size="sm"
           className="gap-2"
           title="Mark New Text"
+          aria-label="Mark Changes"
         >
           <Highlighter className="h-4 w-4" />
           <span className="hidden sm:inline">Mark Changes</span>

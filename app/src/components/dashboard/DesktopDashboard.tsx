@@ -550,6 +550,14 @@ export const DesktopDashboard = () => {
                     <p className="text-xs text-muted-foreground">Shortcut: N or ⌘⇧N</p>
                   </TooltipContent>
                 </Tooltip>
+                <ChangeTrackingControls
+                  enabled={ctEnabled}
+                  color={ctColor}
+                  styles={ctStyles}
+                  onToggleEnabled={ctToggleEnabled}
+                  onColorChange={ctSetColor}
+                  onToggleStyle={ctToggleStyle}
+                />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span>
@@ -1187,14 +1195,6 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                   <p className="text-xs font-medium text-muted-foreground">Workflow</p>
                   <DesktopSpecialtySelector />
                   <DesktopAIModelSettingsDialog />
-                  <ChangeTrackingControls
-                    enabled={ctEnabled}
-                    color={ctColor}
-                    styles={ctStyles}
-                    onToggleEnabled={ctToggleEnabled}
-                    onColorChange={ctSetColor}
-                    onToggleStyle={ctToggleStyle}
-                  />
                 </div>
                 <div className="rounded-md border border-border/40 p-3 space-y-2">
                   <p className="text-xs font-medium text-muted-foreground">Authoring</p>
