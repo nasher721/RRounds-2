@@ -33,13 +33,22 @@ export function usePatientFilter({ patients, sortBy, currentUserId }: UsePatient
 
     return patients
       .filter((patient) => {
+        const searchableClinicalText = [
+          patient.name,
+          patient.mrn ?? '',
+          patient.bed,
+          patient.clinicalSummary,
+          patient.intervalEvents,
+          patient.imaging,
+          patient.labs,
+          ...Object.values(patient.systems),
+          ...patient.medications.infusions,
+          ...patient.medications.scheduled,
+          ...patient.medications.prn,
+        ].join(' ').toLowerCase();
         const matchesSearch =
           !debouncedSearchQuery ||
-          patient.name.toLowerCase().includes(searchLower) ||
-          (patient.mrn ?? "").toLowerCase().includes(searchLower) ||
-          patient.bed.toLowerCase().includes(searchLower) ||
-          patient.clinicalSummary.toLowerCase().includes(searchLower) ||
-          patient.intervalEvents.toLowerCase().includes(searchLower);
+          searchableClinicalText.includes(searchLower);
 
         if (filter === PatientFilterType.Filled) {
           const hasSomeContent =

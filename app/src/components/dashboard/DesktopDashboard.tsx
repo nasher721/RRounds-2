@@ -28,6 +28,7 @@ import { TimelineDialog } from "../tools/timeline/TimelineDialog";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PresenceIndicator } from "@/components/PresenceIndicator";
 import { TrustIndicators } from "@/components/trust/TrustIndicators";
+import { KeyboardShortcutSystem } from "@/components/KeyboardShortcutSystem";
 
 // Lazy-load heavy panels that live behind the Tools menu — keeps initial
 // dashboard chunk smaller and improves LCP on first workspace paint.
@@ -45,6 +46,9 @@ const UnitCensusDashboard = React.lazy(() =>
 );
 const ClinicalRiskCalculator = React.lazy(() =>
   import("@/components/ClinicalRiskCalculator").then((m) => ({ default: m.ClinicalRiskCalculator })),
+);
+const MedicationDoseCalculators = React.lazy(() =>
+  import("@/components/MedicationDoseCalculators").then((m) => ({ default: m.MedicationDoseCalculators })),
 );
 const BatchCourseGenerator = React.lazy(() =>
   import("@/components/BatchCourseGenerator").then((m) => ({ default: m.BatchCourseGenerator })),
@@ -699,6 +703,7 @@ export const DesktopDashboard = () => {
           onImportDictionary={onImportDictionary}
           onOpenPhraseManager={() => setShowPhraseManager(true)}
           onOpenAICommandPalette={() => setAICommandPaletteOpen(true)}
+          onExportRoster={handleExport}
           openToolsRequestToken={openToolsRequestToken}
         />
       </div>
@@ -887,6 +892,7 @@ interface DesktopUtilityPanelProps {
   onImportDictionary: ReturnType<typeof useDashboard>["onImportDictionary"];
   onOpenPhraseManager: () => void;
   onOpenAICommandPalette: () => void;
+  onExportRoster: () => void;
   openToolsRequestToken: number;
 }
 
@@ -920,6 +926,7 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
   onImportDictionary,
   onOpenPhraseManager,
   onOpenAICommandPalette,
+  onExportRoster,
   openToolsRequestToken,
 }) => {
   const MENU_OPEN_STORAGE_KEY = "rr-desktop-utility-menu-open";
@@ -1108,12 +1115,18 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                     <SmartPatientImport onImportPatient={onAddPatientWithData} />
                     <EpicHandoffImport existingBeds={patients.map((p) => p.bed)} onImportPatients={onImportPatients} />
                     <CSVColumnMapper onImportPatients={handleCsvImport} />
+                    <Button onClick={onExportRoster} variant="outline" className="w-full justify-start gap-2">
+                      <FileText className="h-4 w-4" /> Export roster backup (JSON)
+                    </Button>
                     <Button onClick={onOpenAICommandPalette} className="w-full justify-start gap-2 bg-primary/10 text-primary hover:bg-primary/15 border border-primary/20">
                       <Sparkles className="h-4 w-4" /> AI Assistant <span className="ml-auto text-xs opacity-60">⌘⇧A</span>
                     </Button>
                     <TimelineDialog />
                     <React.Suspense fallback={<div className="h-12 animate-pulse rounded-md bg-muted/20" />}>
                       <ClinicalRiskCalculator />
+                    </React.Suspense>
+                    <React.Suspense fallback={<div className="h-10 animate-pulse rounded-md bg-muted/20" />}>
+                      <MedicationDoseCalculators />
                     </React.Suspense>
                   </CollapsibleContent>
                 </Collapsible>
@@ -1195,6 +1208,7 @@ const DesktopUtilityPanel: React.FC<DesktopUtilityPanelProps> = ({
                   <p className="text-xs font-medium text-muted-foreground">Workflow</p>
                   <DesktopSpecialtySelector />
                   <DesktopAIModelSettingsDialog />
+                  <KeyboardShortcutSystem />
                 </div>
                 <div className="rounded-md border border-border/40 p-3 space-y-2">
                   <p className="text-xs font-medium text-muted-foreground">Authoring</p>

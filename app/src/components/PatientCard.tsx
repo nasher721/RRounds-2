@@ -15,6 +15,8 @@ import { FieldTimestamp } from "./FieldTimestamp";
 import { FieldHistoryViewer } from "./FieldHistoryViewer";
 import { SystemsConfigManager } from "./SystemsConfigManager";
 import { MedicationList } from "./MedicationList";
+import { SmartLabParser } from "./SmartLabParser";
+import { OpenFDAChecker } from "./medications";
 import { LabFishbone } from "./labs";
 import { LengthOfStayBadge } from "./LengthOfStayBadge";
 import { QuickActionsPanel } from "./QuickActionsPanel";
@@ -1164,6 +1166,13 @@ const PatientCardComponent = ({
                           )}
                         </div>
                         <div className="flex gap-0.5 no-print">
+                          <SmartLabParser
+                            onLabsParsed={(labs) => onUpdate(
+                              patient.id,
+                              'labs',
+                              [patient.labs.trim(), labs].filter(Boolean).join('\n'),
+                            )}
+                          />
                           <PatientTodos
                             todos={todos}
                             section="labs"
@@ -1225,6 +1234,14 @@ const PatientCardComponent = ({
                   <MedicationList
                     medications={patient.medications ?? { infusions: [], scheduled: [], prn: [] }}
                     onMedicationsChange={(meds) => onUpdate(patient.id, 'medications', meds)}
+                  />
+                  <OpenFDAChecker
+                    className="mt-3"
+                    medications={[
+                      ...(patient.medications?.infusions ?? []),
+                      ...(patient.medications?.scheduled ?? []),
+                      ...(patient.medications?.prn ?? []),
+                    ]}
                   />
                   <FieldTimestamp timestamp={patient.fieldTimestamps?.medications} className="pl-1 mt-2" />
                 </div>

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Patient, PatientSystems, PatientMedications } from "@/types/patient";
 import { MedicationList } from "@/components/MedicationList";
+import { SmartLabParser } from "@/components/SmartLabParser";
+import { OpenFDAChecker } from "@/components/medications";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -606,7 +608,14 @@ export const MobilePatientDetail = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="pb-4">
-            <div className="flex justify-end mb-2">
+            <div className="flex justify-end gap-2 mb-2">
+              <SmartLabParser
+                onLabsParsed={(labs) => onUpdate(
+                  patient.id,
+                  "labs",
+                  [patient.labs.trim(), labs].filter(Boolean).join("\n"),
+                )}
+              />
               <PatientTodos
                 todos={todos}
                 section="labs"
@@ -649,6 +658,14 @@ export const MobilePatientDetail = ({
               onMedicationsChange={(medications: PatientMedications) =>
                 onUpdate(patient.id, "medications", medications)
               }
+            />
+            <OpenFDAChecker
+              className="mt-3 w-full"
+              medications={[
+                ...(patient.medications?.infusions ?? []),
+                ...(patient.medications?.scheduled ?? []),
+                ...(patient.medications?.prn ?? []),
+              ]}
             />
           </AccordionContent>
         </AccordionItem>

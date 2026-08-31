@@ -62,6 +62,8 @@ import {
 import { SpecialtySelectionPanel } from "@/components/settings/SpecialtySelectionPanel";
 import { AIModelSettingsPanel } from "@/components/settings/AIModelSettingsPanel";
 import { ObservabilitySupportCard } from "@/components/settings/ObservabilitySupportCard";
+import { MedicationDoseCalculators } from "@/components/MedicationDoseCalculators";
+import { TimelineDialog } from "@/components/tools/timeline/TimelineDialog";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   FileText,
@@ -602,6 +604,10 @@ export const MobileSettingsPanel = ({
                   <ActionButton icon={FileText} label="Clinical Phrases" onClick={onOpenPhrases} />
                   <ActionButton icon={Sparkles} label="Autotexts & Templates" onClick={onOpenAutotexts} />
                   <ActionButton icon={Printer} label="Print / Export" onClick={onOpenPrint} />
+                  <TimelineDialog triggerClassName="h-12 text-foreground" />
+                  <div className="flex min-h-12 items-center px-3">
+                    <MedicationDoseCalculators />
+                  </div>
                   <div className="pt-3 border-t border-border/30 mt-3">
                     <ActionButton icon={Trash2} label="Clear All Patients" onClick={onClearAll} destructive />
                   </div>
