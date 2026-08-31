@@ -136,4 +136,36 @@ describe("organizeImportedPatient", () => {
     assert.equal(actual.medications.rawText, "Aspirin 81 mg daily");
     assert.equal(actual.labs, "sodium: 140, creatinine: 1.1");
   });
+
+  it("removes a duplicated leading title when content is already routed to that chart section", () => {
+    const actual = organizeImportedPatient({
+      name: "Ada",
+      handoffSummary: "<b>Clinical summary:</b> Septic shock improving",
+      intervalEvents: "Rounds update: Started norepinephrine",
+      imaging: "Imaging: CT head unchanged",
+      labs: "<strong>Labs</strong>: Sodium 140",
+      systems: {
+        neuro: "<b>Neuro:</b> Awake and following commands",
+        resp: "Respiratory - Intubated on volume control",
+      },
+      medications: { rawText: "Medications: Norepinephrine infusion" },
+    });
+
+    assert.equal(actual.clinicalSummary, "Septic shock improving");
+    assert.equal(actual.intervalEvents, "Started norepinephrine");
+    assert.equal(actual.imaging, "CT head unchanged");
+    assert.equal(actual.labs, "Sodium 140");
+    assert.equal(actual.systems.neuro, "Awake and following commands");
+    assert.equal(actual.systems.resp, "Intubated on volume control");
+    assert.equal(actual.medications.rawText, "Norepinephrine infusion");
+  });
+
+  it("keeps a nonmatching leading label because it is clinical content, not duplicated chrome", () => {
+    const actual = organizeImportedPatient({
+      name: "Ada",
+      systems: { neuro: "Exam: Awake and following commands" },
+    });
+
+    assert.equal(actual.systems.neuro, "Exam: Awake and following commands");
+  });
 });

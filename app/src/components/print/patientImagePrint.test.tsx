@@ -50,6 +50,7 @@ const settings: PrintSettings = {
   showTimestamp: false,
   alternateRowColors: false,
   compactMode: false,
+  sectionSpacingPt: 12,
   activeTab: "table",
   showNotesColumn: false,
   showTodosColumn: false,
@@ -80,6 +81,20 @@ const patient: Patient = {
 afterEach(cleanup);
 
 describe("patient image print rendering", () => {
+  it("uses the configured gap between printed chart sections", () => {
+    const { container } = render(
+      <PrintDocument
+        patients={[{ ...patient, clinicalSummary: "Summary", labs: "Sodium 140" }]}
+        settings={{ ...settings, activeTab: "list", sectionSpacingPt: 18 }}
+      />,
+    );
+
+    const document = container.querySelector("[data-print-document]");
+    const sections = container.querySelector(".grid.grid-cols-1.md\\:grid-cols-3");
+    assert.equal(document?.getAttribute("data-print-section-spacing"), "18pt");
+    assert.equal(sections?.getAttribute("style"), "gap: 18pt;");
+  });
+
   it("renders only the active owner's transient signed image and ignores stored src/XSS", () => {
     const { container } = render(
       <PrintDocument

@@ -189,6 +189,7 @@ const PrintExportModalForOwner = ({ open, onOpenChange, patients, patientTodos =
     showTimestamp: true,
     alternateRowColors: true,
     compactMode: false,
+    sectionSpacingPt: 12,
     activeTab: 'table',
     showNotesColumn: false,
     showTodosColumn: true,
@@ -225,6 +226,7 @@ const PrintExportModalForOwner = ({ open, onOpenChange, patients, patientTodos =
     printStorage.setItem('printAlternateRowColors', nextSettings.alternateRowColors.toString());
     printStorage.setItem('printCompactMode', nextSettings.compactMode.toString());
     printStorage.setItem(STORAGE_KEYS.PRINT_FORMAT, nextSettings.activeTab);
+    printStorage.setItem(STORAGE_KEYS.PRINT_SECTION_SPACING, nextSettings.sectionSpacingPt.toString());
     printStorage.setItem(STORAGE_KEYS.PRINT_ROUNDS_SETTINGS, JSON.stringify(nextSettings.rounds));
   }, [printStorage]);
 
@@ -284,6 +286,8 @@ const PrintExportModalForOwner = ({ open, onOpenChange, patients, patientTodos =
       const savedWidths = printStorage.getItem(STORAGE_KEYS.PRINT_COLUMN_WIDTHS);
       const savedCombined = printStorage.getItem(STORAGE_KEYS.PRINT_COMBINED_COLUMNS);
       const savedCombinedWidths = printStorage.getItem(STORAGE_KEYS.PRINT_COMBINED_COLUMN_WIDTHS);
+      const savedSectionSpacingValue = printStorage.getItem(STORAGE_KEYS.PRINT_SECTION_SPACING);
+      const savedSectionSpacing = savedSectionSpacingValue === null ? Number.NaN : Number(savedSectionSpacingValue);
 
       return {
         settings: mergeStoredSettings({
@@ -303,6 +307,9 @@ const PrintExportModalForOwner = ({ open, onOpenChange, patients, patientTodos =
           showTimestamp: printStorage.getItem('printShowTimestamp') !== 'false',
           alternateRowColors: printStorage.getItem('printAlternateRowColors') !== 'false',
           compactMode: printStorage.getItem('printCompactMode') === 'true',
+          sectionSpacingPt: Number.isFinite(savedSectionSpacing)
+            ? Math.min(30, Math.max(0, savedSectionSpacing))
+            : defaultSettings.sectionSpacingPt,
           activeTab: printStorage.getItem(STORAGE_KEYS.PRINT_FORMAT) || defaultSettings.activeTab,
           rounds: parseStoredJson<RoundsSettings | undefined>(
             printStorage.getItem(STORAGE_KEYS.PRINT_ROUNDS_SETTINGS),

@@ -160,6 +160,44 @@ const appendSectionText = (current: string, next: string): string => {
   return `${current.trim()}\n${incoming}`;
 };
 
+const SECTION_TITLES: Record<string, string[]> = {
+  clinicalSummary: ["clinical summary", "handoff summary", "summary", "assessment and plan", "assessment & plan"],
+  intervalEvents: ["interval events", "rounds update", "rounds summary", "rounds events", "overnight events", "daily update", "events"],
+  imaging: ["imaging", "radiology", "imaging results"],
+  labs: ["labs", "lab results", "laboratory results"],
+  medications: ["medications", "meds", "medications and drips", "meds and drips", "drips"],
+  "systems.neuro": ["neuro", "neurologic", "neurological"],
+  "systems.cv": ["cv", "cardiovascular", "cardiac", "hemodynamics"],
+  "systems.resp": ["resp", "respiratory", "pulmonary", "pulm"],
+  "systems.renalGU": ["renal", "renal gu", "gu", "renal/genitourinary"],
+  "systems.gi": ["gi", "gastrointestinal", "nutrition"],
+  "systems.endo": ["endo", "endocrine"],
+  "systems.heme": ["heme", "hematology", "hematologic"],
+  "systems.infectious": ["id", "infectious", "infectious disease", "infection"],
+  "systems.skinLines": ["skin", "lines", "access", "skin/lines", "access/lines"],
+  "systems.dispo": ["dispo", "disposition", "goals of care"],
+};
+
+/**
+ * Imported text is displayed under its destination section's own heading.
+ * Drop only a matching leading source heading; other leading labels may be
+ * clinically meaningful and must remain in the note.
+ */
+const stripDuplicatedSectionTitle = (value: string, target: string): string => {
+  const titles = SECTION_TITLES[target];
+  if (!titles || !value.trim()) return value.trim();
+
+  const titlePattern = [...titles]
+    .sort((left, right) => right.length - left.length)
+    .map((title) => title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+"))
+    .join("|");
+  const leadingTitle = new RegExp(
+    `^\\s*(?:<[^>]+>\\s*)?(?:${titlePattern})\\s*(?:<\\/[^>]+>\\s*)*[:\\-–—]\\s*(?:<\\/[^>]+>\\s*)?`,
+    "i",
+  );
+  return value.trim().replace(leadingTitle, "").trim();
+};
+
 const stringifyImportFragment = (value: unknown): string => {
   if (typeof value === "string") return value.trim();
   if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
@@ -240,7 +278,10 @@ export const organizeImportedPatient = (
 
   if (patient.systems) {
     for (const key of Object.keys(systems) as Array<keyof PatientSystems>) {
-      systems[key] = String(patient.systems[key] ?? "").trim();
+      systems[key] = stripDuplicatedSectionTitle(
+        String(patient.systems[key] ?? ""),
+        `systems.${key}`,
+      );
     }
   }
 
@@ -254,14 +295,20 @@ export const organizeImportedPatient = (
     medications.prn = Array.isArray(patient.medications.prn)
       ? patient.medications.prn.map(String).filter(Boolean)
       : [];
-    medications.rawText = String(patient.medications.rawText ?? "");
+    medications.rawText = stripDuplicatedSectionTitle(
+      String(patient.medications.rawText ?? ""),
+      "medications",
+    );
   }
 
   const bed = String(patient.bed || patient.room || "").trim();
-  let clinicalSummary = String(patient.clinicalSummary || patient.handoffSummary || "").trim();
-  let intervalEvents = String(patient.intervalEvents || "").trim();
-  let imaging = String(patient.imaging || "").trim();
-  let labs = String(patient.labs || "").trim();
+  let clinicalSummary = stripDuplicatedSectionTitle(
+    String(patient.clinicalSummary || patient.handoffSummary || ""),
+    "clinicalSummary",
+  );
+  let intervalEvents = stripDuplicatedSectionTitle(String(patient.intervalEvents || ""), "intervalEvents");
+  let imaging = stripDuplicatedSectionTitle(String(patient.imaging || ""), "imaging");
+  let labs = stripDuplicatedSectionTitle(String(patient.labs || ""), "labs");
 
   // Apply label classification for any leftover free-form keys on the object.
   for (const [label, value] of Object.entries(patient)) {
@@ -293,10 +340,11 @@ export const organizeImportedPatient = (
     ) {
       continue;
     }
-    const fragment = stringifyImportFragment(value);
+    const rawFragment = stringifyImportFragment(value);
+    const target = classifyClinicalFragmentToChartSection(label, rawFragment);
+    const fragment = stripDuplicatedSectionTitle(rawFragment, target);
     if (!fragment) continue;
 
-    const target = classifyClinicalFragmentToChartSection(label, fragment);
     if (target === "skip") continue;
     if (target === "clinicalSummary") {
       clinicalSummary = appendSectionText(clinicalSummary, fragment);

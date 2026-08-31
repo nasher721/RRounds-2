@@ -77,9 +77,9 @@ export interface PrintPreset {
     borderStyle: 'none' | 'light' | 'medium' | 'heavy';
     showPageNumbers: boolean;
     showTimestamp: boolean;
-    alternateRowColors: boolean;
-    compactMode: boolean;
-    physicianName?: string;
+  alternateRowColors: boolean;
+  compactMode: boolean;
+  physicianName?: string;
     pdf?: PdfExportSettings;
     createdAt: string;
 }
@@ -99,9 +99,11 @@ export interface PrintSettings {
     borderStyle: 'none' | 'light' | 'medium' | 'heavy';
     showPageNumbers: boolean;
     showTimestamp: boolean;
-    alternateRowColors: boolean;
-    compactMode: boolean;
-    physicianName?: string;
+  alternateRowColors: boolean;
+  compactMode: boolean;
+  /** Space between printed chart sections in table/card/list formats, in points. */
+  sectionSpacingPt: number;
+  physicianName?: string;
     pdf?: PdfExportSettings;
     /** Active document format. Kept as `activeTab` for stored-payload compatibility. */
     activeTab: string;

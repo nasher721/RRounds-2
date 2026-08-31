@@ -387,8 +387,9 @@ export const PrintDocument = React.forwardRef<HTMLDivElement, PrintDocumentProps
     return (
       <div
         ref={ref}
-        data-print-document
-        data-print-document-id={documentId}
+      data-print-document
+      data-print-document-id={documentId}
+      data-print-section-spacing={`${settings.sectionSpacingPt}pt`}
         className={cn("print-document bg-white text-slate-900", className)}
         style={{
           fontFamily: settings.printFontFamily !== "system" ? settings.printFontFamily : undefined,
@@ -466,6 +467,7 @@ export const PrintDocument = React.forwardRef<HTMLDivElement, PrintDocumentProps
                     : "grid-cols-1"
                   : "grid-cols-1"
               )}
+              style={{ gap: `${settings.sectionSpacingPt}pt` }}
             >
               {patients.map((patient) => (
                 <div
@@ -493,6 +495,7 @@ export const PrintDocument = React.forwardRef<HTMLDivElement, PrintDocumentProps
                     className={cn(
                       settings.activeTab === "list" ? "grid grid-cols-1 md:grid-cols-3 gap-6" : "space-y-4"
                     )}
+                    style={{ gap: `${settings.sectionSpacingPt}pt` }}
                   >
                     {renderColumns
                       .filter((c) => c.id !== "patient")

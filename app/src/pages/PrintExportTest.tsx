@@ -111,6 +111,7 @@ const buildSettings = (overrides: Partial<PrintSettings>): PrintSettings => {
     showTimestamp: true,
     alternateRowColors: true,
     compactMode: false,
+    sectionSpacingPt: 12,
     activeTab: "table",
     showNotesColumn: true,
     showTodosColumn: true,

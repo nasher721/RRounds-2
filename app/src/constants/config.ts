@@ -37,6 +37,7 @@ export const STORAGE_KEYS = {
   PRINT_TEMPLATE_PRESETS: 'printTemplatePresets',
   PRINT_SELECTED_TEMPLATE_ID: 'printSelectedTemplateId',
   PRINT_FORMAT: 'printFormat',
+  PRINT_SECTION_SPACING: 'printSectionSpacing',
   PRINT_ROUNDS_SETTINGS: 'printRoundsSettings',
 } as const;
 

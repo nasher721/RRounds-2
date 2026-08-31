@@ -272,6 +272,22 @@ export function PrintSettings({
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="print-section-spacing">Space Between Sections</Label>
+                <span className="text-xs text-muted-foreground">{settings.sectionSpacingPt}pt</span>
+              </div>
+              <Slider
+                id="print-section-spacing"
+                value={[settings.sectionSpacingPt]}
+                min={0}
+                max={30}
+                step={1}
+                onValueChange={([sectionSpacingPt]) => onUpdateSettings({ sectionSpacingPt })}
+              />
+              <p className="text-xs text-muted-foreground">Adjusts the separation between chart sections in card and list exports.</p>
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>
